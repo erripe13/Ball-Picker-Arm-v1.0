@@ -13,8 +13,8 @@ loop=main_loop.main_loop(serial_port)
 def RunTests():
 
     #Arm Movement Testing
-    #loop.test_arm()
-    #loop.test_arm_XYZ(5,5,-9)
+    loop.test_arm()
+    loop.test_arm_XYZ(5,5,-9)
     loop.test_arm_home()
     #loop.test_arm_home_plane()
     #loop.test_arm_clearcamera()
@@ -44,6 +44,7 @@ def ImageDetection():
 
 
 
-#RunTests()
+
+RunTests()
 #RunPickandPlace()
 ImageDetection()
