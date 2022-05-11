@@ -62,6 +62,7 @@ while True:
 		thickness = int(np.sqrt(args["buffer"] / float(i + 1)) * 2.5)
 		cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
 	# afficher la sortie video traitée assemblée
+	cv2.putText(image,"test",(20,20),cv2.FONT_HERSHEY_SIMPLEX,0.5,(0,0,255),2)
 	cv2.imshow("Frame", frame)
 	key = cv2.waitKey(1) & 0xFF
 	# arrêt si Q est pressé
