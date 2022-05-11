@@ -1,3 +1,5 @@
+# code par Pierre Mirouze depuis un projet de pacogarcia3
+# FabriqExpo Exploradôme de Vitry
 import cv2
 import numpy as np
 import time
