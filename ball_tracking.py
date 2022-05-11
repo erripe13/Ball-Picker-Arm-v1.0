@@ -1,5 +1,7 @@
 # code par Pierre Mirouze depuis la base de connaissance d'Adrian Rosebrock
 # FabriqExpo Exploradôme de Vitry
+# suivi de la balle OpenCV et extraction des coordonnées
+
 # import des paquets nécessaires
 from collections import deque
 from imutils.video import VideoStream

@@ -1,5 +1,7 @@
 # code par Pierre Mirouze depuis un projet de pacogarcia3
 # FabriqExpo Exploradôme de Vitry
+# code principal exécutant toutes les sous-fonctions
+
 import main_loop
 
 

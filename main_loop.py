@@ -1,5 +1,7 @@
 # code par Pierre Mirouze depuis un projet de pacogarcia3
 # FabriqExpo Exploradôme de Vitry
+# boucle principale avec exécution de sous-boucles et overlay de l'interface
+
 import cv2
 import numpy as np
 import time

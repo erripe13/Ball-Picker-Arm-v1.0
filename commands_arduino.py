@@ -1,5 +1,7 @@
 # code par Pierre Mirouze depuis un projet de pacogarcia3
 # FabriqExpo Exploradôme de Vitry
+# code d'envoi des coordonnées à l'arduino
+
 import serial
 import time
 

@@ -1,5 +1,7 @@
 # code par Pierre Mirouze depuis un projet de pacogarcia3
 # FabriqExpo Exploradôme de Vitry
+# projection des coordonnées de la balle 2D dans l'espace 3D
+
 import numpy as np
 import cv2
 import image_recognition_singlecam
