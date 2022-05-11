@@ -1,3 +1,7 @@
+// code par Pierre Mirouze depuis un projet de pacogarcia3
+// FabriqExpo Exploradôme de Vitry
+// programme exécuté par l'Arduino contrôlant les moteurs du bras
+
 #include <Servo.h>
 #include <math.h>
 
