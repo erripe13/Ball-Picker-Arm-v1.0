@@ -69,10 +69,7 @@ while True:
 	if key == ord("q"):
 		break
 # arrêt de la camera
-if not args.get("video", False):
-	vs.stop()
-# libérer le flux série de la caméra dans le système
-else:
-	vs.release()
+vs.stop()
+
 # fermer les fenetres
 cv2.destroyAllWindows()
