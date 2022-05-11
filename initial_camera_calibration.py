@@ -1,7 +1,7 @@
 #https://docs.opencv.org/3.3.0/dc/dbb/tutorial_py_calibration.html
 # code par Pierre Mirouze depuis un projet de pacogarcia3
 # FabriqExpo Exploradôme de Vitry
-# calibration de la perspective de la caméra
+# calibration de la déformation de la caméra (damier)
 
 import numpy as np
 import cv2
