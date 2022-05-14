@@ -2,14 +2,20 @@
 FileName = PCB1.GBR
 AutoAperture = True
 *************************************************************
-Generating : Mechanical 1
-      File : PCB1_Mechanical_1.gbr
+Generating : Top Layer
+      File : PCB1_Copper_Signal_Top.gbr
 
-    Adding Layer      : Mechanical 1
+    Adding Layer      : Top Layer
+
+    Adding Layer      : Multi-Layer
 
 
 Used DCodes :
-    D18
+    D10
+    D11
+    D12
+    D13
+    D14
 *************************************************************
 
 *************************************************************
@@ -28,29 +34,17 @@ Used DCodes :
     D13
     D14
     D15
-    D16
-    D17
-    D18
 *************************************************************
 
 *************************************************************
-Generating : Top Layer
-      File : PCB1_Copper_Signal_Top.gbr
+Generating : Mechanical 1
+      File : PCB1_Mechanical_1.gbr
 
-    Adding Layer      : Top Layer
-
-    Adding Layer      : Multi-Layer
+    Adding Layer      : Mechanical 1
 
 
 Used DCodes :
-    D10
-    D11
-    D12
-    D13
-    D14
     D15
-    D16
-    D17
 *************************************************************
 
 *************************************************************
@@ -59,6 +53,6 @@ Generating : Profile
 
 
 Used DCodes :
-    D19
+    D16
 *************************************************************
 

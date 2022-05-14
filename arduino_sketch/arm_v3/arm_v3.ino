@@ -11,7 +11,8 @@
 
 Servo servo[3];
 
-// setup Pins
+// setup Pins150
+
 const int servo_Pin[] = {6, 7, 4}; //top,middle,grip
 //const int servoGrip_val[]= {145,105,145};  //open/max, close/min, default
 const int servoGrip_val[]= {170,125,170};  //open/max, close/min, default
