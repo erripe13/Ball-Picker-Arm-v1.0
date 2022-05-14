@@ -46,7 +46,7 @@ void setup() {
   // port série
   Serial.begin(9600);
   //envoi du mot start sur le port série
-  Serial.println("start");
+  Serial.println("Démarrage de l'initialisation");
 
   //setup broches arduino
   pinMode(stepper_dirPin[0], OUTPUT);
@@ -122,7 +122,7 @@ void get_angles_from_yz(double y, double z) {
   double H, s1, s2, aB, aA, aQ, servo1angle, servo2angle, y2, z2, y3, z3;
 
   //longueur du bras en cm
-  int L = 13;
+  int L = 30;
 
   H= sqrt (pow(y,2) + pow(z,2));
   s1=H/2;
@@ -136,30 +136,26 @@ void get_angles_from_yz(double y, double z) {
   servo1angle=aA+aB;
   servo1angle= (servo1angle/ (2 * M_PI)) * 360;
 
-  //matrix multiplication - counterclockwise rotation
+  //multiplication de la matrice - rotation dans le sens inverse des aiguilles d'une montre
   y3 = -L*sin(aA+aB);
   z3 = -L* cos(aA+aB);
 
   servo2angle=atan((y-y3)/(z-z3));  
 
   servo2angle= (servo2angle / (2 * M_PI)) * 360;
-  //tangent calculation changes when servo2 exceeds 90 degrees, correction below
+  //le calcul de la tangente change lorsque le servo2 dépasse 90 degrés, correction ci-dessous
   if ((z-z3)>0) {
     servo2angle=servo2angle-180;
   }
 
-  //Absolute Top Arm Angle
-  //Top Arm moves 0 to +90
+  //angle segment 1 absolu
   angle_next[0] = servo1angle;
 
-  //Absolute Middle Arm Angle
-  //Midle Arm moves 0 to +90
+  //angle segment 2 absolu
   angle_next[1] = -servo2angle;
 
 
-  //Convert to SERVO Angle
-  //in this case, a 90 servo position is equal to 71 degrees for Top arm
-  //90 servo position is equal to 65 Middle Arm
+  //conversion en angles des servo réels
   angle_next[0] = angle_next[0] + calibrate_TopArm;
   angle_next[1] = angle_next[1] + calibrate_MiddleArm;
 
@@ -172,15 +168,12 @@ void  coordinate_move(double xEnd, double yEnd, double zEnd, bool liftgrab_motio
   double yStart = XYZ_current[1];
   double zStart = XYZ_current[2];
 
-  //Serial.println("/ Coord Move Start /");
-
-  //calibrate stepper steps into cms (for x axis)
-  
+  //application de la calibration de pas du moteur
   double x_to_steps = STEPS_PER_CM[0];
 
-  //identify if there is movement in the y Axis
+  //mouvement en y ?
   double zDelta = zEnd - zStart;
-  //identify if there is movement in the z Axis
+  //mouvement en z ?
   double xDelta = xEnd - xStart;
 
   double x_stepper_steps = x_to_steps * abs(xDelta);
@@ -193,10 +186,9 @@ void  coordinate_move(double xEnd, double yEnd, double zEnd, bool liftgrab_motio
     }
   }
 
-  //the liftbrab_motion bool is equivalent to the bool_move paramter
-  // controls if the arm moves linearly to the position or performs a pick/grab motions (move Y first/z second etc)
+  //si le bool_liftgrab_motion est équivalent au paramètre bool_move :
+  //Contrôle si le bras se déplace linéairement vers la position ou s'il effectue un mouvement de saisie (déplacer Y d'abord/Z ensuite, etc.).
   
-
   if (liftgrab_motion == true) {
     if (zDelta < 0) {
       //arm is going to move down, move Y first
@@ -227,8 +219,7 @@ void  coordinate_move(double xEnd, double yEnd, double zEnd, bool liftgrab_motio
   }
 
 
-  //Serial.println("/ Coord Move End /");
-
+  //instructions de débug :
   //Serial.println(" //////// ");
   //Serial.print(" xStart=  "); Serial.print(xStart); Serial.print(" yStart=  "); Serial.println(yStart);
   //Serial.print("Angle Top Arm="); Serial.print(angle_TopArm); Serial.print(" Angle Middle Arm=  "); Serial.println(angle_MiddleArm);
@@ -244,34 +235,30 @@ void  coordinate_move(double xEnd, double yEnd, double zEnd, bool liftgrab_motio
 
 void stepper_advance(int stepper_num, double steps, int dir) {
 
-  // generates the pulso for the Pololu controller to move the stepper.
-  // this is helpful, given the delay has to change if you want to modifiy your stepper to operate at Full/Half steps etc.
-
-  // check to see if a full step needs to be corrected
+  // génération de la pwm pour le driver TMC2208
+  // vérification si besoin de compensation pas-à-pas
   if (abs(stepper_correction[stepper_num]) > 1) {
     if (stepper_correction[stepper_num]>1){
-      //add one steps if correction is >1
-      //steps++;
-      //remove that step from the correction log
-      //stepper_correction[stepper_num]--;
+      //ajout d'un pas si la compensation >1
+      steps++;
+      stepper_correction[stepper_num]--;
     } else {
-      //steps--;
-      //stepper_correction[stepper_num]++;
+      steps--;
+      stepper_correction[stepper_num]++;
     }
   }
 
-  // set direction
+  // paramètre de direction de translation
   if (dir == 0) {
     digitalWrite(stepper_dirPin[stepper_num], HIGH);
   } else {
     digitalWrite(stepper_dirPin[stepper_num], LOW);
   }
 
-  // send pulse signal to stepper
+  // envoi pwm driver TMC2208
   while (1) {
     digitalWrite(stepper_stepPin[stepper_num], HIGH);
     delayMicroseconds(stepper_delay[stepper_num]);
-
     digitalWrite(stepper_stepPin[stepper_num], LOW);
     delayMicroseconds(stepper_delay[stepper_num]);
 
@@ -280,7 +267,7 @@ void stepper_advance(int stepper_num, double steps, int dir) {
   }
 
 
-  // accumulate correction on the remainder of steps to avoid de-calibration
+  // stockage du nombre de pas corrigés pour tenir les comptes et ne pas décalibrer
   if (steps > 0 && steps <1) {
     if (dir ==0) {
       stepper_correction[stepper_num]+=steps;
@@ -289,47 +276,44 @@ void stepper_advance(int stepper_num, double steps, int dir) {
     }
   }
   
-  Serial.print("Stepper Remainder ");
+  Serial.print("reste de pas stocké");
   Serial.println(stepper_correction[stepper_num]);
 
 }
 
 void servo_steps(int servo_num, double angle_target, double incr_step = 10, int step_delay = 50) {
-  // Using LD-20MG Servos with an Arduino Mega 2560, they only work smoothly on maximum 25 degree instructions at a time.
-  // I haven't debugged the hardware, but this functions solves the issue.
-
-  // This function helps you send commands to servos to move in a set of degrees at at a time.
+  // cette commande permet d'envoyer les instructions par paquets de 25 degrés. utile pour des servos bas de gamme.
 
   int set_angle;
   int angle_start = angle_current[servo_num];
 
   if (angle_start > angle_target) {
-    //start from angle_start, and then move the servo by incr_steps into the angle_target
-    //stepping down to target
+    //commencer à partir de l'angle_start, puis déplacer le servo par incr_pas dans l'angle_target
+
     for (set_angle = angle_start; set_angle >= angle_target; set_angle -= incr_step) {
       servo[servo_num].write(set_angle);
-      //Serial.println(set_angle);
+      Serial.print("angle servo:")
+      Serial.println(set_angle);
       delay(step_delay);
     }
   } else {
-    //stepping up to target
+
     for (set_angle = angle_start; set_angle <= angle_target; set_angle += incr_step) {
       servo[servo_num].write(set_angle);
-      //Serial.println(set_angle);
+      Serial.print("angle servo:")
+      Serial.println(set_angle);
       delay(step_delay);
     }
   }
 
-  // make sure the servo arrives at the target
+  // assurer l'instruction d'angle
   servo[servo_num].write(angle_target);
-  //update the current angle
+  //mettre à jour la donnée d'angle dans le registre de position
   angle_current[servo_num] = angle_target;
 
 }
 
 void twoarm_step_coordinate(double toparm_target, double middlearm_target) {
-
-  //Serial.println("--> two arm step Start /");
 
   double incr_steps0=1;
   double incr_steps1= 1;
