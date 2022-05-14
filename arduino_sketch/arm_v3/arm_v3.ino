@@ -5,58 +5,50 @@
 #include <Servo.h>
 #include <math.h>
 
-//Servo[0]=TopArm
-//Servo[1]=MiddleArm
-//Servo[2]=Grip
-
-Servo servo[3];
-
-// setup Pins150
-
-const int servo_Pin[] = {6, 7, 4}; //top,middle,grip
-//const int servoGrip_val[]= {145,105,145};  //open/max, close/min, default
-const int servoGrip_val[]= {170,125,170};  //open/max, close/min, default
+//initialisation de la liste des servos
+Servo servo[4];
+// setup broches utilisées
+const int servo_Pin[] = {5, 6, 7, 4}; //rotation,segment1,segment2,pince
+//définition des valeurs de serrage/désserrage sous le format suivant :
+//{ouvert-max, fermé-min, repos}
+const int servoGrip_val[]= {170,125,170};  
 const int stepper_dirPin[] = {8};
 const int stepper_stepPin[] = {9};
-
-// servo Angles
+//liste d'angles
 double angle_current[] = {90, 90, 145};
 double angle_next[] = {90, 90, 145};
-
-// starting arm Coordinates
+//coordonnées du bras initialement, puis actuelles, puis suivantes
 const double XYZ_base[] = {0, 0, -6, 1, 0, 0, 1}; //x,y,z, bool_move, bool_open, delay_to_next, type_of_action
 double XYZ_current[] = {0, 0, -9, 1, 0, 1}; //x,y,z, bool_move, bool_open, delay_to_next, type_of_action
 double XYZ_next[] = {0, 0, -9, 1, 0, 1}; //x,y,z, bool_move, bool_open, delay_to_next, type_of_action
-
-// operating Constraints
-const int stepper_delay[] = {27 * 28}; // 27 for sixteen, 27*22 for full step
-const int stepper_maxsteps[] = {4000}; 
-const double STEPS_PER_CM[] ={50.335}; //1500 total travel steps for ~29.8 cm = 50.335 steps per cm
+//contraintes de translation (pas-à-pas)
+const int stepper_delay[] = {27 * 28}; //27*22 for full step
+const int stepper_maxsteps[] = {4000}; //max de pas
+const double STEPS_PER_CM[] ={50.335}; //résultat calcul par par cm
 double stepper_correction[]={0};
 
-// make sure that the servo angle position, correctly translates to the trigonometric formulas of the arm position (see docs)
-// set the servo to 90 degress, then measure the real angle of the arm.
-// the calibration value is (90 - {position of arm vs reference at servo 90}), which then helps all values translate to sevo position.
+// vérifier que l'angle du servo correpond bien à l'angle de la partie du bras commandée
+// mettre le servo à 90°, puis mesurer l'angle réel
+// la valeur de calibration est donc (90 - {réel angle par rapport à 90})
 const double calibrate_TopArm=90-35.7;
 const double calibrate_MiddleArm=90-41.4;
-//compensate for Grip Height (vs. middle arm end) on Z-axis
+//compensation hauteur de la pince par rapport à l'extrémité du segment 2 du bras
 const double calibrate_Z=8.5;
 
 // communication
 const byte numChars = 32;
 char receivedChars[numChars];
-
 boolean newData = false;
 
 
 void setup() {
 
-  // Setup Communication
+  // port série
   Serial.begin(9600);
-  //Serial.println("#====# Setup Start #====#");
+  //envoi du mot start sur le port série
   Serial.println("start");
 
-  // Setup Pin Modes
+  //setup broches arduino
   pinMode(stepper_dirPin[0], OUTPUT);
   pinMode(stepper_stepPin[0], OUTPUT);
   int i = 0;
@@ -64,7 +56,7 @@ void setup() {
     pinMode(servo_Pin[i], OUTPUT);
   }
 
-  // Setup initial Servo Angles
+  // Setup des angles servo initiaux
   //for(i=0; i<2; i++) { servo[i].write(90); angle_current[i]=90; }
   servo[2].write(servoGrip_val[2]); angle_current[2] = servoGrip_val[2];
   // Set Coordinates a Base
@@ -72,12 +64,12 @@ void setup() {
   int z = -6;
   coordinate_move(0, y, z, false);
 
-  // setup servos
+  // setup servo
   for (i = 0; i < 3; i++) {
     servo[i].attach(servo_Pin[i], 500, 2500);
   }
 
-  //=========run tests (make sure to set "loop" bolean to false)
+  //tests de moteurs, à décommenter pour tester et en mettant "boot loop=false" dans la boucle principale
   //test_stepper();
   //test_servo(0);
   //test_servo(1);
@@ -90,13 +82,12 @@ void setup() {
   //test_getangles(-5,-9);
   //test_getangles(5,-9);
   //test_getangles(0,-13);
-
   //coordinate_move(0,-9,0);
   //delay(500);50
   //coordinate_move(0, y, 0, false);
   //delay(500);
 
-  //Serial.println("#====# Arduino Ready #====#");
+  //envoi ready port série
   Serial.println("ready");
 
   
@@ -104,21 +95,15 @@ void setup() {
 
 void loop() {
 
-
-  // put your main code here, to run repeatedly:
   bool loop=true;
   
   recvWithStartEndMarkers();
   showNewData();
-  //delay(5000);
-  
+
   //data format <x,y,z,bool_move,bool_open,delayms,type_int> = <23,56,89,1,1,3456,3> {17}
   //X: 7.00 Y: 8.00 Z: 9.00 bool_move: 1.00 bool_open: 0.00 delay_ms: 10.00 move_type: 1.00
-
-  //the bool_move controls if the arm moves linearly to the position or performs a pick/grab motions (move x first/y second etc)
+  //le bool_move contrôle si le bras se déplace linéairement vers la position ou s'il effectue un mouvement de prise (déplacement x d'abord/y ensuite, etc.).
   
-  //<0,0,-9,1,1,1>
-
   if (newData==true && loop==true) {
     coordinate_move(XYZ_next[0],XYZ_next[1],XYZ_next[2],XYZ_next[3]);
     servo_Open(XYZ_next[4]);
@@ -132,11 +117,11 @@ void loop() {
 
 void get_angles_from_yz(double y, double z) {
 
-  //refer to trigonometry illustration for variable description
+  //voir le schéma trigo pour le nom des variables
 
   double H, s1, s2, aB, aA, aQ, servo1angle, servo2angle, y2, z2, y3, z3;
 
-  //arm length in cm
+  //longueur du bras en cm
   int L = 13;
 
   H= sqrt (pow(y,2) + pow(z,2));
