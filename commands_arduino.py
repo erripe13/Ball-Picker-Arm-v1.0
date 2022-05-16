@@ -15,11 +15,11 @@ class arm_controller:
     
         self.wait_forready()
 
-        self.LOW_Z=LOW_Z  #lowest coordinate the arm can reach
-        self.HOVER_Z=HOVER_Z #Z value before a Grab motion (height to move on top of object)
-        self.DROP_Z=DROP_Z #Z value to perform a Drop
-        self.MID_Z=MID_Z #mid Z value
-        self.HIGH_Z=HIGH_Z #highest Z value
+        self.LOW_Z=LOW_Z  #coordonnée la plus basse atteignable
+        self.HOVER_Z=HOVER_Z #Z pendant translation
+        self.DROP_Z=DROP_Z #Z avant de lâcher
+        self.MID_Z=MID_Z #Z intermédiaire (repos)
+        self.HIGH_Z=HIGH_Z #Z le plus haut atteignable
 
 
         self.DELAY=0
@@ -32,7 +32,7 @@ class arm_controller:
         inputstr=inputstr.replace("'b","")
         return inputstr
 
-    #https://playground.arduino.cc/interfacing/python
+    # ressource : https://playground.arduino.cc/interfacing/python
 
     def wait_forready(self):
         print(self.decodestr(self.ser.readline()))
@@ -45,10 +45,10 @@ class arm_controller:
     def move_untildone(self, inputarr):
 
 
-        #data format <x,y,z,bool_move,bool_open,delayms,type_int> = <23,56,89,1,1,3456,3> {17}
+        #format : <x,y,z,bool_move,bool_open,delayms,type_int> = <23,56,89,1,1,3456,3> {17}
         #X: 7.00 Y: 8.00 Z: 9.00 bool_move: 1.00 bool_open: 0.00 delay_ms: 10.00 move_type: 1.00
 
-        #bool_move controls if the arm moves linearly to the position or coordinates y/z to pickup
+        #bool_move contrôle un mouvement linéaire
         
         inputs="<"+str(inputarr[0])+","+str(inputarr[1])+","+str(inputarr[2])+","+str(inputarr[3])+","+str(inputarr[4])+","+str(inputarr[5])+">"
         inputs=inputs.encode("utf-8")
@@ -67,32 +67,31 @@ class arm_controller:
     def move_and_pickup(self, x, y):
 
         
-        #elevate arm
+        #montée du bras
         self.move_untildone([x,0,self.HIGH_Z,1,1,self.DELAY,1])
-        #open
+        #ouvrir
         self.move_untildone([x,0,self.HIGH_Z,1,1,self.DELAY,1])
-        #move on z
+        #mmouvement z
         self.move_untildone([x,0,self.HIGH_Z,1,1,self.DELAY,1])
-        #lower arm and x
+        #descente du bras
         self.move_untildone([x,y,self.HOVER_Z,0,1,self.DELAY,1])
-        #lower
         self.move_untildone([x,y,self.LOW_Z,1,1,self.DELAY,1])
-        #close
+        #fermer
         self.move_untildone([x,y,self.LOW_Z,1,0,self.DELAY*20,1])
-        #elevate arm
+        #montée du bras
         self.move_untildone([x,y,self.HOVER_Z,1,0,self.DELAY,1])
         self.move_untildone([x,0,self.HIGH_Z,0,0,self.DELAY,1])
 
 
     def transport_and_drop(self, x, y):
 
-        #elevate arm
+        #monter
         self.move_untildone([x,y,self.MID_Z,1,0,self.DELAY,1])
-        #lower
+        #baisser
         self.move_untildone([x,y,self.DROP_Z,0,0,self.DELAY,1])
-        #drop
+        #lâcher
         self.move_untildone([x,y,self.DROP_Z,1,1,self.DELAY*10,1])
-        #elevate arm
+        #monter
         self.move_untildone([x,0,self.HIGH_Z,0,1,self.DELAY,1])
 
 
@@ -105,7 +104,7 @@ class arm_controller:
 
     def move_home_plane(self):
 
-        #moves the arm to touch the base, with closed grip
+        #bouger au 0 pince fermée
         self.move_untildone([0,0,self.LOW_Z,1,0,self.DELAY,1])
 
 
@@ -125,7 +124,7 @@ class arm_controller:
         #home
         self.move_home()
 
-        #clear
+        #libérer vue cam
         self.move_clearcamera()
 
         #home
