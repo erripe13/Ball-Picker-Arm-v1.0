@@ -155,7 +155,7 @@ void get_angles_from_yz(double y, double z) {
   angle_next[1] = -servo2angle;
 
 
-  //conversion en angles des servo réels
+  //conversion en  angles des servo réels
   angle_next[0] = angle_next[0] + calibrate_TopArm;
   angle_next[1] = angle_next[1] + calibrate_MiddleArm;
 
@@ -412,21 +412,21 @@ void test_servo(int servo_num) {
 
   //ref servo_steps(int servo_num, int angle_target, int incr_step=10, int step_delay=50)
 
-  //top servo
+  //segment1
   if (servo_num == 0) {
-    //max design free-movement limits (your actual setup limits may be different!)
+    //Butées servo1 réelles
     angle_max = 100;
     angle_min = 10;
     angle_default = 90;
   }
-  //middle servo
+  //segment2
   if (servo_num == 1) {
-    //max design  free-movementlimits (your actual setup limits may be different!)
+    //Butées servo2 réelles
     angle_max = 120;
     angle_min = 30;
     angle_default = 90;
   }
-  //grip servo
+  //Butées servo pince réelles
   if (servo_num == 2) {
     angle_max = servoGrip_val[0];
     angle_min = servoGrip_val[1];
@@ -441,21 +441,22 @@ void test_servo(int servo_num) {
 
 }
 
+//position repos/home
 void test_servo_home(int servo_num) {
-
+  
   int angle_default = 0;
 
   //ref servo_steps(int servo_num, int angle_target, int incr_step=10, int step_delay=50)
 
-  //top servo
+  //segment1
   if (servo_num == 0) {
     angle_default = 90;
   }
-  //middle servo
+  //segment2
   if (servo_num == 1) {
     angle_default = 90;
   }
-  //grip servo
+  //servo pince
   if (servo_num == 2) {
     angle_default = servoGrip_val[2];
   }
@@ -488,7 +489,7 @@ void test_getangles(double y, double z) {
 
 
 
-//from http://forum.arduino.cc/index.php?topic=288234.0
+//ressource : http://forum.arduino.cc/index.php?topic=288234.0
 
 void recvWithStartEndMarkers() {
     static boolean recvInProgress = false;
@@ -509,7 +510,7 @@ void recvWithStartEndMarkers() {
                 }
             }
             else {
-                receivedChars[ndx] = '\0'; // terminate the string
+                receivedChars[ndx] = '\0'; // fin du string
                 recvInProgress = false;
                 ndx = 0;
                 newData = true;
@@ -550,33 +551,33 @@ void showNewData() {
 
 void parseData() {
 
-  // split the data into its parts
+  // formattage des données reçues
 
-  //data format <x,y,z,bool_move,bool_open,delayms,type_int> = <23,56,89,1,1,3456,3> {17}
+  //format : <x,y,z,bool_move,bool_open,delayms,type_int> = <23,56,89,1,1,3456,3> {17}
   //X: 7.00 Y: 8.00 Z: 9.00 bool_move: 1.00 bool_open: 0.00 delay_ms: 10.00 move_type: 1.00
 
-  char * strtokIndx; // this is used by strtok() as an index
+  char * strtokIndx;
  
   //grab X
-  strtokIndx = strtok(receivedChars,",");      // get the first part - the string
-  XYZ_next[0] = atof(strtokIndx);     // convert this part to a float
+  strtokIndx = strtok(receivedChars,","); 
+  XYZ_next[0] = atof(strtokIndx);     // conversion en float
   //grab Y
   strtokIndx = strtok(NULL, ",");
-  XYZ_next[1] = atof(strtokIndx);     // convert this part to a float
+  XYZ_next[1] = atof(strtokIndx);     // conversion en float
   //grab Z
   strtokIndx = strtok(NULL, ",");
-  XYZ_next[2] = atof(strtokIndx);     // convert this part to a float
+  XYZ_next[2] = atof(strtokIndx);     // conversion en float
   //grab bool_move
   strtokIndx = strtok(NULL, ",");
-  XYZ_next[3] = atoi(strtokIndx);     // convert this part to a integer
+  XYZ_next[3] = atoi(strtokIndx);     // conversion en integer
   //grab bool_open
   strtokIndx = strtok(NULL, ",");
-  XYZ_next[4] = atoi(strtokIndx);     // convert this part to a integer
+  XYZ_next[4] = atoi(strtokIndx);     // conversion en integer
   //grab delayms
   strtokIndx = strtok(NULL, ",");
-  XYZ_next[5] = atoi(strtokIndx);     // convert this part to a integer
+  XYZ_next[5] = atoi(strtokIndx);     // conversion en integer
   //type of action
   strtokIndx = strtok(NULL, ",");
-  XYZ_next[6] = atoi(strtokIndx);     // convert this part to a integer
+  XYZ_next[6] = atoi(strtokIndx);     // conversion en integer
     
 }
