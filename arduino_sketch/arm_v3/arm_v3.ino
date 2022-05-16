@@ -24,7 +24,7 @@ double XYZ_next[] = {0, 0, -9, 1, 0, 1}; //x,y,z, bool_move, bool_open, delay_to
 //contraintes de translation (pas-à-pas)
 const int stepper_delay[] = {27 * 28}; //27*22 for full step
 const int stepper_maxsteps[] = {4000}; //max de pas
-const double STEPS_PER_CM[] ={50.335}; //résultat calcul par par cm
+const double STEPS_PER_CM[] ={50.335}; //résultat calcul pas/CM
 double stepper_correction[]={0};
 
 // vérifier que l'angle du servo correpond bien à l'angle de la partie du bras commandée
@@ -33,7 +33,7 @@ double stepper_correction[]={0};
 const double calibrate_TopArm=90-35.7;
 const double calibrate_MiddleArm=90-41.4;
 //compensation hauteur de la pince par rapport à l'extrémité du segment 2 du bras
-const double calibrate_Z=8.5;
+const double calibrate_Z=7.65;
 
 // communication
 const byte numChars = 32;
@@ -191,24 +191,19 @@ void  coordinate_move(double xEnd, double yEnd, double zEnd, bool liftgrab_motio
   
   if (liftgrab_motion == true) {
     if (zDelta < 0) {
-      //arm is going to move down, move Y first
-
-      // move arms in Y direction
+      //le bras va descendre
+      // bouge en Y
       get_angles_from_yz(yEnd, zStart);
       twoarm_step_coordinate(angle_next[0], angle_next[1]);
 
-      // move arms in Z direction
+      // bouge en Z
       get_angles_from_yz(yEnd, zEnd);
       twoarm_step_coordinate(angle_next[0], angle_next[1]);
 
     } else {
-      //arm is moving up, perform Y movement first.
-
-      // move arms in Z direction
+      //le bras va monter
       get_angles_from_yz(yStart, zEnd);
       twoarm_step_coordinate(angle_next[0], angle_next[1]);
-
-      // move arms in Y direction
       get_angles_from_yz(yEnd, zEnd);
       twoarm_step_coordinate(angle_next[0], angle_next[1]);
     }
@@ -219,7 +214,7 @@ void  coordinate_move(double xEnd, double yEnd, double zEnd, bool liftgrab_motio
   }
 
 
-  //instructions de débug :
+  //prints de débug :
   //Serial.println(" //////// ");
   //Serial.print(" xStart=  "); Serial.print(xStart); Serial.print(" yStart=  "); Serial.println(yStart);
   //Serial.print("Angle Top Arm="); Serial.print(angle_TopArm); Serial.print(" Angle Middle Arm=  "); Serial.println(angle_MiddleArm);
@@ -292,7 +287,7 @@ void servo_steps(int servo_num, double angle_target, double incr_step = 10, int 
 
     for (set_angle = angle_start; set_angle >= angle_target; set_angle -= incr_step) {
       servo[servo_num].write(set_angle);
-      Serial.print("angle servo:")
+      Serial.print("angle servo:");
       Serial.println(set_angle);
       delay(step_delay);
     }
@@ -300,7 +295,7 @@ void servo_steps(int servo_num, double angle_target, double incr_step = 10, int 
 
     for (set_angle = angle_start; set_angle <= angle_target; set_angle += incr_step) {
       servo[servo_num].write(set_angle);
-      Serial.print("angle servo:")
+      Serial.print("angle servo:");
       Serial.println(set_angle);
       delay(step_delay);
     }
@@ -324,35 +319,32 @@ void twoarm_step_coordinate(double toparm_target, double middlearm_target) {
   int e0 = 0;
   int e1 = 0;
 
-  //Reference to function:  servo_steps(int servo_num, int angle_target, int incr_step=10, int step_delay=50)
-
-  //identify which of the arms has a greater delta in terms of degress to move
+  //détermine quel segment a le meilleur delta en terme d'efficacité de mouvement
   double delta0 = abs(angle_current[0] - toparm_target);
   double delta1 = abs(angle_current[1] - middlearm_target);
 
-  //coordinate the speed of the two access through the incremental steps, so they can move smoothly in the x/y plane
-  //   (this avoids one arm finishing its movements first, and generating huge variagtionsin the real x/y position of the endpoint)
+  //coordination des deux servos avec gestion de la vitesse pour que les deux segments finissent leurs déplacements en même temps
+
   if (delta0!=0 && delta1!=0) {
     if (delta0 >= delta1) {
       incr_steps0 = (delta0 / delta1)*incr_steps1;
-      //slow down motion as steps increase (just in case big jump in steps)
+      //au plus le déplacement est grand au plus on ralentit
       inner_step_delay0=(delta0/delta1)*0.5;
-      //reduce the outer step
+   
       outer_step_delay=outer_step_delay-inner_step_delay0;
     } else {
       incr_steps1 = (delta1 / delta0)*incr_steps0;
-      //slow down motion as steps increase (just in case big jump in steps)
       inner_step_delay1=(delta1/delta0)*0.5;
-      //reduce the outer step
+
       outer_step_delay=outer_step_delay-inner_step_delay1;
     }
   }
-  //set to zero if negative value on outer delay
+  
   if (outer_step_delay<0) {
     outer_step_delay=0;
   }
   
-  //identify the direction of steps
+  //identification de la direction des pas "soft" des servos
   if (angle_current[0] > toparm_target) {
     i = -incr_steps0;
   } else {
@@ -364,17 +356,16 @@ void twoarm_step_coordinate(double toparm_target, double middlearm_target) {
     j = incr_steps1;
   }
   
-  // user the servo step functions, doing inter-twined steps until the gaps are reached.
-  // we send a delay of 0 to the servo step function, given we'll control the delay in this outer loop.
+  // contrôle général des servos
   while (1) {
-    // top arm moves
+    // segment1
     if (abs(angle_current[0] - toparm_target) > incr_steps0) {
       servo_steps(0, angle_current[0] + i, incr_steps0, inner_step_delay0);
     } else {
       servo_steps(0, toparm_target, incr_steps0, inner_step_delay0);
       e0 = 1;
     }
-    // middle arm moves
+    // segment2
     if (abs(angle_current[1] - middlearm_target) > incr_steps1) {
       servo_steps(1, angle_current[1] + j, incr_steps1, inner_step_delay1);
     } else {
@@ -397,9 +388,6 @@ void servo_Open(bool openVal) {
   int servo_num = 2;
   int open_angle = servoGrip_val[0];
   int close_angle = servoGrip_val[1];
-
-  //Reference to function:  servo_steps(int servo_num, int angle_target, int incr_step=10, int step_delay=50)
-
   if (openVal == true) {
     servo_steps(servo_num, open_angle, 1, 5);
   } else {
