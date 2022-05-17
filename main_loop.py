@@ -10,10 +10,6 @@ import camera_realworldxyz
 import ball_tracking
 import commands_arduino
 
-
-
-
-
 class main_loop:
 
     def __init__(self, serialport='/dev/ttyACM1',x_arm_adj=0,y_arm_adj=0):
@@ -34,48 +30,48 @@ class main_loop:
         multiplier = 10 ** decimals
         return int(n * multiplier) / multiplier
 
-    def capturefromPiCamera(self, imgdir,prefix="Cap",fullscreen=False,detectXYZ=True, calcXYZ=True, arm=True):
+    #def capturefromPiCamera(self, imgdir,prefix="Cap",fullscreen=False,detectXYZ=True, calcXYZ=True, arm=True):
 
-            #init compteurs
-            img_counter=0
-            bg_counter=0
-            id_counter=0
+    #         #init compteurs
+    #         img_counter=0
+    #         bg_counter=0
+    #         id_counter=0
             
-            #init des flags
-            bg_capture=False
-            move_object=False
-            arm_move=False
+    #         #init des flags
+    #         bg_capture=False
+    #         move_object=False
+    #         arm_move=False
 
-            #initiate objects detected
-            obj_detected=0
-            obj_detected_prev=0
+    #         #initiate objects detected
+    #         obj_detected=0
+    #         obj_detected_prev=0
 
-            #mouvement pour libérer la vue de la caméra
-            if (arm==True): self.arm_c.move_clearcamera()
+    #         #mouvement pour libérer la vue de la caméra
+    #         if (arm==True): self.arm_c.move_clearcamera()
 
 
-            #initialisation caméra et fenêtre display
-            camera = PiCamera()
-            camera.resolution = (1280, 720)
-            camera.framerate = 20
-            rawCapture = PiRGBArray(camera, size=(1280, 720))
-            time.sleep(0.2)
-            win_name="Capture"       
-            if (fullscreen==True):
-                    cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
-                    cv2.setWindowProperty(win_name,cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
-            else:
-                    cv2.namedWindow(win_name)
+    #         #initialisation caméra et fenêtre display
+    #         camera = PiCamera()
+    #         camera.resolution = (1280, 720)
+    #         camera.framerate = 20
+    #         rawCapture = PiRGBArray(camera, size=(1280, 720))
+    #         time.sleep(0.2)
+    #         win_name="Capture"       
+    #         if (fullscreen==True):
+    #                 cv2.namedWindow(win_name, cv2.WND_PROP_FULLSCREEN)
+    #                 cv2.setWindowProperty(win_name,cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
+    #         else:
+    #                 cv2.namedWindow(win_name)
 
 
 
             # capture du flux caméra
-            for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+            # for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
 
-                    #check si interruption clavier
-                    k = cv2.waitKey(1)
+            #         #check si interruption clavier
+            #         k = cv2.waitKey(1)
                     
-                    image = frame.array
+            #         image = frame.array
                     #if your image is flipped, used this command
                     #image=cv2.flip(image_cap, -1 )
 
@@ -108,27 +104,27 @@ class main_loop:
                     #                         id_counter+=1
                     #                         cv2.putText(image,"Object Detected",(20,20),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,0,0),2)
                          
-                    if k%256 == 27:
-                            # ESC pressed
-                            print("Exiting...")
-                            break
-                    # elif k%256 == 32:
-                    #         # SPACE pressed Captures an Image
-                    #         img_name = imgdir + prefix + "_{}.jpg".format(img_counter)
-                    #         cv2.imwrite(img_name, image)
-                    #         print(prefix + "_{} written!".format(img_counter))
-                    #         img_counter += 1
+            #         if k%256 == 27:
+            #                 # ESC pressed
+            #                 print("Exiting...")
+            #                 break
+            #         # elif k%256 == 32:
+            #         #         # SPACE pressed Captures an Image
+            #         #         img_name = imgdir + prefix + "_{}.jpg".format(img_counter)
+            #         #         cv2.imwrite(img_name, image)
+            #         #         print(prefix + "_{} written!".format(img_counter))
+            #         #         img_counter += 1
 
 
-                    # show the frame
-                    cv2.imshow(win_name, image)
+            #         # show the frame
+            #         cv2.imshow(win_name, image)
 
-                    # clear the stream in preparation for the next frame
-                    rawCapture.truncate(0)
+            #         # clear the stream in preparation for the next frame
+            #         rawCapture.truncate(0)
 
-            if (arm==True): self.arm_c.move_home()
+            # if (arm==True): self.arm_c.move_home()
 
-            cv2.destroyAllWindows()
+            # cv2.destroyAllWindows()
 
             
     def pickanddrop(self, XYZ, arm=True):
