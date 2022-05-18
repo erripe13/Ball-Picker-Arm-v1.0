@@ -1,5 +1,5 @@
-from Tkinter import *
-import tkMessageBox
+from tkinter import *
+import tkinter.messagebox
 import time
 import serial
 
@@ -14,8 +14,8 @@ def move_it():
     #this function sends the command of joint angles to the arduino to move the servos to the desired positions
 
     command = str(base.get()) + ',' + str(shoulder.get()) +   ',' + str(elbow.get() ) + 'd'
-    print command
-    ser.write(command)
+    print(command)
+    ser.write(str.encode(command))
     #if not in the commandline can print verification to a notification window
     #tkMessageBox.showinfo( "Hello Python", "message sent")
 
@@ -62,7 +62,7 @@ shoulder.pack()
 #++++++++++++++++++++++ELBOW++++++++++++++++++++++++++++
 elbowLabel = Label(armControl, text = "servo2", bg = "green", padx = 100)
 elbowLabel.pack()
-elbow = Scale(armControl, from_= 145, to = 180, length = 300, orient = HORIZONTAL)
+elbow = Scale(armControl, from_= 130, to = 180, length = 300, orient = HORIZONTAL)
 elbow.pack()
 
 #Send
@@ -71,20 +71,20 @@ armGoBut.pack()
 
 #++++++++++++++++++++++++++++Gripper+++++++++++++++++++
 
-gripperFrame = Frame(root)
-gripperFrame.pack()
+# gripperFrame = Frame(root)
+# gripperFrame.pack()
 
 
-gripperLabel = Label(gripperFrame, text = "Gripper", bg = "green", padx = 20)
-gripperLabel.pack()
+# gripperLabel = Label(gripperFrame, text = "Gripper", bg = "green", padx = 20)
+# gripperLabel.pack()
 
 
-gripOpenBut = Button(gripperFrame, text ="Open", height = 2, width = 5, command = open_gripper  )
-gripOpenBut.pack(side = RIGHT)
+# gripOpenBut = Button(gripperFrame, text ="Open", height = 2, width = 5, command = open_gripper  )
+# gripOpenBut.pack(side = RIGHT)
 
-gripCloseBut = Button(gripperFrame, text ="Close", height = 2, width = 5,command = close_gripper )
-gripCloseBut.pack(side = RIGHT)
+# gripCloseBut = Button(gripperFrame, text ="Close", height = 2, width = 5,command = close_gripper )
+# gripCloseBut.pack(side = RIGHT)
 
 #+++++++++++++++++++++++++++Read Values+++++++++++++++++
 
-root.mainloop(
+root.mainloop()
