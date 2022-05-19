@@ -48,21 +48,21 @@ armLabel.pack()
 
 #++++++++++++++++++++++++BASE+++++++++++++++++++++++++++
 
-baseLabel = Label(armControl, text = "rotation", bg = "green", padx = 100)
+baseLabel = Label(armControl, text = "servo1", bg = "green", padx = 100)
 baseLabel.pack()
-base = Scale(armControl, from_= 1, to = 175, length = 300, orient = HORIZONTAL)
+base = Scale(armControl, from_= 10, to = 70, length = 300, orient = HORIZONTAL)
 base.pack()
 
 #++++++++++++++++++++++++Shoulder+++++++++++++++++++++++++
-shoulderLabel = Label(armControl, text = "servo1", bg = "green", padx = 100)
+shoulderLabel = Label(armControl, text = "servo2", bg = "green", padx = 100)
 shoulderLabel.pack()
-shoulder = Scale(armControl, from_= 10, to = 70, length = 300, orient = HORIZONTAL)
+shoulder = Scale(armControl, from_= 100, to = 180, length = 300, orient = HORIZONTAL)
 shoulder.pack()
 
 #++++++++++++++++++++++ELBOW++++++++++++++++++++++++++++
-elbowLabel = Label(armControl, text = "servo2", bg = "green", padx = 100)
+elbowLabel = Label(armControl, text = "spince", bg = "green", padx = 100)
 elbowLabel.pack()
-elbow = Scale(armControl, from_= 130, to = 180, length = 300, orient = HORIZONTAL)
+elbow = Scale(armControl, from_= 64, to = 114, length = 300, orient = HORIZONTAL)
 elbow.pack()
 
 #Send
