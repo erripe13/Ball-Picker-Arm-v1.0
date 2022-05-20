@@ -415,14 +415,15 @@ void test_servo(int servo_num) {
   //segment1
   if (servo_num == 0) {
     //Butées servo1 réelles
-    angle_max = 100;
-    angle_min = 10;
+    angle_max = 170;
+    angle_min = 5;
     angle_default = 90;
   }
   //segment2
   if (servo_num == 1) {
     //Butées servo2 réelles
-    angle_max = 120;
+    angle_max = 120
+  ;
     angle_min = 30;
     angle_default = 90;
   }
