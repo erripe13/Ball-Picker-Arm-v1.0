@@ -43,7 +43,7 @@ speedControl.pack()
 armControl = Frame(root)
 armControl.pack( )
 
-armLabel = Label(armControl, text = "Arm Componets", bg = "red", padx = 100)
+armLabel = Label(armControl, text = "Bras du turfu", bg = "red", padx = 100)
 armLabel.pack()
 
 #++++++++++++++++++++++++BASE+++++++++++++++++++++++++++

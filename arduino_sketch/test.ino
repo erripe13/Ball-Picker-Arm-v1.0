@@ -29,15 +29,15 @@ void servoControl (int thePos, int theSpeed, Servo theServo);
 void setup()
 {
   Serial.begin(9600);
-  baseServo.attach(9);        // attaches the servo on pin 9 to the servo object
-  shoulderServo.attach(10);
-  wristServo.attach(11);
+  baseServo.attach(5);        // attaches the servo on pin 9 to the servo object
+  shoulderServo.attach(6);
+  wristServo.attach(7);
 
   Serial.setTimeout(50);      //ensures the the arduino does not read serial for too long
   Serial.println("started");
   baseServo.write(90);        //intial positions of servos
-  shoulderServo.write(150);
-  wristServo.write(110);
+  shoulderServo.write(20);
+  wristServo.write(120);
 }
 
 //primary arduino loop
