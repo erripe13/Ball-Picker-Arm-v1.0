@@ -415,16 +415,15 @@ void test_servo(int servo_num) {
   //segment1
   if (servo_num == 0) {
     //Butées servo1 réelles
-    angle_max = 170;
-    angle_min = 5;
-    angle_default = 90;
+    angle_max = 59;
+    angle_min = 20;
+    angle_default = 40;
   }
   //segment2
   if (servo_num == 1) {
     //Butées servo2 réelles
-    angle_max = 120
-  ;
-    angle_min = 30;
+    angle_max = 180;
+    angle_min = 145;
     angle_default = 90;
   }
   //Butées servo pince réelles
@@ -451,7 +450,7 @@ void test_servo_home(int servo_num) {
 
   //segment1
   if (servo_num == 0) {
-    angle_default = 90;
+    angle_default = 40;
   }
   //segment2
   if (servo_num == 1) {
