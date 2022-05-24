@@ -23,14 +23,14 @@ double XYZ_current[] = {0, 0, -9, 1, 0, 1}; //x,y,z, bool_move, bool_open, delay
 double XYZ_next[] = {0, 0, -9, 1, 0, 1}; //x,y,z, bool_move, bool_open, delay_to_next, type_of_action
 //contraintes de translation (pas-à-pas)
 const int stepper_delay[] = {27 * 28}; //27*22 for full step
-const int stepper_maxsteps[] = {4000}; //max de pas
-const double STEPS_PER_CM[] ={50.335}; //résultat calcul pas/CM
+const int stepper_maxsteps[] = {240}; //max de pas
+const double STEPS_PER_CM[] ={50}; //résultat calcul pas/CM
 double stepper_correction[]={0};
 
 // vérifier que l'angle du servo correpond bien à l'angle de la partie du bras commandée
 // mettre le servo à 90°, puis mesurer l'angle réel
 // la valeur de calibration est donc (90 - {réel angle par rapport à 90})
-const double calibrate_TopArm=90-35.7;
+const double calibrate_TopArm=0;
 const double calibrate_MiddleArm=90-41.4;
 //compensation hauteur de la pince par rapport à l'extrémité du segment 2 du bras
 const double calibrate_Z=7.65;
@@ -70,7 +70,7 @@ void setup() {
   }
 
   //tests de moteurs, à décommenter pour tester et en mettant "boot loop=false" dans la boucle principale
-  //test_stepper();
+  test_stepper();
   //test_servo(0);
   //test_servo(1);
   //test_servo(2);
@@ -95,7 +95,7 @@ void setup() {
 
 void loop() {
 
-  bool loop=true;
+  bool loop=false;
   
   recvWithStartEndMarkers();
   showNewData();
@@ -381,8 +381,6 @@ void twoarm_step_coordinate(double toparm_target, double middlearm_target) {
 
 }
 
-
-
 void servo_Open(bool openVal) {
 
   int servo_num = 2;
@@ -487,8 +485,6 @@ void test_getangles(double y, double z) {
 
 }
 
-
-
 //ressource : http://forum.arduino.cc/index.php?topic=288234.0
 
 void recvWithStartEndMarkers() {
@@ -547,7 +543,6 @@ void showNewData() {
         //newData = false;
     }
 }
-
 
 void parseData() {
 
