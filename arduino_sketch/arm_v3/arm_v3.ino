@@ -446,11 +446,11 @@ void test_servo_home(int servo_num) {
 
   //segment1
   if (servo_num == 0) {
-    angle_default = 46;
+    angle_default = 55;
   }
   //segment2
   if (servo_num == 1) {
-    angle_default = 155;
+    angle_default = 145;
   }
   //servo pince
   if (servo_num == 2) {
