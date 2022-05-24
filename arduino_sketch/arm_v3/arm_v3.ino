@@ -274,7 +274,7 @@ void stepper_advance(int stepper_num, double steps, int dir) {
 
 }
 
-void servo_steps(int servo_num, double angle_target, double incr_step = 10, int step_delay = 150) {
+void servo_steps(int servo_num, double angle_target, double incr_step = 10, int step_delay = 100) {
   // cette commande permet d'envoyer les instructions par paquets de 25 degrés. utile pour des servos bas de gamme.
 
   int set_angle;
@@ -413,14 +413,14 @@ void test_servo(int servo_num) {
     //Butées servo1 réelles
     angle_max = 80;
     angle_min = 20;
-    angle_default = 50;
+    angle_default = 46;
   }
   //segment2
   if (servo_num == 1) {
     //Butées servo2 réelles
     angle_max = 160;
     angle_min = 120;
-    angle_default = 145;
+    angle_default = 148;
   }
   //Butées servo pince réelles
   if (servo_num == 2) {
