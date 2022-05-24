@@ -8,7 +8,7 @@
 //initialisation de la liste des servos
 Servo servo[4];
 // setup broches utilisées
-const int servo_Pin[] = {6, 7, 4}; //rotation,segment1,segment2,pince
+const int servo_Pin[] = {6, 7, 4}; //segment1,segment2,pince
 //définition des valeurs de serrage/désserrage sous le format suivant :
 //{ouvert-max, fermé-min, repos}
 const int servoGrip_val[]= {114,70,85};  
@@ -74,9 +74,9 @@ void setup() {
   test_servo(0);
   test_servo(1);
   test_servo(2);
-  //test_servo_home(0);
-  //test_servo_home(1);
-  //test_servo_home(2);
+  test_servo_home(0);
+  test_servo_home(1);
+  test_servo_home(2);
   //test_getangles(-5,-20); free-movement
   //test_getangles(5,-20);
   //test_getangles(-5,-9);
@@ -85,7 +85,7 @@ void setup() {
   //coordinate_move(0,-9,0);
   //delay(500);50
   //coordinate_move(0, y, 0, false);
-  //delay(500);
+  delay(500);
 
   //envoi ready port série
   Serial.println("ready");
@@ -420,7 +420,7 @@ void test_servo(int servo_num) {
     //Butées servo2 réelles
     angle_max = 180;
     angle_min = 100;
-    angle_default = 90;
+    angle_default = 145;
   }
   //Butées servo pince réelles
   if (servo_num == 2) {
