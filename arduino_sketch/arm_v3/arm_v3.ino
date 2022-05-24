@@ -1,6 +1,7 @@
 // code par Pierre Mirouze depuis un projet de pacogarcia3
 // FabriqExpo Exploradôme de Vitry
 // programme exécuté par l'Arduino contrôlant les moteurs du bras
+//ressource : http://forum.arduino.cc/index.php?topic=288234.0
 
 #include <Servo.h>
 #include <math.h>
@@ -26,7 +27,6 @@ const int stepper_delay[] = {27 * 28}; //27*22 for full step
 const int stepper_maxsteps[] = {6340}; //max de pas
 const double STEPS_PER_CM[] ={171}; //résultat calcul pas/CM
 double stepper_correction[]={0};
-
 // vérifier que l'angle du servo correpond bien à l'angle de la partie du bras commandée
 // mettre le servo à 90°, puis mesurer l'angle réel
 // la valeur de calibration est donc (90 - {réel angle par rapport à 90})
@@ -34,12 +34,10 @@ const double calibrate_TopArm=0;
 const double calibrate_MiddleArm=90-41.4;
 //compensation hauteur de la pince par rapport à l'extrémité du segment 2 du bras
 const double calibrate_Z=7.65;
-
 // communication
 const byte numChars = 32;
 char receivedChars[numChars];
 boolean newData = false;
-
 
 void setup() {
 
@@ -92,7 +90,6 @@ void setup() {
 
   
 }
-
 void loop() {
 
   bool loop=false;
@@ -113,8 +110,6 @@ void loop() {
   }
 
 }
-
-
 void get_angles_from_yz(double y, double z) {
 
   //voir le schéma trigo pour le nom des variables
@@ -160,8 +155,7 @@ void get_angles_from_yz(double y, double z) {
   angle_next[1] = angle_next[1] + calibrate_MiddleArm;
 
 }
-
-void  coordinate_move(double xEnd, double yEnd, double zEnd, bool liftgrab_motion) {
+void coordinate_move(double xEnd, double yEnd, double zEnd, bool liftgrab_motion) {
 
   double xStart = XYZ_current[0];
   double yStart = XYZ_current[1];
@@ -225,7 +219,6 @@ void  coordinate_move(double xEnd, double yEnd, double zEnd, bool liftgrab_motio
   XYZ_current[2] = zEnd;
   XYZ_current[3] = liftgrab_motion;
 }
-
 void stepper_advance(int stepper_num, double steps, int dir) {
 
   // génération de la pwm pour le driver TMC2208
@@ -273,7 +266,6 @@ void stepper_advance(int stepper_num, double steps, int dir) {
   Serial.println(stepper_correction[stepper_num]);
 
 }
-
 void servo_steps(int servo_num, double angle_target, double incr_step = 10, int step_delay = 100) {
   // cette commande permet d'envoyer les instructions par paquets de 25 degrés. utile pour des servos bas de gamme.
 
@@ -305,7 +297,6 @@ void servo_steps(int servo_num, double angle_target, double incr_step = 10, int 
   angle_current[servo_num] = angle_target;
 
 }
-
 void twoarm_step_coordinate(double toparm_target, double middlearm_target) {
 
   double incr_steps0=1;
@@ -378,7 +369,6 @@ void twoarm_step_coordinate(double toparm_target, double middlearm_target) {
   //Serial.println("--> two arm step End /");
 
 }
-
 void servo_Open(bool openVal) {
 
   int servo_num = 2;
@@ -392,7 +382,6 @@ void servo_Open(bool openVal) {
   
   XYZ_current[4] = openVal;
 }
-
 void test_stepper() {
 
   stepper_advance(0, stepper_maxsteps[0], 0);
@@ -436,8 +425,6 @@ void test_servo(int servo_num) {
   servo_steps(servo_num, angle_default);
 
 }
-
-//position repos/home
 void test_servo_home(int servo_num) {
   
   int angle_default = 0;
@@ -481,7 +468,6 @@ void test_getangles(double y, double z) {
 
 
 }
-//ressource : http://forum.arduino.cc/index.php?topic=288234.0
 void recvWithStartEndMarkers() {
     static boolean recvInProgress = false;
     static byte ndx = 0;
