@@ -418,7 +418,7 @@ void test_servo(int servo_num) {
   //segment2
   if (servo_num == 1) {
     //Butées servo2 réelles
-    angle_max = 160;
+    angle_max = 155;
     angle_min = 120;
     angle_default = 148;
   }
