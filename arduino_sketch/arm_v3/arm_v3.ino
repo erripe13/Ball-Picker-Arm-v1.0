@@ -58,11 +58,11 @@ void setup() {
 
   // Setup des angles servo initiaux
   //for(i=0; i<2; i++) { servo[i].write(90); angle_current[i]=90; }
-  //servo[2].write(servoGrip_val[2]); angle_current[2] = servoGrip_val[2];
+  servo[2].write(servoGrip_val[2]); angle_current[2] = servoGrip_val[2];
   // Set Coordinates a Base
   int y = 0;
   int z = -6;
-  //coordinate_move(0, y, z, false);
+  coordinate_move(0, y, z, false);
 
   // setup servo
   for (i = 0; i < 3; i++) {
@@ -71,9 +71,9 @@ void setup() {
 
   //tests de moteurs, à décommenter pour tester et en mettant "boot loop=false" dans la boucle principale
   test_stepper();
-  //test_servo(0);
-  //test_servo(1);
-  //test_servo(2);
+  test_servo(0);
+  test_servo(1);
+  test_servo(2);
   //test_servo_home(0);
   //test_servo_home(1);
   //test_servo_home(2);
