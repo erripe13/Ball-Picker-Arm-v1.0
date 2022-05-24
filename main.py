@@ -13,7 +13,7 @@ loop=main_loop.main_loop(serial_port)
 def RunTests():
 
     #Arm Movement Testing
-    #loop.test_arm()
+    loop.test_arm()
     #loop.test_arm_XYZ(5,5,-9)
     loop.test_arm_home()
     #loop.test_arm_home_plane()
@@ -21,7 +21,6 @@ def RunTests():
 
 def RunPickandPlace():
         #Run Pick and Place
-        
         fullscreen=False
         detectXYZ=True
         calculateXYZ=True
@@ -44,6 +43,6 @@ def ImageDetection():
 
 
 
-#RunTests()
-#RunPickandPlace()
+RunTests()
+RunPickandPlace()
 ImageDetection()

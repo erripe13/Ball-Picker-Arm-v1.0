@@ -69,9 +69,9 @@ void setup() {
   }
 
   //tests de moteurs, à décommenter pour tester et en mettant "boot loop=false" dans la boucle principale
-  // test_servo(0);
-  // test_servo(1);
-  // test_servo(2);
+  test_servo(0);
+  test_servo(1);
+  test_servo(2);
   test_servo_home(0);
   test_servo_home(1);
   test_servo_home(2);  
@@ -408,9 +408,9 @@ void test_servo(int servo_num) {
   //segment2
   if (servo_num == 1) {
     //Butées servo2 réelles
-    angle_max = 155;
-    angle_min = 120;
-    angle_default = 148;
+    angle_max = 165;
+    angle_min = 140;
+    angle_default = 155;
   }
   //Butées servo pince réelles
   if (servo_num == 2) {
