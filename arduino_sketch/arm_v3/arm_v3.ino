@@ -396,7 +396,7 @@ void servo_Open(bool openVal) {
 void test_stepper() {
 
   stepper_advance(0, stepper_maxsteps[0], 0);
-  delay(2500);
+  delay(1000);
   stepper_advance(0, stepper_maxsteps[0], 1);
 
 }
@@ -446,11 +446,11 @@ void test_servo_home(int servo_num) {
 
   //segment1
   if (servo_num == 0) {
-    angle_default = 56;
+    angle_default = 46;
   }
   //segment2
   if (servo_num == 1) {
-    angle_default = 140;
+    angle_default = 155;
   }
   //servo pince
   if (servo_num == 2) {
