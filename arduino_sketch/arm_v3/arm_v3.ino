@@ -274,7 +274,7 @@ void stepper_advance(int stepper_num, double steps, int dir) {
 
 }
 
-void servo_steps(int servo_num, double angle_target, double incr_step = 10, int step_delay = 50) {
+void servo_steps(int servo_num, double angle_target, double incr_step = 10, int step_delay = 150) {
   // cette commande permet d'envoyer les instructions par paquets de 25 degrés. utile pour des servos bas de gamme.
 
   int set_angle;
@@ -418,8 +418,8 @@ void test_servo(int servo_num) {
   //segment2
   if (servo_num == 1) {
     //Butées servo2 réelles
-    angle_max = 180;
-    angle_min = 100;
+    angle_max = 160;
+    angle_min = 120;
     angle_default = 145;
   }
   //Butées servo pince réelles
@@ -460,7 +460,6 @@ void test_servo_home(int servo_num) {
   servo_steps(servo_num, angle_default);
 
 }
-
 void test_getangles(double y, double z) {
    
   get_angles_from_yz(y,z);
@@ -482,9 +481,7 @@ void test_getangles(double y, double z) {
 
 
 }
-
 //ressource : http://forum.arduino.cc/index.php?topic=288234.0
-
 void recvWithStartEndMarkers() {
     static boolean recvInProgress = false;
     static byte ndx = 0;
@@ -541,7 +538,6 @@ void showNewData() {
         //newData = false;
     }
 }
-
 void parseData() {
 
   // formattage des données reçues
