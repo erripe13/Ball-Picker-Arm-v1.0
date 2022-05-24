@@ -446,7 +446,7 @@ void test_servo_home(int servo_num) {
 
   //segment1
   if (servo_num == 0) {
-    angle_default = 45;
+    angle_default = 56;
   }
   //segment2
   if (servo_num == 1) {
