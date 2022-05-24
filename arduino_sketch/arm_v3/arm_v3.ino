@@ -76,12 +76,12 @@ void setup() {
   test_servo_home(1);
   test_servo_home(2);  
   //test_stepper();
-  test_getangles(-5,-20); free-movement
+  test_getangles(-5,-20);
   test_getangles(5,-20);
   test_getangles(-5,-9);
   test_getangles(5,-9);
   test_getangles(0,-13);
-  coordinate_move(0,-9,0);
+  coordinate_move(0,-9,0, false);
   delay(2000);
   coordinate_move(0, y, 0, false);
   delay(2000);
