@@ -23,8 +23,8 @@ double XYZ_current[] = {0, 0, -9, 1, 0, 1}; //x,y,z, bool_move, bool_open, delay
 double XYZ_next[] = {0, 0, -9, 1, 0, 1}; //x,y,z, bool_move, bool_open, delay_to_next, type_of_action
 //contraintes de translation (pas-à-pas)
 const int stepper_delay[] = {27 * 28}; //27*22 for full step
-const int stepper_maxsteps[] = {240}; //max de pas
-const double STEPS_PER_CM[] ={50}; //résultat calcul pas/CM
+const int stepper_maxsteps[] = {6340}; //max de pas
+const double STEPS_PER_CM[] ={171}; //résultat calcul pas/CM
 double stepper_correction[]={0};
 
 // vérifier que l'angle du servo correpond bien à l'angle de la partie du bras commandée
