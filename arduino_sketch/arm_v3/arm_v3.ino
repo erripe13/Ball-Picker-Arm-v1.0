@@ -8,10 +8,10 @@
 //initialisation de la liste des servos
 Servo servo[4];
 // setup broches utilisées
-const int servo_Pin[] = {5, 6, 7, 4}; //rotation,segment1,segment2,pince
+const int servo_Pin[] = {6, 7, 4}; //rotation,segment1,segment2,pince
 //définition des valeurs de serrage/désserrage sous le format suivant :
 //{ouvert-max, fermé-min, repos}
-const int servoGrip_val[]= {170,125,170};  
+const int servoGrip_val[]= {114,70,85};  
 const int stepper_dirPin[] = {8};
 const int stepper_stepPin[] = {9};
 //liste d'angles
@@ -58,11 +58,11 @@ void setup() {
 
   // Setup des angles servo initiaux
   //for(i=0; i<2; i++) { servo[i].write(90); angle_current[i]=90; }
-  servo[2].write(servoGrip_val[2]); angle_current[2] = servoGrip_val[2];
+  //servo[2].write(servoGrip_val[2]); angle_current[2] = servoGrip_val[2];
   // Set Coordinates a Base
   int y = 0;
   int z = -6;
-  coordinate_move(0, y, z, false);
+  //coordinate_move(0, y, z, false);
 
   // setup servo
   for (i = 0; i < 3; i++) {
@@ -161,7 +161,6 @@ void get_angles_from_yz(double y, double z) {
 
 }
 
-
 void  coordinate_move(double xEnd, double yEnd, double zEnd, bool liftgrab_motion) {
 
   double xStart = XYZ_current[0];
@@ -226,7 +225,6 @@ void  coordinate_move(double xEnd, double yEnd, double zEnd, bool liftgrab_motio
   XYZ_current[2] = zEnd;
   XYZ_current[3] = liftgrab_motion;
 }
-
 
 void stepper_advance(int stepper_num, double steps, int dir) {
 
@@ -413,15 +411,15 @@ void test_servo(int servo_num) {
   //segment1
   if (servo_num == 0) {
     //Butées servo1 réelles
-    angle_max = 59;
+    angle_max = 80;
     angle_min = 20;
-    angle_default = 40;
+    angle_default = 50;
   }
   //segment2
   if (servo_num == 1) {
     //Butées servo2 réelles
     angle_max = 180;
-    angle_min = 145;
+    angle_min = 100;
     angle_default = 90;
   }
   //Butées servo pince réelles
@@ -448,11 +446,11 @@ void test_servo_home(int servo_num) {
 
   //segment1
   if (servo_num == 0) {
-    angle_default = 40;
+    angle_default = 45;
   }
   //segment2
   if (servo_num == 1) {
-    angle_default = 90;
+    angle_default = 140;
   }
   //servo pince
   if (servo_num == 2) {
