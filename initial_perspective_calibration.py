@@ -69,7 +69,7 @@ imagePoints=np.array([[cx,cy],
                        [183,203],
                        [388,767],
                        [288,85],
-                       [192,90]], dtype=np.float32)
+                       [192,90], dtype=np.float32)
 
 
 #FOR REAL WORLD POINTS, CALCULATE Z from d*
