@@ -7,10 +7,6 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 import commands_arduino
 
-
-
-
-
 class main_loop:
 
     def __init__(self, serialport='/dev/ttyACM1',x_arm_adj=0,y_arm_adj=0):
