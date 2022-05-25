@@ -13,7 +13,7 @@ loop=main_loop.main_loop(serial_port)
 def RunTests():
 
     #Arm Movement Testing
-    loop.test_arm()
+    #loop.test_arm()
     #loop.test_arm_XYZ(5,5,-9)
     loop.test_arm_home()
     #loop.test_arm_home_plane()
@@ -24,13 +24,12 @@ def RunPickandPlace():
         fullscreen=False
         detectXYZ=True
         calculateXYZ=True
-        move_arm=True
+        move_arm=False
         loop.capturefromPiCamera(imgdir,imgprefix,fullscreen,detectXYZ,calculateXYZ,move_arm)
 
 def ImageDetection():
         #Work on Image Detection (press ESC when done, Space to capture image)
-        loop.test_arm_clearcamera()
-
+        #loop.test_arm_clearcamera()
         fullscreen=False
         #set detect XYZ to False when you want to use this loop to capture pictures (press spacebar)
         detectXYZ=True
@@ -43,6 +42,6 @@ def ImageDetection():
 
 
 
-RunTests()
+#RunTests()
 RunPickandPlace()
 ImageDetection()

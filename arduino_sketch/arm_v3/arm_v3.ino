@@ -69,9 +69,9 @@ void setup() {
   }
 
   //tests de moteurs, à décommenter pour tester et en mettant "boot loop=false" dans la boucle principale
-  test_servo(0);
-  test_servo(1);
-  test_servo(2);
+//  test_servo(0);
+//  test_servo(1);
+//  test_servo(2);
   test_servo_home(0);
   test_servo_home(1);
   test_servo_home(2);  
@@ -93,7 +93,7 @@ void setup() {
 }
 void loop() {
 
-  bool loop=false;
+  bool loop=true;
   
   recvWithStartEndMarkers();
   showNewData();

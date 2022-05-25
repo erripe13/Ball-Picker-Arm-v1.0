@@ -17,8 +17,8 @@ class main_loop:
 
         #Calibrate Camera XY vs. Arm coordinates XY
         #x_camera=x_arm    y_camera=y_arm
-        self.x_arm_adj=2.62 #cam_x Zero Position vs. arm X zero position
-        self.y_arm_adj=8.85 #cam_y Zero Position vs. arm Y zero positoin
+        self.x_arm_adj=0 #cam_x Zero Position vs. arm X zero position
+        self.y_arm_adj=0 #cam_y Zero Position vs. arm Y zero positoin
 
         #initialize detection
         self.cameraXYZ=camera_realworldxyz.camera_realtimeXYZ()
@@ -56,9 +56,9 @@ class main_loop:
 
             #initiate camera and window
             camera = PiCamera()
-            camera.resolution = (1280, 720)
+            camera.resolution = (600, 400)
             camera.framerate = 20
-            rawCapture = PiRGBArray(camera, size=(1280, 720))
+            rawCapture = PiRGBArray(camera, size=(600, 400))
             time.sleep(0.2)
             win_name="Capture"       
             if (fullscreen==True):
