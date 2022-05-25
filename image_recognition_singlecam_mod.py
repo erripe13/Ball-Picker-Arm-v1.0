@@ -1,3 +1,7 @@
+# code par Pierre Mirouze depuis un projet de pacogarcia3
+# FabriqExpo Exploradôme de Vitry
+# ancien fichier de détection des objets, supprimé en prod
+
 import cv2
 import numpy as np
 import time

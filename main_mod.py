@@ -1,3 +1,7 @@
+# code par Pierre Mirouze depuis un projet de pacogarcia3
+# FabriqExpo Exploradôme de Vitry
+# code principal exécutant toutes les sous-fonctions
+
 import main_loop
 
 
@@ -13,8 +17,8 @@ loop=main_loop.main_loop(serial_port)
 def RunTests():
 
     #Arm Movement Testing
-    #loop.test_arm()
-    #loop.test_arm_XYZ(5,5,-9)
+    loop.test_arm()
+    loop.test_arm_XYZ(5,5,-9)
     loop.test_arm_home()
     #loop.test_arm_home_plane()
     #loop.test_arm_clearcamera()
@@ -44,6 +48,7 @@ def ImageDetection():
 
 
 
-#RunTests()
-#RunPickandPlace()
+
+RunTests()
+RunPickandPlace()
 ImageDetection()
