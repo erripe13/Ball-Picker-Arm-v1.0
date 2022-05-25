@@ -43,33 +43,33 @@ print("cx: "+str(cx)+",cy "+str(cy)+",fx "+str(fx))
 
 total_points_used=10
 
-X_center=10.9
-Y_center=10.7
-Z_center=43.4
+X_center=307
+Y_center=315
+Z_center=675
 worldPoints=np.array([[X_center,Y_center,Z_center],
-                       [5.5,3.9,46.8],
-                       [14.2,3.9,47.0],
-                       [22.8,3.9,47.4],
-                       [5.5,10.6,44.2],
-                       [14.2,10.6,43.8],
-                       [22.8,10.6,44.8],
-                       [5.5,17.3,43],
-                       [14.2,17.3,42.5],
-                       [22.8,17.3,44.4]], dtype=np.float32)
+                       [150,120,615],
+                       [307,120,618],
+                       [463,120,650],
+                       [150,315,667],
+                       [307,315,675],
+                       [463,315,710],
+                       [150,510,777],
+                       [307,510,773],
+                       [463,510,805], dtype=np.float32)
 
 #MANUALLY INPUT THE DETECTED IMAGE COORDINATES HERE
 
 #[u,v] center + 9 Image points
 imagePoints=np.array([[cx,cy],
-                       [502,185],
-                       [700,197],
-                       [894,208],
-                       [491,331],
-                       [695,342],
-                       [896,353],
-                       [478,487],
-                       [691,497],
-                       [900,508]], dtype=np.float32)
+                       [412,337],
+                       [289,339],
+                       [171,343],
+                       [396,193],
+                       [287,199],
+                       [183,203],
+                       [388,767],
+                       [288,85],
+                       [192,90]], dtype=np.float32)
 
 
 #FOR REAL WORLD POINTS, CALCULATE Z from d*
