@@ -43,35 +43,56 @@ print("cx: "+str(cx)+",cy "+str(cy)+",fx "+str(fx))
 
 total_points_used=10
 
-X_center=307
-Y_center=315
+X_center=335
+Y_center=325
 Z_center=675
 worldPoints=np.array([[X_center,Y_center,Z_center],
-                       [150,120,615],
-                       [307,120,618],
-                       [463,120,650],
-                       [150,315,667],
-                       [307,315,675],
-                       [463,315,710],
-                       [150,510,777],
-                       [307,510,773],
-                       [463,510,805]], dtype=np.float32)
+                       [185,135,805],
+                       [335,135,773],
+                       [485,135,777],
+                       [185,325,710],
+                       [335,325,675],
+                       [485,325,667],
+                       [185,520,650],
+                       [335,520,618],
+                       [485,520,615]], dtype=np.float32)
+
+# worldPoints=np.array([[X_center,Y_center,Z_center],
+#                        [150,120,615],
+#                        [307,120,618],
+#                        [463,120,650],
+#                        [150,315,667],
+#                        [307,315,675],
+#                        [463,315,710],
+#                        [150,510,777],
+#                        [307,510,773],
+#                        [463,510,805]], dtype=np.float32)
 
 #MANUALLY INPUT THE DETECTED IMAGE COORDINATES HERE
 
 #[u,v] center + 9 Image points
 imagePoints=np.array([[cx,cy],
-                       [412,337],
-                       [289,339],
-                       [171,343],
-                       [396,193],
-                       [287,199],
-                       [183,203],
-                       [388,767],
+                       [192,90],
                        [288,85],
-                       [192,90]], dtype=np.float32)
+                       [388,76],
+                       [183,203],
+                       [287,199],
+                       [396,193],
+                       [171,343],
+                       [289,339],
+                       [412,337]], dtype=np.float32)
 
-
+# imagePoints=np.array([[cx,cy],
+#                        [412,337],
+#                        [289,339],
+#                        [171,343],
+#                        [396,193],
+#                        [287,199],
+#                        [183,203],
+#                        [388,767],
+#                        [288,85],
+#                        [192,90]], dtype=np.float32)
+                       
 #FOR REAL WORLD POINTS, CALCULATE Z from d*
 
 for i in range(1,total_points_used):
