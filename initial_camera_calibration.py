@@ -13,7 +13,7 @@ savedir="camera_data/"
 
 # termination criteria
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-# prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
+# prepare object points, like (0,0,0), ( 1,0,0), (2,0,0) ....,(6,5,0)
 objp = np.zeros((7*7,3), np.float32)
 
 #add 2.5 to account for 2.5 cm per square in grid
@@ -38,7 +38,7 @@ for fname in images:
     # Find the chess board corners
     ret, corners = cv2.findChessboardCorners(gray, (7,7), None)
     # If found, add object points, image points (after refining them)
-    if ret == True:
+    if ret == True: 
         objpoints.append(objp)
         corners2=cv2.cornerSubPix(gray,corners, (11,11), (-1,-1), criteria)
         imgpoints.append(corners)
