@@ -34,7 +34,7 @@ def ImageDetection():
         #set detect XYZ to False when you want to use this loop to capture pictures (press spacebar)
         detectXYZ=True
         #set calculateXYZ to enable real world XYZ to be calculated
-        calculateXYZ=False
+        calculateXYZ=True
         move_arm=False
         loop.capturefromPiCamera(imgdir,imgprefix,fullscreen,detectXYZ,calculateXYZ,move_arm)
 

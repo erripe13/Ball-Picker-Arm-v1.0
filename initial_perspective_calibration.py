@@ -62,27 +62,17 @@ worldPoints=np.array([[X_center,Y_center,Z_center],
 
 #[u,v] center + 9 Image points
 imagePoints=np.array([[cx,cy],
-                       [258,168],
-                       [373,168],
-                       [457,],
-                       [],
-                       [],
-                       [],
-                       [],
-                       [],
-                       []], dtype=np.float32)
+                       [260, 172],
+                       [374, 169],
+                       [489, 166],
+                       [252, 306],
+                       [376, 307],
+                       [500, 305],
+                       [244, 474],
+                       [379, 470],
+                       [517, 471]], dtype=np.float32)
 
-# imagePoints=np.array([[cx,cy],
-#                        [412,337],
-#                        [289,339],
-#                        [171,343],
-#                        [396,193],
-#                        [287,199],
-#                        [183,203],
-#                        [388,767],
-#                        [288,85],
-#                        [192,90]], dtype=np.float32)
-                       
+
 #FOR REAL WORLD POINTS, CALCULATE Z from d*
 
 for i in range(1,total_points_used):
