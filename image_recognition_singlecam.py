@@ -99,7 +99,7 @@ class image_recognition:
                     
                     #image,text,font,bottomleftconrner,fontscale,fontcolor,linetype
                     cv2.putText(img_output,"Point "+str(i),(x-w,y+h),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,0,0),1)
-                    cv2.putText(img_output,"cx,cy: "+str(self.truncate(cx,2))+","+str(self.truncate(cy,2)),(x-w,y+h+9),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,0,0),1)
+                    cv2.putText(img_output,"xy:"+str(self.truncate(cx,2))+","+str(self.truncate(cy,2)),(x-w,y+h+9),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,0,0),1)
 
                 points=[x,y,w,h,cx,cy]
                 detected_points.append(points)

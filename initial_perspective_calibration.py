@@ -43,44 +43,34 @@ print("cx: "+str(cx)+",cy "+str(cy)+",fx "+str(fx))
 
 total_points_used=10
 
-X_center=335
-Y_center=315
-Z_center=675
+X_center=313
+Y_center=347
+Z_center=770
 worldPoints=np.array([[X_center,Y_center,Z_center],
-                       [185,135,805],
-                       [335,135,773],
-                       [485,135,777],
-                       [185,325,710],
-                       [335,325,675],
-                       [485,325,667],
-                       [185,520,650],
-                       [335,520,618],
-                       [485,520,615]], dtype=np.float32)
+                       [184, 155, 870],
+                       [334, 155, 860],
+                       [485, 155, 875],
+                       [184, 350, 780],
+                       [334, 350, 770],
+                       [485, 350, 790],
+                       [184, 545, 735],
+                       [334, 545, 730],
+                       [485, 545, 740]], dtype=np.float32)
 
-# worldPoints=np.array([[X_center,Y_center,Z_center],
-#                        [18.5,13.5,80.5],
-#                        [33.5,13.5,77.3],
-#                        [48.5,13.5,77.7],
-#                        [18.5,32.5,71.0],
-#                        [33.5,32.5,67.5],
-#                        [48.5,32.5,66.7],
-#                        [18.5,52.0,65.0],
-#                        [33.5,52.0,61.8],
-#                        [48.5,52.0,61.5]], dtype=np.float32)
 
 #MANUALLY INPUT THE DETECTED IMAGE COORDINATES HERE
 
 #[u,v] center + 9 Image points
 imagePoints=np.array([[cx,cy],
-                       [192,90],
-                       [288,85],
-                       [388,76],
-                       [183,203],
-                       [287,199],
-                       [396,193],
-                       [171,343],
-                       [289,339],
-                       [412,337]], dtype=np.float32)
+                       [258,168],
+                       [373,168],
+                       [457,],
+                       [],
+                       [],
+                       [],
+                       [],
+                       [],
+                       []], dtype=np.float32)
 
 # imagePoints=np.array([[cx,cy],
 #                        [412,337],
