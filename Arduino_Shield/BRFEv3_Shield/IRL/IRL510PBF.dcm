@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP IRL510PBF
+D Power MOSFET, N channel
+K
+F http://www.vishay.com/docs/91297/sihl510.pdf
+$ENDCMP
+#
+#End Doc Library

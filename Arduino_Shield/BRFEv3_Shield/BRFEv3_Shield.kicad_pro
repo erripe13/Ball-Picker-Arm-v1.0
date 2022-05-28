@@ -104,7 +104,7 @@
         "allow_blind_buried_vias": false,
         "allow_microvias": false,
         "max_error": 0.005,
-        "min_clearance": 0.0,
+        "min_clearance": 0.3,
         "min_copper_edge_clearance": 0.075,
         "min_hole_clearance": 0.0,
         "min_hole_to_hole": 0.25,
@@ -121,7 +121,8 @@
         0.0,
         0.2,
         0.4,
-        0.6
+        0.6,
+        2.0
       ],
       "via_dimensions": [
         {
@@ -135,6 +136,10 @@
         {
           "diameter": 0.8,
           "drill": 0.4
+        },
+        {
+          "diameter": 2.2,
+          "drill": 1.8
         }
       ],
       "zones_allow_external_fillets": false,
@@ -363,7 +368,7 @@
     "classes": [
       {
         "bus_width": 12.0,
-        "clearance": 0.2,
+        "clearance": 0.5,
         "diff_pair_gap": 0.25,
         "diff_pair_via_gap": 0.25,
         "diff_pair_width": 0.2,
@@ -438,7 +443,7 @@
   },
   "sheets": [
     [
-      "8390a0ec-5f13-46a8-bc72-6a7442402500",
+      "1d037b2f-6449-4e2d-8d98-40e0cdcc5a65",
       ""
     ]
   ],
