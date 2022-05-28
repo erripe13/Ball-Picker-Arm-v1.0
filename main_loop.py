@@ -56,9 +56,9 @@ class main_loop:
 
             #initiate camera and window
             camera = PiCamera()
-            camera.resolution = (600, 400)
+            camera.resolution = (720, 600)
             camera.framerate = 20
-            rawCapture = PiRGBArray(camera, size=(600, 400))
+            rawCapture = PiRGBArray(camera, size=(720, 600))
             time.sleep(0.2)
             win_name="Capture"       
             if (fullscreen==True):

@@ -32,16 +32,16 @@ def ImageDetection():
         #loop.test_arm_clearcamera()
         fullscreen=False
         #set detect XYZ to False when you want to use this loop to capture pictures (press spacebar)
-        detectXYZ=True
+        detectXYZ=False
         #set calculateXYZ to enable real world XYZ to be calculated
-        calculateXYZ=True
+        calculateXYZ=False
         move_arm=False
         loop.capturefromPiCamera(imgdir,imgprefix,fullscreen,detectXYZ,calculateXYZ,move_arm)
 
-        loop.test_arm_home()
+        #loop.test_arm_home()
 
 
 
 #RunTests()
-RunPickandPlace()
+#RunPickandPlace()
 ImageDetection()
