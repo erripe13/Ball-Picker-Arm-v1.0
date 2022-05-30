@@ -81,10 +81,10 @@ void setup() {
   test_getangles(-5,-9);
   test_getangles(5,-9);
   test_getangles(0,-13);
-  coordinate_move(0,-9,0, false);
-  delay(2000);
-  coordinate_move(0, y, 0, false);
-  delay(2000);
+  coordinate_move(90,90,10, false);
+  //delay(2000);
+  //coordinate_move(0, y, 0, false);
+  //delay(2000);
 
   //envoi ready port série
   Serial.println("ready");
