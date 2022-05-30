@@ -7,7 +7,7 @@
 #include <math.h>
 
 //initialisation de la liste des servos
-Servo servo[4];
+Servo servo[3];
 // setup broches utilisées
 const int servo_Pin[] = {6, 7, 4}; //segment1,segment2,pince
 //définition des valeurs de serrage/désserrage sous le format suivant :
@@ -69,19 +69,19 @@ void setup() {
   }
 
   //tests de moteurs, à décommenter pour tester et en mettant "boot loop=false" dans la boucle principale
-  test_servo(0);
-  test_servo(1);
-  test_servo(2);
+  // test_servo(0);
+  // test_servo(1);
+  // test_servo(2);
   test_servo_home(0);
   test_servo_home(1);
   test_servo_home(2);  
-  test_stepper();
-  test_getangles(-5,-20);
-  test_getangles(5,-20);
-  test_getangles(-5,-9);
-  test_getangles(5,-9);
-  test_getangles(0,-13);
-  coordinate_move(15,15,10, false);
+  //test_stepper();
+  // test_getangles(-5,-20);
+  // test_getangles(5,-20);
+  // test_getangles(-5,-9);
+  // test_getangles(5,-9);
+  // test_getangles(0,-13);
+  coordinate_move(15,15,25, false);
   //delay(2000);
   //coordinate_move(0, y, 0, false);
   //delay(2000);
