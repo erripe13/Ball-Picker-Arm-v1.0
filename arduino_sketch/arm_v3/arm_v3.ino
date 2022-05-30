@@ -75,13 +75,13 @@ void setup() {
   test_servo_home(0);
   test_servo_home(1);
   test_servo_home(2);  
-  //test_stepper();
+  test_stepper();
   test_getangles(-5,-20);
   test_getangles(5,-20);
   test_getangles(-5,-9);
   test_getangles(5,-9);
   test_getangles(0,-13);
-  coordinate_move(90,90,10, false);
+  coordinate_move(15,15,10, false);
   //delay(2000);
   //coordinate_move(0, y, 0, false);
   //delay(2000);
