@@ -13,6 +13,7 @@ const int servo_Pin[] = {6, 7, 4}; //segment1,segment2,pince
 //définition des valeurs de serrage/désserrage sous le format suivant :
 //{ouvert-max, fermé-min, repos}
 const int servoGrip_val[]= {114,70,85};  
+//broches moteur pas-à-pas
 const int stepper_dirPin[] = {8};
 const int stepper_stepPin[] = {9};
 //liste d'angles
@@ -74,16 +75,16 @@ void setup() {
   test_servo_home(0);
   test_servo_home(1);
   test_servo_home(2);  
-  test_stepper();
-  //test_getangles(-5,-20); free-movement
-  //test_getangles(5,-20);
-  //test_getangles(-5,-9);
-  //test_getangles(5,-9);
-  //test_getangles(0,-13);
-  //coordinate_move(0,-9,0);
-  //delay(500);50
-  //coordinate_move(0, y, 0, false);
-  delay(500);
+  //test_stepper();
+  test_getangles(-5,-20); free-movement
+  test_getangles(5,-20);
+  test_getangles(-5,-9);
+  test_getangles(5,-9);
+  test_getangles(0,-13);
+  coordinate_move(0,-9,0);
+  delay(2000);
+  coordinate_move(0, y, 0, false);
+  delay(2000);
 
   //envoi ready port série
   Serial.println("ready");
