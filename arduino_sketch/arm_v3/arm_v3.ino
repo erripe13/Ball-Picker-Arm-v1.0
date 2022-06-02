@@ -81,7 +81,7 @@ void setup() {
   // test_getangles(-5,-9);
   // test_getangles(5,-9);
   // test_getangles(0,-13);
-  coordinate_move(15,15,25, false);
+  //coordinate_move(15,15,25, false);
   //delay(2000);
   //coordinate_move(0, y, 0, false);
   //delay(2000);

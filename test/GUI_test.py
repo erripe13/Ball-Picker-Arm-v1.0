@@ -35,7 +35,7 @@ backFrame = Frame(motorControl)
 backFrame.pack (side = BOTTOM)
 
 speedControl = Frame(root)
-speedControl.pack()
+speedControl.pack() 
 
 
 #+++++++++++++++++ARM+++++++++++++++++++++++++
