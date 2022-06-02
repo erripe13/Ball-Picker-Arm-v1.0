@@ -49,7 +49,7 @@ void setup() {
   stepper.setSpeed(50); //vitesse pas-à-pas
   
   Rot.write(90);     //position initiale
-  Servo1.write(90);  //position initiale
+  Servo1.write(10);  //position initiale
   Servo1.write(144); //position initiale
   Pince.write(90);   //position initiale
 }
