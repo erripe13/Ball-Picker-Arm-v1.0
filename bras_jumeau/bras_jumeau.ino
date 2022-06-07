@@ -22,12 +22,13 @@ int val3;
 int domain0;
 int domain1;
 int sortie;
+int buth = 115;
+int butb = 166; 
 
 //input numérique (boutons)
 const int bpPince = 2;
 int bpPincestate = 0; 
 int stepperdest = 0;
-int stepperdestpast = 0;
 
 AccelStepper stepper(AccelStepper::DRIVER, 9, 8);
 
@@ -43,9 +44,9 @@ void setup() {
   Servo2.attach(7);     // pin servo
   Pince.attach(4);      // pin servo
 
-  stepper.setSpeed(50); //vitesse pas-à-pas
-  stepper.setMaxSpeed(1200);
-  stepper.setAcceleration(500);
+  //stepper.setSpeed(50); //vitesse pas-à-pas
+  stepper.setMaxSpeed(1000);
+  stepper.setAcceleration(900);
   stepper.moveTo(0);
   
   Rot.write(0);         //position initiale
@@ -56,28 +57,19 @@ void setup() {
 
 void loop() {
 
-  //lecture des pot
+  //contrôles du bras
   val0 = analogRead(potpin0);            // lecture pot1
   if (val0 > 119) val0 = 119;
-  val0 = map(val0, 0, 119, 20, 66);      // prod croix
-  domain0 = map(val0, 40, 66, 100, 0);
-  
-  val1 = analogRead(potpin1);            // lecture pot1
+  val0 = map(val0, 0, 119, 28, 66);      // prod croix
+  domain0 = map(val0, 28, 66, 100, 0);
+  val1 = analogRead(potpin1);            // lecture pot2
   if (val1 > 165) val1 = 165;
   val1 = map(val1, 0, 165, 115, 160);    // prod croix
   domain1 = map(val1, 115, 160, 0, 100);
   sortie = domain0+domain1;
-  val1 = map(sortie, 0, 100, 115, 160);
+  val1 = map(sortie, 0, 100, buth, butb);
   Serial.println(val1); //debug print
   
-  
-  val2 = analogRead(potpin2);
-  val2 = map(val2, 0, 673, 0, 180);     // prod croix 
-  
-  Servo1.write(val0);
-  Servo2.write(val1);
-  Rot.write(val2);
-
   //Pince
   if (digitalRead(bpPince) == 1) {
      Pince.write(90);
@@ -86,12 +78,27 @@ void loop() {
      Pince.write(50);
   }
 
-  stepperdestpast=analogRead(potpin3);
+  //translation
   stepperdest=analogRead(potpin3);
-  if (stepperdest > 640) stepperdest = 640;
-  stepperdest = stepperdest*10.52;
- // Serial.println(stepperdest);
-  
-  stepper.moveTo(stepperdest);
+  if (stepperdest > 640) stepperdest = 640; //butée pour éviter l'instabilité de fin de potentiomètre
+  stepperdest = stepperdest*10.52; //640 unités potentiomètre en 40cm
+  stepper.setMaxSpeed(1000);
+  stepper.setAcceleration(900);
+  stepper.moveTo(stepperdest); //assignation destination stepper
+
+  //rotation si translation pas trop avancée pour éviter chocs dans la cage
+  if (stepperdest < 3000){
+    val2 = analogRead(potpin2);
+    val2 = map(val2, 0, 673, 0, 180);     // prod croix
+  }
+  else {
+    if (val2>=90) val2 = 180;
+    else val2=0;
+  }
+  //exécution des moteurs en résultat de tous les calculs
+  Servo1.write(val0);
+  Servo2.write(val1);
+  Rot.write(val2);
   stepper.run();
+  
 }
