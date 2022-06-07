@@ -1,4 +1,4 @@
-#include <AccelStepperWithDistance.h>
+#include <AccelStepper.h>
 #include <Servo.h>
 #include <Math.h>
 
@@ -14,18 +14,16 @@ const int potpin0 = A0;
 int val0;
 const int potpin1 = A1;  
 int val1;
+const int potpin2 = A2;  
+int val2;
+const int potpin3 = A3;  
+int val3;
 
 //input numérique (boutons)
 const int bpPince = 2;
 int bpPincestate = 0; 
-const int bprotG = 10;
-int bprotGstate = 0; 
-const int bprotD = 11;
-int bprotDstate = 0; 
-const int bpAV = 12;
-int bpAVstate = 0; 
-const int bpAR = 13;
-int bpARstate = 0; 
+int stepperdest = 0;
+int stepperdestpast = 0;
 
 AccelStepper stepper(AccelStepper::DRIVER, 9, 8);
 
@@ -34,74 +32,62 @@ void setup() {
   Serial.begin(9600);
   Serial.println("Initialisation");
 
-  pinMode(bprotG, INPUT);  // pin BP
-  pinMode(bprotD, INPUT);  // pin BP
-  pinMode(bpAV, INPUT);    // pin BP
-  pinMode(bpAR, INPUT);    // pin BP
   pinMode(bpPince, INPUT); // pin BP
 
-
   Rot.attach(5);     // pin servo
-  Servo1.attach(6);  // pin servo
-  Servo2.attach(7);  // pin servo
+  //Servo1.attach(6);  // pin servo
+  //Servo2.attach(7);  // pin servo
   Pince.attach(4);   // pin servo
 
   stepper.setSpeed(50); //vitesse pas-à-pas
+  stepper.setMaxSpeed(1200);
+  stepper.setAcceleration(500);
+  stepper.moveTo(0);
   
-  Rot.write(90);     //position initiale
-  Servo1.write(10);  //position initiale
-  Servo1.write(144); //position initiale
-  Pince.write(90);   //position initiale
+//  Rot.write(0);     //position initiale
+//  Servo1.write(40);  //position initiale
+//  Servo2.write(155); //position initiale
+  Pince.write(20);   //position initiale
 }
 
 void loop() {
-  //lecture des BP
-  bpPincestate = digitalRead(bpPince);
-  bprotGstate = digitalRead(bprotG);
-  bprotDstate = digitalRead(bprotD);
-  bpAVstate = digitalRead(bpAV);
-  bpARstate = digitalRead(bpAR);
-  
+
   //lecture des pot
   val0 = analogRead(potpin0);            // lecture pot1
-  //val0 = map(val0, 0, 1023, 20, 75);     // prod croix
+  if (val0 > 29) val0 = 29;
+  val0 = map(val0, 0, 29, 40, 66);     // prod croix
+  
   val1 = analogRead(potpin1);            // lecture pot1
-  //val1 = map(val1, 0, 1023, 140, 165);     // prod croix
-
-  //écriture des angles
-  Serial.println(val0); //debug print
   Serial.println(val1); //debug print
+  if (val1 > 179) val1 = 179;
+  val1 = map(val1, 0, 179, 115, 160);     // prod croix
+  //val1 = val1+(val0+40);
+  
+  val2 = analogRead(potpin2);
+  val2 = map(val2, 0, 673, 0, 180);     // prod croix 
+  
+  //écriture des angles
+ // Serial.println(val0); //debug print
+  //Serial.println(val1); //debug print
+  //Serial.println(val2); //debug print
   //Servo1.write(val0);
   //Servo2.write(val1);
+  Rot.write(val2);
 
   //Pince
-  if (bpPincestate == HIGH) {
-     Pince.write(70);
+  if (digitalRead(bpPince) == 1) {
+     Pince.write(90);
      } 
   else {
-     Pince.write(140);
+     Pince.write(50);
   }
 
-  //Rotation
-  rotationControl();
-  //Translation
-  translationControl();
+  stepperdestpast=analogRead(potpin3);
+  stepperdest=analogRead(potpin3);
+  if (stepperdest > 640) stepperdest = 640;
+  stepperdest = stepperdest*10.52;
+ // Serial.println(stepperdest);
   
-  delay(1);
-}
-
-void rotationControl(void){
-  if (bprotGstate == HIGH) {
-    pos++;  
-    delay(2);
-    Pince.write(pos);
-  }
-  else if (bprotDstate == HIGH) {
-    pos--; 
-    delay(2);
-    Pince.write(pos);
-  }
-}
-
-void translationControl(void){
+  stepper.moveTo(stepperdest);
+  stepper.run();
 }
