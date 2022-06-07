@@ -19,6 +19,10 @@ int val2;
 const int potpin3 = A3;  
 int val3;
 
+int domain0;
+int domain1;
+int sortie;
+
 //input numérique (boutons)
 const int bpPince = 2;
 int bpPincestate = 0; 
@@ -35,8 +39,8 @@ void setup() {
   pinMode(bpPince, INPUT); // pin BP
 
   Rot.attach(5);     // pin servo
-  //Servo1.attach(6);  // pin servo
-  //Servo2.attach(7);  // pin servo
+  Servo1.attach(6);  // pin servo
+  Servo2.attach(7);  // pin servo
   Pince.attach(4);   // pin servo
 
   stepper.setSpeed(50); //vitesse pas-à-pas
@@ -45,8 +49,8 @@ void setup() {
   stepper.moveTo(0);
   
 //  Rot.write(0);     //position initiale
-//  Servo1.write(40);  //position initiale
-//  Servo2.write(155); //position initiale
+  Servo1.write(40);  //position initiale
+  Servo2.write(155); //position initiale
   Pince.write(20);   //position initiale
 }
 
@@ -56,12 +60,15 @@ void loop() {
   val0 = analogRead(potpin0);            // lecture pot1
   if (val0 > 29) val0 = 29;
   val0 = map(val0, 0, 29, 40, 66);     // prod croix
+  domain0 = map(val0, 40, 66, 100, 0);
   
   val1 = analogRead(potpin1);            // lecture pot1
-  Serial.println(val1); //debug print
   if (val1 > 179) val1 = 179;
   val1 = map(val1, 0, 179, 115, 160);     // prod croix
-  //val1 = val1+(val0+40);
+  domain1 = map(val1, 115, 160, 0, 100);
+  sortie = domain0+domain1;
+  val1 = map(sortie, 0, 200, 115, 160);
+  Serial.println(val1); //debug print
   
   val2 = analogRead(potpin2);
   val2 = map(val2, 0, 673, 0, 180);     // prod croix 
@@ -70,8 +77,8 @@ void loop() {
  // Serial.println(val0); //debug print
   //Serial.println(val1); //debug print
   //Serial.println(val2); //debug print
-  //Servo1.write(val0);
-  //Servo2.write(val1);
+  Servo1.write(val0);
+  Servo2.write(val1);
   Rot.write(val2);
 
   //Pince
