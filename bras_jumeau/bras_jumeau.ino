@@ -52,7 +52,7 @@ void setup() {
 
   //Rot.write(0);         //position initiale
   Servo1.write(40);     //position initiale
-  Servo2.write(155);    //position initiale
+  Servo2.write(50);    //position initiale
   slowRot(0);
   Pince.write(40);      //position initiale
 }
