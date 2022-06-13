@@ -132,7 +132,7 @@ void get_angles_from_yz(double y, double z) {
   servo1angle=aA+aB;
   servo1angle= (servo1angle/ (2 * M_PI)) * 360;
 
-  //multiplication de la matrice - rotation dans le sens inverse des aiguilles d'une montre
+  //multiplication de la matrice  rotation dans le sens inverse des aiguilles d'une montre
   y3 = -L*sin(aA+aB);
   z3 = -L* cos(aA+aB);
 
