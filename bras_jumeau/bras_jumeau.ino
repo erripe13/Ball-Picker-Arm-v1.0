@@ -46,64 +46,20 @@ void setup() {
   Pince.attach(4);      // pin servo
 
   //stepper.setSpeed(50); //vitesse pas-à-pas
-  stepper.setMaxSpeed(1000);
-  stepper.setAcceleration(900);
-  stepper.moveTo(0);
+  stepper.setSpeed(800);
+  stepper.setMaxSpeed(150);
+  stepper.setAcceleration(100);
 
-  Rot.write(0);         //position initiale
+  //Rot.write(0);         //position initiale
   Servo1.write(40);     //position initiale
   Servo2.write(155);    //position initiale
-  Pince.write(20);      //position initiale
+  slowRot(0);
+  Pince.write(40);      //position initiale
 }
 
 void loop() {
-
-  //contrôles du bras
-  val0 = analogRead(potpin0);            // lecture pot1
-  if (val0 > 119) val0 = 119;
-  val0 = map(val0, 0, 119, 28, 66);      // prod croix
-  domain0 = map(val0, 28, 66, 100, 0);
-  val1 = analogRead(potpin1);            // lecture pot2
-  if (val1 > 165) val1 = 165;
-  val1 = map(val1, 0, 165, 115, 160);    // prod croix
-  domain1 = map(val1, 115, 160, 0, 100);
-  sortie = domain0 + domain1;
-  val1 = map(sortie, 0, 100, buth, butb);
-  Serial.println(val1); //debug print
-
-  //Pince
-  if (digitalRead(bpPince) == 1) {
-    Pince.write(90);
-  }
-  else {
-    Pince.write(50);
-  }
-
-  //translation
-  stepperdest = analogRead(potpin3);
-  if (stepperdest > 640) stepperdest = 640; //butée pour éviter l'instabilité de fin de potentiomètre
-  stepperdest = stepperdest * 10.52; //640 unités potentiomètre en 40cm
-  stepper.setMaxSpeed(1000);
-  stepper.setAcceleration(900);
-  stepper.moveTo(stepperdest); //assignation destination stepper
-
-  //rotation si translation pas trop avancée pour éviter chocs dans la cage
-  if (stepperdest < 3000) {
-    val2 = analogRead(potpin2);
-    if (val2 > 670) val2 = 673;
-    if (val2 < 4) val2 = 0;
-    val2 = map(val2, 0, 673, 0, 180);     // prod croix
-  }
-  else {
-    if (val2 >= 90) val2 = 180;
-    else val2 = 0;
-  }
-  //exécution des moteurs en résultat de tous les calculs
-  Servo1.write(val0);
-  Servo2.write(val1);
-  slowRot(val2);
-  stepper.run();
-
+  pantin();
+  //stackunstack();
 }
 
 void slowRot(int i) {
@@ -111,13 +67,78 @@ void slowRot(int i) {
   if ( i >= angle) {
     for (angle = angle; angle <= i; angle = angle + 1) { 
       Rot.write(angle);
-      delay(10);
+      delay(13);
     }
   }
   else
   { for (angle = angle; angle >= i; angle = angle - 1){ 
       Rot.write(angle);
-      delay(10);
+      delay(13);
     }
   }
+}
+
+void stackunstack(){
+  slowRot(0);
+  Servo1.write(50);     //position initiale
+  Servo2.write(90);    //position initiale
+  delay(1000);
+  Servo1.write(50);     //position initiale
+  Servo2.write(90);    //position initiale
+  delay(1000);
+  Servo1.write(50);     //position initiale
+  Servo2.write(90);    //position initiale
+  delay(1000);
+}
+
+void pantin() {
+
+  //contrôles du bras
+  val0 = analogRead(potpin0);            // lecture pot1
+  if (val0 > 130) val0 = 130;
+  val0 = map(val0, 0, 130, 28, 76);      // prod croix
+  domain0 = map(val0, 28, 76, 100, 0);
+  
+  val1 = analogRead(potpin1);            // lecture pot2
+  if (val1 > 160) val1 = 160;
+  val1 = map(val1, 0, 165, 90, 160);    // prod croix
+  domain1 = map(val1, 90, 160, 0, 100);
+  sortie = domain0 + domain1;
+  val1 = map(sortie, 0, 100, buth, butb);
+  Serial.print("s1="); //debug print
+  Serial.println(val1);
+  Serial.println("s2="); //debug print
+  Serial.println(val2);
+  
+  
+  //Pince
+  if (digitalRead(bpPince) == 1) {
+    Pince.write(80);
+  }
+  else {
+    Pince.write(60);
+  }
+
+  //translation
+//  stepperdest = analogRead(potpin3);
+//  if (stepperdest > 640) stepperdest = 640; //butée pour éviter l'instabilité de fin de potentiomètre
+//  stepperdest = stepperdest * 10.52; //640 unités potentiomètre en 40cm
+//  stepper.moveTo(stepperdest); //assignation destination stepper
+//  stepper.run();
+  //rotation si translation pas trop avancée pour éviter chocs dans la cage
+  //if (stepper.currentPosition() < 3000) {
+  val2 = analogRead(potpin2);
+  Serial.println(val2);
+  if (val2 > 670) val2 = 675;
+  if (val2 < 4) val2 = 0;
+  val2 = map(val2, 0, 675, 0, 170);     // prod croix
+  //}
+  //else {
+  //  if (val2 >= 90) val2 = 180;
+  //  else val2 = 0;        
+  //}
+  //exécution des moteurs en résultat de tous les calculs
+  Servo1.write(val0);
+  Servo2.write(val1);
+  slowRot(val2);
 }

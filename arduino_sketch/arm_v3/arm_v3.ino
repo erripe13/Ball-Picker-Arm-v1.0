@@ -69,9 +69,9 @@ void setup() {
   }
 
   //tests de moteurs, à décommenter pour tester et en mettant "boot loop=false" dans la boucle principale
-//  test_servo(0);
-//  test_servo(1);
-//  test_servo(2);
+  //  test_servo(0);
+  //  test_servo(1);
+  //  test_servo(2);
   test_servo_home(0);
   test_servo_home(1);
   test_servo_home(2);  
@@ -434,11 +434,11 @@ void test_servo_home(int servo_num) {
 
   //segment1
   if (servo_num == 0) {
-    angle_default = 55;
+    angle_default = 10;
   }
   //segment2
   if (servo_num == 1) {
-    angle_default = 148;
+    angle_default = 120;
   }
   //servo pince
   if (servo_num == 2) {
