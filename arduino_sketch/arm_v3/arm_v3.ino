@@ -41,7 +41,7 @@ char receivedChars[numChars];
 boolean newData = false;
 
 void setup() {
-
+  
   // port série
   Serial.begin(9600);
   //envoi du mot start sur le port série
@@ -57,6 +57,8 @@ void setup() {
 
   // Setup des angles servo initiaux
   //for(i=0; i<2; i++) { servo[i].write(90); angle_current[i]=90; }
+  servo[0].write(30);
+  servo[1].write(50);
   servo[2].write(servoGrip_val[2]); angle_current[2] = servoGrip_val[2];
   // Set Coordinates a Base
   int y = 0;
