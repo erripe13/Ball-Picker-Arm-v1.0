@@ -1,16 +1,19 @@
 {
   "board": {
-    "active_layer": 0,
+    "active_layer": 31,
     "active_layer_preset": "",
     "auto_track_width": true,
-    "hidden_nets": [],
+    "hidden_nets": [
+      "/A4(SDA)",
+      "/A5(SCL)"
+    ],
     "high_contrast_mode": 0,
     "net_color_mode": 1,
     "opacity": {
       "pads": 1.0,
       "tracks": 1.0,
       "vias": 1.0,
-      "zones": 0.6
+      "zones": 0.10000000149011612
     },
     "ratsnest_display_mode": 0,
     "selection_filter": {
@@ -34,9 +37,11 @@
       4,
       5,
       6,
+      7,
       8,
       9,
       10,
+      11,
       13,
       14,
       15,
@@ -59,7 +64,7 @@
       37,
       38
     ],
-    "visible_layers": "fffffff_ffffffff",
+    "visible_layers": "ffdffdf_ffffffff",
     "zone_display_mode": 0
   },
   "meta": {
@@ -67,6 +72,31 @@
     "version": 3
   },
   "project": {
-    "files": []
+    "files": [
+      {
+        "name": "BRFEv3_Shield.kicad_sch",
+        "open": true,
+        "window": {
+          "display": 0,
+          "maximized": true,
+          "pos_x": 560,
+          "pos_y": 295,
+          "size_x": 1440,
+          "size_y": 875
+        }
+      },
+      {
+        "name": "BRFEv3_Shield.kicad_pcb",
+        "open": true,
+        "window": {
+          "display": 0,
+          "maximized": true,
+          "pos_x": -160,
+          "pos_y": 25,
+          "size_x": 1600,
+          "size_y": 875
+        }
+      }
+    ]
   }
 }

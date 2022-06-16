@@ -9,7 +9,7 @@
 //initialisation de la liste des servos
 Servo servo[3];
 // setup broches utilisées
-const int servo_Pin[] = {6, 7, 4}; //segment1,segment2,pince
+const int servo_Pin[] = {2, 3, 4}; //segment1,segment2,pince
 //définition des valeurs de serrage/désserrage sous le format suivant :
 //{ouvert-max, fermé-min, repos}
 const int servoGrip_val[]= {114,70,85};  
