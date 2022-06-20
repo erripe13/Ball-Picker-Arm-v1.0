@@ -43,19 +43,19 @@ print("cx: "+str(cx)+",cy "+str(cy)+",fx "+str(fx))
 
 total_points_used=10
 
-X_center=313
-Y_center=347
-Z_center=770
+X_center=31.3
+Y_center=34.7
+Z_center=77.0
 worldPoints=np.array([[X_center,Y_center,Z_center],
-                       [184, 155, 870],
-                       [334, 155, 860],
-                       [485, 155, 875],
-                       [184, 350, 780],
-                       [334, 350, 770],
-                       [485, 350, 790],
-                       [184, 545, 735],
-                       [334, 545, 730],
-                       [485, 545, 740]], dtype=np.float32)
+                       [18.4, 15.5, 87.0],
+                       [33.4, 15.5, 86.0],
+                       [48.5, 15.5, 87.5],
+                       [18.4, 35.0, 78.0],
+                       [33.4, 35.0, 77.0],
+                       [48.5, 35.0, 79.0],
+                       [18.4, 54.5, 73.5],
+                       [33.4, 54.5, 73.0],
+                       [48.5, 54.5, 74.0]], dtype=np.float32)
 
 
 #MANUALLY INPUT THE DETECTED IMAGE COORDINATES HERE
