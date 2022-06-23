@@ -11,8 +11,8 @@ import imutils
 import time
 
 # limites HSV couleur balle, à définir avec hsv_define.py
-greenLower = (0, 126, 130)
-greenUpper = (22, 237, 227)
+greenLower = (15, 112, 143)
+greenUpper = (45, 255, 255)
 pts = deque(maxlen=50)
 
 # attribution flux webcam
