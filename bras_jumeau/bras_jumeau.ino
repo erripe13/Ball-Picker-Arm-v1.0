@@ -98,7 +98,6 @@ void pantin() {
   if (val0 > 130) val0 = 130;
   val0 = map(val0, 0, 130, 28, 76);      // prod croix
   domain0 = map(val0, 28, 76, 100, 0);
-  
   val1 = analogRead(potpin1);            // lecture pot2
   if (val1 > 160) val1 = 160;
   val1 = map(val1, 0, 165, 90, 160);    // prod croix

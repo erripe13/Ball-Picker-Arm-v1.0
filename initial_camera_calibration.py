@@ -11,12 +11,12 @@ import time
 workingdir="/home/pi/Desktop/Captures/"
 savedir="camera_data/"
 
-# termination criteria
+# critère d'arrêt
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-# prepare object points, like (0,0,0), ( 1,0,0), (2,0,0) ....,(6,5,0)
+# liste des points
 objp = np.zeros((7*7,3), np.float32)
 
-#add 2.5 to account for 2.5 cm per square in grid
+#2.5cm par carré du damier dans l'axe horizontal
 objp[:,:2] = np.mgrid[0:7,0:7].T.reshape(-1,2)*2.5
 
 # Arrays to store object points and image points from all the images.
@@ -35,14 +35,14 @@ for fname in images:
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 
-    # Find the chess board corners
+    # trouver le damier
     ret, corners = cv2.findChessboardCorners(gray, (7,7), None)
-    # If found, add object points, image points (after refining them)
+    # corréler les points du damier avec la topographie de l'image
     if ret == True: 
         objpoints.append(objp)
         corners2=cv2.cornerSubPix(gray,corners, (11,11), (-1,-1), criteria)
         imgpoints.append(corners)
-        # Draw and display the corners
+        # dessiner les lignes du damier
         cv2.drawChessboardCorners(img, (7,7), corners2, ret)
         cv2.imshow(win_name, img)
         cv2.waitKey(500)
@@ -75,9 +75,6 @@ print(">==> Calibration ended")
 h,  w = img1.shape[:2]
 print("Image Width, Height")
 print(w, h)
-#if using Alpha 0, so we discard the black pixels from the distortion.  this helps make the entire region of interest is the full dimensions of the image (after undistort)
-#if using Alpha 1, we retain the black pixels, and obtain the region of interest as the valid pixels for the matrix.
-#i will use Apha 1, so that I don't have to run undistort.. and can just calculate my real world x,y
 newcam_mtx, roi=cv2.getOptimalNewCameraMatrix(cam_mtx, dist, (w,h), 1, (w,h))
 
 print("Region of Interest")
@@ -85,7 +82,6 @@ print(roi)
 np.save(savedir+'roi.npy', roi)
 
 print("New Camera Matrix")
-#print(newcam_mtx)
 np.save(savedir+'newcam_mtx.npy', newcam_mtx)
 print(np.load(savedir+'newcam_mtx.npy'))
 
@@ -94,13 +90,9 @@ print("Inverse New Camera Matrix")
 print(inverse)
 
 
-# undistort
+# rectifier l'image
 undst = cv2.undistort(img1, cam_mtx, dist, None, newcam_mtx)
 
-# crop the image
-#x, y, w, h = roi
-#dst = dst[y:y+h, x:x+w]
-#cv2.circle(dst,(308,160),5,(0,255,0),2)
 cv2.imshow('img1', img1)
 cv2.waitKey(2000)
 cv2.destroyAllWindows()

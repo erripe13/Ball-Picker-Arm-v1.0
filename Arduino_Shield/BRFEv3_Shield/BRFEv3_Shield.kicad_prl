@@ -77,11 +77,23 @@
         "name": "BRFEv3_Shield.kicad_sch",
         "open": true,
         "window": {
+          "display": 1,
+          "maximized": true,
+          "pos_x": 2725,
+          "pos_y": 321,
+          "size_x": 1755,
+          "size_y": 1002
+        }
+      },
+      {
+        "name": "BRFEv3_Shield.kicad_pcb",
+        "open": true,
+        "window": {
           "display": 0,
           "maximized": true,
-          "pos_x": 560,
-          "pos_y": 295,
-          "size_x": 1440,
+          "pos_x": -160,
+          "pos_y": 25,
+          "size_x": 1600,
           "size_y": 875
         }
       }
