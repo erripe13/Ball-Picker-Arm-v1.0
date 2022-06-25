@@ -1,3 +1,4 @@
+
 #include "DHT.h"
 
 #define fanPin 10 // Arduino pin connected to relay which connected to fan
@@ -9,7 +10,7 @@ DHT dht(DHTPIN, DHTTYPE);
 float temperature;    // temperature in Celsius
 int control=35;
 unsigned long previousMillis = 0;        // will store last time LED was updated
-const long interval = 1000;           // interval at which to blink (milliseconds)
+const long interval = 5000;           // interval at which to blink (milliseconds)
 
 void setup()
 {
@@ -39,7 +40,7 @@ void loop()
       if (temperature>=30) temperature=30;
       control=map(temperature, 26, 30, 100, 255);
       analogWrite(fanPin, control);
-      control=map(control, 0, 255, 0, 100);
+      control=map(control, 100, 255, 40, 100);
       Serial.print("ventilateur: ");
       Serial.print(control);
       Serial.println("%");

@@ -16,13 +16,14 @@ Servo servo1;
 Servo servo2;
 Servo pince;
 
+int i=1;
 int pos = 0;    // variable to store the servo position
 
 unsigned long previousMillis = 0;
 const long interval = 15;           // interval 
 
 void setup() {
-  servo1.attach(2);  // attaches the servo on pin 9 to the servo object
+  servo1.attach(2); 
   servo2.attach(3);
   pince.attach(4);
   dht.begin();   
@@ -30,18 +31,89 @@ void setup() {
   pinMode(en5V, OUTPUT);
   Serial.begin(9600); // initialize serial
   pinMode(fanPin, OUTPUT); // initialize digital pin as an output
+  pince.write(70);
 }
+
 void loop() {
 
-  temperature = dht.readTemperature();;  // read temperature in Celsius
+  temperature = dht.readTemperature();  // read temperature in Celsius
   Serial.print("température : ");
   Serial.println(temperature);
   digitalWrite(en6V, LOW);
   digitalWrite(en5V, LOW);
   digitalWrite(fanPin, HIGH);
-  
-  servo1.write(15);              // tell servo to go to position in variable 'pos'
-  servo2.write(180);              // tell servo to go to position in variable 'pos'
 
-  delay(10);
+  servo2.write(90);
+  //picktest();
+}
+void picktest(){
+  for(i=1; i<=2; i++){
+    
+  servo1.write(60);
+  servo2.write(100);
+  delay(500);
+  
+  servo2.write(110);
+  delay(500);
+  
+  pince.write(25);
+  delay(1000);  
+  
+  servo1.write(40);
+  servo2.write(90);
+  delay(2000);
+
+  servo1.write(30);
+  servo2.write(120);
+  delay(500);
+  
+  servo2.write(135);
+  delay(500);
+  
+  pince.write(70);
+  delay(1000);
+
+  servo2.write(120);
+  delay(500);
+
+  servo1.write(40);
+  servo2.write(90);
+  delay(2000);
+
+  servo1.write(30);
+  servo2.write(120);
+  delay(500);
+  
+  servo2.write(135);
+  delay(500);
+
+  pince.write(25);
+  delay(1000);  
+
+  servo1.write(40);
+  servo2.write(90);
+  delay(2000);
+
+  servo1.write(60);
+  servo2.write(100);
+  delay(500);
+  
+  servo2.write(110);
+  delay(500);
+  
+  pince.write(70);
+  delay(1000);  
+
+  servo2.write(100);
+  delay(500);
+  
+  servo1.write(40);
+  servo2.write(90);
+  delay(2000);
+
+  }
+  
+  digitalWrite(en6V, LOW);
+  digitalWrite(en5V, LOW);
+  delay(15000);
 }

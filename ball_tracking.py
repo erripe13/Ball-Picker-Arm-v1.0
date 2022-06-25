@@ -29,7 +29,7 @@ while True:
 	if frame is None:
 		break
 	# réduction de la résolution, flou, et conversion HSV
-	frame = imutils.resize(frame, width=600)
+	frame = frame[20:450, 0:600]
 	blurred = cv2.GaussianBlur(frame, (11, 11), 0)
 	hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
 	# génération d'un masque sur la balle
@@ -51,7 +51,7 @@ while True:
 		if radius > 10:
 			# dessiner le cercle et mettre à jour la liste des dernières coordonnées (pour le trail)
 			cv2.circle(frame, (int(x), int(y)), int(radius),
-				(0, 255, 255), 2)
+				(0, 255, 0), 2)
 			cv2.circle(frame, center, 5, (0, 0, 255), -1)
 	# màj des données
 	pts.appendleft(center)
@@ -64,8 +64,10 @@ while True:
 		thickness = int(np.sqrt(10 / float(i + 1)) * 2.5)
 		cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
 	# afficher la sortie video traitée assemblée
-	cv2.putText(frame,"x,y: "+str(x)+","+str(y),(20,20),cv2.FONT_HERSHEY_SIMPLEX,0.5,(0,0,255),2)
-	cv2.imshow("Frame", frame)
+	x=round(x)
+	y=round(y)
+	cv2.putText(frame,"x,y: "+str(x)+","+str(y),(20,20),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
+	cv2.imshow("Retour tracking", frame)
 	key = cv2.waitKey(1) & 0xFF
 	# arrêt si Q est pressé
 	if key == ord("q"):

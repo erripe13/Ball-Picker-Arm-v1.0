@@ -9,7 +9,8 @@
 #define fanPin 10 // Arduino pin connected to relay which connected to fan
 #define DHTPIN 12           // Arduino pin connected to relay which connected to DHT sensor
 #define DHTTYPE DHT11
-
+#define en6V 8
+#define en5V 9
 DHT dht(DHTPIN, DHTTYPE);
 
 float temperature;    // temperature in Celsius
@@ -28,7 +29,7 @@ Servo servo[3];
 const int servo_Pin[] = {2, 3, 4}; //segment1,segment2,pince
 //définition des valeurs de serrage/désserrage sous le format suivant :
 //{ouvert-max, fermé-min, repos}
-const int servoGrip_val[]= {114,70,85};  
+const int servoGrip_val[]= {70,25,70};  
 //broches moteur pas-à-pas
 const int stepper_enPin[] = {5};
 const int stepper_dirPin[] = {6};
@@ -48,10 +49,10 @@ double stepper_correction[]={0};
 // vérifier que l'angle du servo correpond bien à l'angle de la partie du bras commandée
 // mettre le servo à 90°, puis mesurer l'angle réel
 // la valeur de calibration est donc (90 - {réel angle par rapport à 90})
-const double calibrate_TopArm=0;
-const double calibrate_MiddleArm=0;
+const double calibrate_TopArm=90-0;
+const double calibrate_MiddleArm=90+90;
 //compensation hauteur de la pince par rapport à l'extrémité du segment 2 du bras
-const double calibrate_Z=8;
+const double calibrate_Z=13;
 // communication
 const byte numChars = 32;
 char receivedChars[numChars];
@@ -68,7 +69,9 @@ void setup() {
   pinMode(stepper_dirPin[0], OUTPUT);
   pinMode(stepper_stepPin[0], OUTPUT);
   pinMode(stepper_enPin[0], OUTPUT);
-  
+  pinMode(en6V, OUTPUT);
+  pinMode(en5V, OUTPUT);
+
   int i = 0;
   for (i = 0; i < 3; i++) {
     pinMode(servo_Pin[i], OUTPUT);
@@ -76,9 +79,9 @@ void setup() {
 
   // Setup des angles servo initiaux
   //for(i=0; i<2; i++) { servo[i].write(90); angle_current[i]=90; }
-  //servo[0].write(30);
-  //servo[1].write(50);
-  //servo[2].write(servoGrip_val[2]); angle_current[2] = servoGrip_val[2];
+  servo[0].write(50);
+  servo[1].write(110);
+  servo[2].write(servoGrip_val[2]); angle_current[2] = servoGrip_val[2];
   // Set Coordinates a Base
   int y = 0;
   int z = -6;
@@ -97,7 +100,7 @@ void setup() {
   //test_servo_home(1);
   //test_servo_home(2);  
   //test_stepper();
-  // test_getangles(-5,-20);
+  //test_getangles(-5,-20);
   // test_getangles(5,-20);
   // test_getangles(-5,-9);
   // test_getangles(5,-9);
@@ -111,30 +114,36 @@ void setup() {
   dht.begin();        // initialize the sensor
   pinMode(fanPin, OUTPUT); // initialize digital pin as an output
   Serial.println("ready");
+  
 
   
 }
 void loop() {
-  fanControl();
+  //fanControl();
   digitalWrite(stepper_enPin[0], HIGH);
-
+  digitalWrite(fanPin, HIGH);
   bool loop=true;
+  digitalWrite(en6V, HIGH);
+  digitalWrite(en5V, HIGH);
+  test_servo_home(0);
+  test_servo_home(1);
+  test_servo_home(2); 
   
-  recvWithStartEndMarkers();
-  showNewData();
-
-  //data format <x,y,z,bool_move,bool_open,delayms,type_int> = <23,56,89,1,1,3456,3> {17}
-  //X: 7.00 Y: 8.00 Z: 9.00 bool_move: 1.00 bool_open: 0.00 delay_ms: 10.00 move_type: 1.00
-  //le bool_move contrôle si le bras se déplace linéairement vers la position ou s'il effectue un mouvement de prise (déplacement x d'abord/y ensuite, etc.).
-  
-  if (newData==true && loop==true) {
-    coordinate_move(XYZ_next[0],XYZ_next[1],XYZ_next[2],XYZ_next[3]);
-    servo_Open(XYZ_next[4]);
-    delay(XYZ_next[5]);
-    newData=false;
-    Serial.println("done");
-  }
-
+//  recvWithStartEndMarkers();
+//  showNewData();
+//
+//  //data format <x,y,z,bool_move,bool_open,delayms,type_int> = <23,56,89,1,1,3456,3> {17}
+//  //X: 7.00 Y: 8.00 Z: 9.00 bool_move: 1.00 bool_open: 0.00 delay_ms: 10.00 move_type: 1.00
+//  //le bool_move contrôle si le bras se déplace linéairement vers la position ou s'il effectue un mouvement de prise (déplacement x d'abord/y ensuite, etc.).
+//  
+//  if (newData==true && loop==true) {
+//    coordinate_move(XYZ_next[0],XYZ_next[1],XYZ_next[2],XYZ_next[3]);
+//    servo_Open(XYZ_next[4]);
+//    delay(XYZ_next[5]);
+//    newData=false;
+//    Serial.println("done");
+//  }
+  delay(10000);
 }
 
 void fanControl(){
@@ -171,7 +180,7 @@ void get_angles_from_yz(double y, double z) {
   double H, s1, s2, aB, aA, aQ, servo1angle, servo2angle, y2, z2, y3, z3;
 
   //longueur du bras en cm
-  int L = 30;
+  int L = 25;
 
   H= sqrt (pow(y,2) + pow(z,2));
   s1=H/2;
@@ -320,7 +329,7 @@ void stepper_advance(int stepper_num, double steps, int dir) {
   Serial.println(stepper_correction[stepper_num]);
 
 }
-void servo_steps(int servo_num, double angle_target, double incr_step = 10, int step_delay = 100) {
+void servo_steps(int servo_num, double angle_target, double incr_step = 10, int step_delay = 10) {
   // cette commande permet d'envoyer les instructions par paquets de 25 degrés. utile pour des servos bas de gamme.
 
   int set_angle;
@@ -454,15 +463,15 @@ void test_servo(int servo_num) {
   //segment1
   if (servo_num == 0) {
     //Butées servo1 réelles
-    angle_max = 80;
-    angle_min = 20;
-    angle_default = 46;
+    angle_max = 90;
+    angle_min = 0;
+    angle_default = 70;
   }
   //segment2
   if (servo_num == 1) {
     //Butées servo2 réelles
-    angle_max = 165;
-    angle_min = 140;
+    angle_max = 180;
+    angle_min = 120;
     angle_default = 155;
   }
   //Butées servo pince réelles
@@ -487,11 +496,11 @@ void test_servo_home(int servo_num) {
 
   //segment1
   if (servo_num == 0) {
-    angle_default = 10;
+    angle_default = 50;
   }
   //segment2
   if (servo_num == 1) {
-    angle_default = 90;
+    angle_default = 100;
   }
   //servo pince
   if (servo_num == 2) {

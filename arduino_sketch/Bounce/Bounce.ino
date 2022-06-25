@@ -1,15 +1,12 @@
-// Bounce.pde
-// -*- mode: C++ -*-
-//
-// Make a single stepper bounce from one limit to another
-//
-// Copyright (C) 2012 Mike McCauley
-// $Id: Random.pde,v 1.1 2011/01/05 01:51:01 mikem Exp mikem $
+
 
 #include <AccelStepper.h>
 
+#define fanPin 10
+#define enStep 5
+
 // Define a stepper and the pins it will use
-AccelStepper stepper(AccelStepper::DRIVER, 9, 8);
+AccelStepper stepper(AccelStepper::DRIVER, 6, 7);
 
 void setup()
 {  
@@ -17,6 +14,8 @@ void setup()
   stepper.setMaxSpeed(1500);
   stepper.setAcceleration(550);
   stepper.moveTo(1600);
+  digitalWrite(fanPin, HIGH);
+  digitalWrite(enStep, HIGH);
 }
 
 void loop()
@@ -24,6 +23,5 @@ void loop()
     // If at the end of travel go to the other end
     if (stepper.distanceToGo() == 0)
       stepper.moveTo(-stepper.currentPosition());
-
     stepper.run();
 }
