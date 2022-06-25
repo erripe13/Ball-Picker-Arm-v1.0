@@ -55,8 +55,8 @@ def rainbow_cycle(wait):
 
 
 while True:
-    # Comment this line out if you have RGBW/GRBW NeoPixels
+    # éclairage blanc
     pixels.fill((255, 255, 255))
-    #rainbow_cycle(0.001)
+    #envoi de la donnée
     pixels.show()
 

@@ -13,7 +13,7 @@
       "pads": 1.0,
       "tracks": 1.0,
       "vias": 1.0,
-      "zones": 0.10000000149011612
+      "zones": 0.4300000071525574
     },
     "ratsnest_display_mode": 0,
     "selection_filter": {
@@ -77,10 +77,10 @@
         "name": "BRFEv3_Shield.kicad_sch",
         "open": true,
         "window": {
-          "display": 1,
+          "display": 0,
           "maximized": true,
-          "pos_x": 2725,
-          "pos_y": 321,
+          "pos_x": 402,
+          "pos_y": 231,
           "size_x": 1755,
           "size_y": 1002
         }
