@@ -27,7 +27,7 @@ const int stepper_enPin[] = {5};
 const int stepper_dirPin[] = {6};
 const int stepper_stepPin[] = {7};
 //liste d'angles
-double angle_current[] = {90, 90, 145};
+double angle_current[] = {20, 100, 145};
 double angle_next[] = {90, 90, 145};
 //coordonnées du bras initialement, puis actuelles, puis suivantes
 const double XYZ_base[] = {0, 0, -6, 1, 0, 0, 1}; //x,y,z, bool_move, bool_open, delay_to_next, type_of_action
@@ -42,7 +42,7 @@ double stepper_correction[]={0};
 // mettre le servo à 90°, puis mesurer l'angle réel
 // la valeur de calibration vaut donc (90 - {réel angle par rapport à 90})
 const double calibrate_TopArm=0;
-const double calibrate_MiddleArm=-90;
+const double calibrate_MiddleArm=0;
 //compensation hauteur de la pince par rapport à l'extrémité du segment 2 du bras
 const double calibrate_Z=13;
 // communication
@@ -71,16 +71,20 @@ void setup() {
     pinMode(en5V, OUTPUT);            
     pinMode(fanPin, OUTPUT); 
     dht.begin();
+    servo[0].write(35);
+    servo[1].write(100);
+    
 }
 
 void loop() {
-    temperature = dht.readTemperature();;  // read temperature in Celsius
-    Serial.print("température : ");
-    Serial.println(temperature);
     digitalWrite(en6V, LOW);
     digitalWrite(en5V, LOW);
     digitalWrite(fanPin, HIGH);
-    coordinate_move(0, 20, 20, false);
+    coordinate_move(20, 20, -5, false);
+}
+
+void gotocoord(double y, double z){
+  
 }
 
 void get_angles_from_yz(double y, double z) {
