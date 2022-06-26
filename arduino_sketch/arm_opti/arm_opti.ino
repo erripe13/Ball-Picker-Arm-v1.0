@@ -5,6 +5,9 @@
 #define fanPin 10 // Arduino pin connected to relay which connected to fan
 #define DHTPIN 12           // Arduino pin connected to relay which connected to DHT sensor
 #define DHTTYPE DHT11
+#define en6V 8
+#define en5V 9
+
 DHT dht(DHTPIN, DHTTYPE);
 float temperature;    // temperature in Celsius
 int control=35;
@@ -12,9 +15,11 @@ unsigned long previousMillis = 0;        // will store last time LED was updated
 const long interval = 2000;           // intervmpal at which to blink (milliseconds)
 
 //initialisation de la liste des servos
-Servo servo[3];
+Servo servo1;
+Servo servo2;
+Servo pince;                         
 // setup broches utilisées
-const int servo_Pin[] = {2, 3, 4}; //segment1,segment2,pince
+//const int servo_Pin[] = {2, 3, 4}; //segment1,segment2,pince
 //définition des valeurs de serrage/désserrage sous le format suivant :
 //{ouvert-max, fermé-min, repos}
 const int servoGrip_val[]= {114,70,85};  
@@ -38,7 +43,7 @@ double stepper_correction[]={0};
 // mettre le servo à 90°, puis mesurer l'angle réel
 // la valeur de calibration vaut donc (90 - {réel angle par rapport à 90})
 const double calibrate_TopArm=0;
-const double calibrate_MiddleArm=0;
+const double calibrate_MiddleArm=-90;
 //compensation hauteur de la pince par rapport à l'extrémité du segment 2 du bras
 const double calibrate_Z=8;
 // communication
@@ -47,20 +52,34 @@ char receivedChars[numChars];
 boolean newData = false;
 
 
-
 void setup() {
-  // port série
-  Serial.begin(9600);
-  //envoi du mot start sur le port série
-  Serial.println("Démarrage de l'initialisation");
+    // port série
+    Serial.begin(9600);
+    //envoi du start sur le port série
+    Serial.println("Démarrage de l'initialisation");
 
-  //setup broches arduino
-  pinMode(stepper_dirPin[0], OUTPUT);
-  pinMode(stepper_stepPin[0], OUTPUT);
-  pinMode(stepper_enPin[0], OUTPUT);
-  pinMode(servo_Pin[0], OUTPUT);
-  pinMode(servo_Pin[1], OUTPUT);
-  pinMode(servo_Pin[2], OUTPUT);
+    //setup pin
+    pinMode(stepper_dirPin[0], OUTPUT);
+    pinMode(stepper_stepPin[0], OUTPUT);
+    pinMode(stepper_enPin[0], OUTPUT);
+//  pinMode(servo_Pin[0], OUTPUT);
+//  pinMode(servo_Pin[1], OUTPUT);
+//  pinMode(servo_Pin[2], OUTPUT);
+    servo1.attach(2);
+    servo2.attach(3);
+    pince.attach(4);
+    pinMode(en6V, OUTPUT);
+    pinMode(en5V, OUTPUT);            
+    pinMode(fanPin, OUTPUT); 
+    dht.begin();
+}
 
-  
+void loop() {
+    temperature = dht.readTemperature();;  // read temperature in Celsius
+    Serial.print("température : ");
+    Serial.println(temperature);
+    digitalWrite(en6V, LOW);
+    digitalWrite(en5V, LOW);
+    digitalWrite(fanPin, HIGH);
+    
 }
