@@ -1,3 +1,6 @@
 __pycache__
 .DS_Store
 .vscode
+*.zip
+Arduino_Shield/BRFEv3_Shield/BRFEv3_Shield.kicad_prl
+Arduino_Shield/BRFEv3_Shield/BRFEv3_Shield-backups/BRFEv3_Shield-2022-06-13_221522.zip

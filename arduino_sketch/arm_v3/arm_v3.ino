@@ -112,7 +112,9 @@ void loop() {
     Serial.println("done");
   }
 
-}
+}``
+
+//connaître l'angle du servo à instant t
 void get_angles_from_yz(double y, double z) {
 
   //voir le schéma trigo pour le nom des variables
@@ -158,6 +160,7 @@ void get_angles_from_yz(double y, double z) {
   angle_next[1] = angle_next[1] + calibrate_MiddleArm;
 
 }
+//mouvement coordonné des deux servo
 void coordinate_move(double xEnd, double yEnd, double zEnd, bool liftgrab_motion) {
 
   double xStart = XYZ_current[0];
@@ -222,6 +225,7 @@ void coordinate_move(double xEnd, double yEnd, double zEnd, bool liftgrab_motion
   XYZ_current[2] = zEnd;
   XYZ_current[3] = liftgrab_motion;
 }
+//générateur pwm pour le driver pas-à-pas
 void stepper_advance(int stepper_num, double steps, int dir) {
 
   // génération de la pwm pour le driver TMC2208
@@ -269,6 +273,7 @@ void stepper_advance(int stepper_num, double steps, int dir) {
   Serial.println(stepper_correction[stepper_num]);
 
 }
+//générateur de "pas" pour contrôler la vitesse des servo
 void servo_steps(int servo_num, double angle_target, double incr_step = 10, int step_delay = 100) {
   // cette commande permet d'envoyer les instructions par paquets de 25 degrés. utile pour des servos bas de gamme.
 
@@ -300,6 +305,7 @@ void servo_steps(int servo_num, double angle_target, double incr_step = 10, int 
   angle_current[servo_num] = angle_target;
 
 }
+//corrélateur d'angles trigonométrique
 void twoarm_step_coordinate(double toparm_target, double middlearm_target) {
 
   double incr_steps0=1;
@@ -372,6 +378,7 @@ void twoarm_step_coordinate(double toparm_target, double middlearm_target) {
   //Serial.println("--> two arm step End /");
 
 }
+//gestion de la pince
 void servo_Open(bool openVal) {
 
   int servo_num = 2;
@@ -385,6 +392,7 @@ void servo_Open(bool openVal) {
   
   XYZ_current[4] = openVal;
 }
+//essai pas-à-pas
 void test_stepper() {
 
   stepper_advance(0, stepper_maxsteps[0], 0);
@@ -392,6 +400,7 @@ void test_stepper() {
   stepper_advance(0, stepper_maxsteps[0], 1);
 
 }
+//essai servos
 void test_servo(int servo_num) {
 
   int angle_max = 0;
@@ -428,6 +437,7 @@ void test_servo(int servo_num) {
   servo_steps(servo_num, angle_default);
 
 }
+//essai position neutre servos
 void test_servo_home(int servo_num) {
   
   int angle_default = 0;
@@ -450,6 +460,7 @@ void test_servo_home(int servo_num) {
   servo_steps(servo_num, angle_default);
 
 }
+//essai retour d'angle
 void test_getangles(double y, double z) {
    
   get_angles_from_yz(y,z);
@@ -471,6 +482,7 @@ void test_getangles(double y, double z) {
 
 
 }
+//réception instructions portsérie
 void recvWithStartEndMarkers() {
     static boolean recvInProgress = false;
     static byte ndx = 0;
@@ -502,6 +514,7 @@ void recvWithStartEndMarkers() {
     }
    
 }
+//print ordres reçus sur le port série
 void showNewData() {
     if (newData == true) {
         Serial.println(receivedChars);
@@ -527,6 +540,7 @@ void showNewData() {
         //newData = false;
     }
 }
+//parser des data du port série
 void parseData() {
 
   // formattage des données reçues

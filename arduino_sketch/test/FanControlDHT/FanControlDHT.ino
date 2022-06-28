@@ -21,19 +21,19 @@ void setup()
 void loop()
 {
   unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= interval) {
+  if (currentMillis - previousMillis >= interval) { //délai non bloquant
     previousMillis = currentMillis;
-    temperature = dht.readTemperature();;  // read temperature in Celsius
-    Serial.print("température : ");
+    temperature = dht.readTemperature();;  // lecture de la température par le capteur
+    Serial.print("température : ");        // retour port série
     Serial.println(temperature);
-    if (temperature<26) {
+    if (temperature<26) {                  //condition basse vitesse
       control=100;
       Serial.print("ventilateur: ");
       Serial.print("40");
       Serial.println("%");
       analogWrite(fanPin, control);
     }
-    if (temperature>=26){
+    if (temperature>=26){                   //accélération des ventilateurs jusqu'à 30°
       Serial.print("température : ");
       Serial.println(temperature);
       if (temperature>=30) temperature=30;
