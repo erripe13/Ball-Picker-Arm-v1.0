@@ -3,6 +3,22 @@
 // programme exécuté par l'Arduino contrôlant les moteurs du bras
 //ressource : http://forum.arduino.cc/index.php?topic=288234.0
 
+
+#include "DHT.h"
+
+#define fanPin 10 // Arduino pin connected to relay which connected to fan
+#define DHTPIN 12           // Arduino pin connected to relay which connected to DHT sensor
+#define DHTTYPE DHT11
+
+DHT dht(DHTPIN, DHTTYPE);
+
+float temperature;    // temperature in Celsius
+int control=35;
+unsigned long previousMillis = 0;        // will store last time LED was updated
+const long interval = 2000;           // interval at which to blink (milliseconds)
+
+
+
 #include <Servo.h>
 #include <math.h>
 
@@ -14,8 +30,9 @@ const int servo_Pin[] = {2, 3, 4}; //segment1,segment2,pince
 //{ouvert-max, fermé-min, repos}
 const int servoGrip_val[]= {114,70,85};  
 //broches moteur pas-à-pas
-const int stepper_dirPin[] = {8};
-const int stepper_stepPin[] = {9};
+const int stepper_enPin[] = {5};
+const int stepper_dirPin[] = {6};
+const int stepper_stepPin[] = {7};
 //liste d'angles
 double angle_current[] = {90, 90, 145};
 double angle_next[] = {90, 90, 145};
@@ -32,9 +49,9 @@ double stepper_correction[]={0};
 // mettre le servo à 90°, puis mesurer l'angle réel
 // la valeur de calibration est donc (90 - {réel angle par rapport à 90})
 const double calibrate_TopArm=0;
-const double calibrate_MiddleArm=90-41.4;
+const double calibrate_MiddleArm=0;
 //compensation hauteur de la pince par rapport à l'extrémité du segment 2 du bras
-const double calibrate_Z=7.65;
+const double calibrate_Z=8;
 // communication
 const byte numChars = 32;
 char receivedChars[numChars];
@@ -50,6 +67,8 @@ void setup() {
   //setup broches arduino
   pinMode(stepper_dirPin[0], OUTPUT);
   pinMode(stepper_stepPin[0], OUTPUT);
+  pinMode(stepper_enPin[0], OUTPUT);
+  
   int i = 0;
   for (i = 0; i < 3; i++) {
     pinMode(servo_Pin[i], OUTPUT);
@@ -57,9 +76,9 @@ void setup() {
 
   // Setup des angles servo initiaux
   //for(i=0; i<2; i++) { servo[i].write(90); angle_current[i]=90; }
-  servo[0].write(30);
-  servo[1].write(50);
-  servo[2].write(servoGrip_val[2]); angle_current[2] = servoGrip_val[2];
+  //servo[0].write(30);
+  //servo[1].write(50);
+  //servo[2].write(servoGrip_val[2]); angle_current[2] = servoGrip_val[2];
   // Set Coordinates a Base
   int y = 0;
   int z = -6;
@@ -74,9 +93,9 @@ void setup() {
   //  test_servo(0);
   //  test_servo(1);
   //  test_servo(2);
-  test_servo_home(0);
-  test_servo_home(1);
-  test_servo_home(2);  
+  //test_servo_home(0);
+  //test_servo_home(1);
+  //test_servo_home(2);  
   //test_stepper();
   // test_getangles(-5,-20);
   // test_getangles(5,-20);
@@ -89,11 +108,15 @@ void setup() {
   //delay(2000);
 
   //envoi ready port série
+  dht.begin();        // initialize the sensor
+  pinMode(fanPin, OUTPUT); // initialize digital pin as an output
   Serial.println("ready");
 
   
 }
 void loop() {
+  fanControl();
+  digitalWrite(stepper_enPin[0], HIGH);
 
   bool loop=true;
   
@@ -112,9 +135,35 @@ void loop() {
     Serial.println("done");
   }
 
-}``
+}
 
-//connaître l'angle du servo à instant t
+void fanControl(){
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis >= interval) {
+    previousMillis = currentMillis;
+    temperature = dht.readTemperature();  // read temperature in Celsius
+    Serial.print("température : ");
+    Serial.println(temperature);
+    if (temperature<26) {
+      control=100;
+      Serial.print("ventilateur: ");
+      Serial.print("40");
+      Serial.println("%");
+      analogWrite(fanPin, control);
+    }
+    if (temperature>=26){
+      Serial.print("température : ");
+      Serial.println(temperature);
+      if (temperature>=30) temperature=30;
+      control=map(temperature, 26, 30, 100, 255);
+      analogWrite(fanPin, control);
+      control=map(control, 0, 255, 0, 100);
+      Serial.print("ventilateur: ");
+      Serial.print(control);
+      Serial.println("%");
+    }
+  }
+}
 void get_angles_from_yz(double y, double z) {
 
   //voir le schéma trigo pour le nom des variables
@@ -160,7 +209,6 @@ void get_angles_from_yz(double y, double z) {
   angle_next[1] = angle_next[1] + calibrate_MiddleArm;
 
 }
-//mouvement coordonné des deux servo
 void coordinate_move(double xEnd, double yEnd, double zEnd, bool liftgrab_motion) {
 
   double xStart = XYZ_current[0];
@@ -225,7 +273,6 @@ void coordinate_move(double xEnd, double yEnd, double zEnd, bool liftgrab_motion
   XYZ_current[2] = zEnd;
   XYZ_current[3] = liftgrab_motion;
 }
-//générateur pwm pour le driver pas-à-pas
 void stepper_advance(int stepper_num, double steps, int dir) {
 
   // génération de la pwm pour le driver TMC2208
@@ -273,7 +320,6 @@ void stepper_advance(int stepper_num, double steps, int dir) {
   Serial.println(stepper_correction[stepper_num]);
 
 }
-//générateur de "pas" pour contrôler la vitesse des servo
 void servo_steps(int servo_num, double angle_target, double incr_step = 10, int step_delay = 100) {
   // cette commande permet d'envoyer les instructions par paquets de 25 degrés. utile pour des servos bas de gamme.
 
@@ -305,7 +351,6 @@ void servo_steps(int servo_num, double angle_target, double incr_step = 10, int 
   angle_current[servo_num] = angle_target;
 
 }
-//corrélateur d'angles trigonométrique
 void twoarm_step_coordinate(double toparm_target, double middlearm_target) {
 
   double incr_steps0=1;
@@ -378,7 +423,6 @@ void twoarm_step_coordinate(double toparm_target, double middlearm_target) {
   //Serial.println("--> two arm step End /");
 
 }
-//gestion de la pince
 void servo_Open(bool openVal) {
 
   int servo_num = 2;
@@ -392,7 +436,6 @@ void servo_Open(bool openVal) {
   
   XYZ_current[4] = openVal;
 }
-//essai pas-à-pas
 void test_stepper() {
 
   stepper_advance(0, stepper_maxsteps[0], 0);
@@ -400,7 +443,6 @@ void test_stepper() {
   stepper_advance(0, stepper_maxsteps[0], 1);
 
 }
-//essai servos
 void test_servo(int servo_num) {
 
   int angle_max = 0;
@@ -437,7 +479,6 @@ void test_servo(int servo_num) {
   servo_steps(servo_num, angle_default);
 
 }
-//essai position neutre servos
 void test_servo_home(int servo_num) {
   
   int angle_default = 0;
@@ -460,7 +501,6 @@ void test_servo_home(int servo_num) {
   servo_steps(servo_num, angle_default);
 
 }
-//essai retour d'angle
 void test_getangles(double y, double z) {
    
   get_angles_from_yz(y,z);
@@ -482,7 +522,6 @@ void test_getangles(double y, double z) {
 
 
 }
-//réception instructions portsérie
 void recvWithStartEndMarkers() {
     static boolean recvInProgress = false;
     static byte ndx = 0;
@@ -514,7 +553,6 @@ void recvWithStartEndMarkers() {
     }
    
 }
-//print ordres reçus sur le port série
 void showNewData() {
     if (newData == true) {
         Serial.println(receivedChars);
@@ -540,7 +578,6 @@ void showNewData() {
         //newData = false;
     }
 }
-//parser des data du port série
 void parseData() {
 
   // formattage des données reçues

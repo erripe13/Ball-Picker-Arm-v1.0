@@ -9,7 +9,7 @@ DHT dht(DHTPIN, DHTTYPE);
 float temperature;    // temperature in Celsius
 int control=35;
 unsigned long previousMillis = 0;        // will store last time LED was updated
-const long interval = 2000;           // interval at which to blink (milliseconds)
+const long interval = 1000;           // interval at which to blink (milliseconds)
 
 void setup()
 {
