@@ -5,23 +5,19 @@
 
 
 #include "DHT.h"
+#include <Servo.h>
+#include <math.h>
+
 
 #define fanPin 10 // Arduino pin connected to relay which connected to fan
 #define DHTPIN 12           // Arduino pin connected to relay which connected to DHT sensor
 #define DHTTYPE DHT11
-
 DHT dht(DHTPIN, DHTTYPE);
 
 float temperature;    // temperature in Celsius
 int control=35;
 unsigned long previousMillis = 0;        // will store last time LED was updated
 const long interval = 2000;           // interval at which to blink (milliseconds)
-
-
-
-#include <Servo.h>
-#include <math.h>
-
 //initialisation de la liste des servos
 Servo servo[3];
 // setup broches utilisées
