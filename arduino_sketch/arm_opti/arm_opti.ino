@@ -12,7 +12,9 @@ unsigned long previousMillis = 0;        // will store last time LED was updated
 const long interval = 2000;           // intervmpal at which to blink (milliseconds)
 
 //initialisation de la liste des servos
-Servo servo[3];
+Servo servo1;
+Servo servo2;
+Servo pince;                         
 // setup broches utilisées
 const int servo_Pin[] = {2, 3, 4}; //segment1,segment2,pince
 //définition des valeurs de serrage/désserrage sous le format suivant :
@@ -49,18 +51,31 @@ boolean newData = false;
 
 
 void setup() {
-  // port série
-  Serial.begin(9600);
-  //envoi du mot start sur le port série
-  Serial.println("Démarrage de l'initialisation");
+    // port série
+    Serial.begin(9600);
+    //envoi du start sur le port série
+    Serial.println("Démarrage de l'initialisation");
 
-  //setup broches arduino
-  pinMode(stepper_dirPin[0], OUTPUT);
-  pinMode(stepper_stepPin[0], OUTPUT);
-  pinMode(stepper_enPin[0], OUTPUT);
-  pinMode(servo_Pin[0], OUTPUT);
-  pinMode(servo_Pin[1], OUTPUT);
-  pinMode(servo_Pin[2], OUTPUT);
+    //setup pin
+    pinMode(stepper_dirPin[0], OUTPUT);
+    pinMode(stepper_stepPin[0], OUTPUT);
+    pinMode(stepper_enPin[0], OUTPUT);
+    pinMode(servo_Pin[0], OUTPUT);
+    pinMode(servo_Pin[1], OUTPUT);
+    pinMode(servo_Pin[2], OUTPUT);
+    pinMode(fanPin, OUTPUT); 
+    dht.begin();
+}
 
-  
+void loop() {
+
+    temperature = dht.readTemperature();;  // read temperature in Celsius
+    Serial.print("température : ");
+    Serial.println(temperature);
+    digitalWrite(en6V, HIGH);
+    digitalWrite(en5V, LOW);
+    digitalWrite(fanPin, HIGH);
+
+    
+
 }
