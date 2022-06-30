@@ -15,9 +15,8 @@ unsigned long previousMillis = 0;        // will store last time LED was updated
 const long interval = 2000;           // intervmpal at which to blink (milliseconds)
 
 //initialisation de la liste des servos
-Servo servo1;
-Servo servo2;
-Servo pince;                         
+Servo servo[3];    
+const int servo_Pin[] = {2, 3, 4};                 
 // setup broches utilisées
 //const int servo_Pin[] = {2, 3, 4}; //segment1,segment2,pince
 //définition des valeurs de serrage/désserrage sous le format suivant :
@@ -65,9 +64,9 @@ void setup() {
 //  pinMode(servo_Pin[0], OUTPUT);
 //  pinMode(servo_Pin[1], OUTPUT);
 //  pinMode(servo_Pin[2], OUTPUT);
-    servo1.attach(2);
-    servo2.attach(3);
-    pince.attach(4);
+    servo[0].attach(servo_Pin[0], 500, 2500);
+    servo[1].attach(servo_Pin[1], 500, 2500);
+    servo[2].attach(servo_Pin[2], 500, 2500);
     pinMode(en6V, OUTPUT);
     pinMode(en5V, OUTPUT);            
     pinMode(fanPin, OUTPUT); 
