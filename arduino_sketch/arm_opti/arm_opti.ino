@@ -64,9 +64,9 @@ void setup() {
 //  pinMode(servo_Pin[0], OUTPUT);
 //  pinMode(servo_Pin[1], OUTPUT);
 //  pinMode(servo_Pin[2], OUTPUT);
-    servo[0].attach(servo_Pin[0], 500, 2500);
-    servo[1].attach(servo_Pin[1], 500, 2500);
-    servo[2].attach(servo_Pin[2], 500, 2500);
+    servo[0].attach(servo_Pin[0]);
+    servo[1].attach(servo_Pin[1]);
+    servo[2].attach(servo_Pin[2]);
     pinMode(en6V, OUTPUT);
     pinMode(en5V, OUTPUT);            
     pinMode(fanPin, OUTPUT); 
