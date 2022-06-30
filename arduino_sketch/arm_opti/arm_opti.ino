@@ -71,8 +71,8 @@ void setup() {
     pinMode(en5V, OUTPUT);            
     pinMode(fanPin, OUTPUT); 
     dht.begin();
-    servo[0].write(35);
-    servo[1].write(100);
+    servo[0].write(0);
+    servo[1].write(180);
     
 }
 
@@ -80,11 +80,7 @@ void loop() {
     digitalWrite(en6V, LOW);
     digitalWrite(en5V, LOW);
     digitalWrite(fanPin, HIGH);
-    coordinate_move(20, 20, -5, false);
-}
-
-void gotocoord(double y, double z){
-  
+    //coordinate_move(20, 20, -5, false);
 }
 
 void get_angles_from_yz(double y, double z) {
