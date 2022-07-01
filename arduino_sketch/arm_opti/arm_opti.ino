@@ -77,9 +77,23 @@ void setup() {
 }
 
 void loop() {
-    digitalWrite(en6V, LOW);
-    digitalWrite(en5V, LOW);
-    digitalWrite(fanPin, HIGH);
+  digitalWrite(en6V, LOW);
+  digitalWrite(en5V, LOW);
+  digitalWrite(fanPin, HIGH);
+  recvWithStartEndMarkers();
+  showNewData();
+
+  //data format <x,y,z,bool_move,bool_open,delayms,type_int> = <23,56,89,1,1,3456,3> {17}
+  //X: 7.00 Y: 8.00 Z: 9.00 bool_move: 1.00 bool_open: 0.00 delay_ms: 10.00 move_type: 1.00
+  //le bool_move contrôle si le bras se déplace linéairement vers la position ou s'il effectue un mouvement de prise (déplacement x d'abord/y ensuite, etc.).
+  
+  if (newData==true && loop==true) {
+    coordinate_move(XYZ_next[0],XYZ_next[1],XYZ_next[2],XYZ_next[3]);
+    servo_Open(XYZ_next[4]);
+    delay(XYZ_next[5]);
+    newData=false;
+    Serial.println("done");
+  }
     //coordinate_move(20, 20, -5, false);
 }
 
