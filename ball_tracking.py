@@ -30,6 +30,10 @@ while True:
 		break
 	# réduction de la résolution, flou, et conversion HSV
 	frame = frame[20:450, 0:600]
+	cv2.circle(frame,(114,151),5,(0,0,255),-1)
+    cv2.circle(frame, (605, 89), 5, (0, 0, 255), -1)
+    cv2.circle(frame, (72, 420), 5, (0, 0, 255), -1)
+    cv2.circle(frame, (637, 420), 5, (0, 0, 255), -1)
 	blurred = cv2.GaussianBlur(frame, (11, 11), 0)
 	hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
 	# génération d'un masque sur la balle
