@@ -17,11 +17,19 @@ GPIO.setup(buttonPin, GPIO.IN)
 key = cv2.waitKey(1) & 0xFF
 
 def debug():
+<<<<<<< HEAD
     # attribution flux webcam
     vs = VideoStream(src=0).start()
     # définir frame comme flux video
     frame = vs.read()
     
+=======
+
+    # définir frame comme flux video
+    frame = vs.read()
+    # attribution flux webcam
+    vs = VideoStream(src=0).start()
+>>>>>>> d7c8199a3dfe3c868e1d3ab2b8bc8241e4a09030
     # attente démarrage cam
     time.sleep(1.0)
     while True:
@@ -57,6 +65,12 @@ def vision():
     vs = VideoStream(src=0).start()
     # définir frame comme flux video
     frame = vs.read()
+<<<<<<< HEAD
+=======
+    # attribution flux webcam
+    vs = VideoStream(src=0).start()
+    # attente démarrage cam
+>>>>>>> d7c8199a3dfe3c868e1d3ab2b8bc8241e4a09030
     time.sleep(1.0)
 
     # main
@@ -132,4 +146,8 @@ while True :
         debug()
     else :
         vision()
+<<<<<<< HEAD
     
+=======
+    
+>>>>>>> d7c8199a3dfe3c868e1d3ab2b8bc8241e4a09030
