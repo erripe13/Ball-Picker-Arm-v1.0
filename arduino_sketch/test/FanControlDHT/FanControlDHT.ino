@@ -17,6 +17,8 @@ void setup()
   Serial.begin(9600); // initialize serial
   dht.begin();        // initialize the sensor
   pinMode(fanPin, OUTPUT); // initialize digital pin as an output
+  pinMode(5, OUTPUT);
+  digitalWrite(5, HIGH);
 }
 
 void loop()

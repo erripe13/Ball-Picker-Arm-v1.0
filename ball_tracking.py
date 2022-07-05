@@ -9,6 +9,11 @@ import numpy as np
 import cv2
 import imutils
 import time
+import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BOARD)
+buttonPin = 36
+GPIO.setwarnings(False) # Ignore warning for now
+GPIO.setup(buttonPin, GPIO.IN)
 
 # limites HSV couleur balle, à définir avec hsv_define.py
 greenLower = (15, 112, 143)
@@ -61,10 +66,10 @@ while True:
 				(0, 255, 0), 2)
 			cv2.circle(frame, center, 5, (0, 0, 255), -1)
 			
-			x=(x/1000)*64
-			y=(y/1000)*64
-			x=round(x,2)+1
-			y=round(y,2)-0.4
+			x=((x/1000)*64)+1
+			y=((y/1000)*64)-0.4
+			x=round(x,2)
+			y=round(y,2)
 
 			cv2.putText(frame,"x,y: "+str(x)+","+str(y),(20,20),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
 	# màj des données
@@ -77,14 +82,16 @@ while True:
 		# calculer l'épaisseur de la ligne en fonction du temps et dessiner
 		thickness = int(np.sqrt(10 / float(i + 1)) * 2.5)
 		cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
-		# afficher la sortie video traitée assemblée
-	
-	#cv2.namedWindow("Retour tracking", cv2.WND_PROP_FULLSCREEN)	
-	#cv2.setWindowProperty("Retour tracking",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
-	cv2.imshow("Retour tracking", frame)
-	#cv2.imshow("pré-calib", calib)
+		# afficher la sortie video traitée assemblé
+	if GPIO.input(buttonPin) == GPIO.HIGH:
+		cv2.namedWindow("pré-calib", cv2.WND_PROP_FULLSCREEN)	
+		cv2.setWindowProperty("pré-calib",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
+		cv2.imshow("pré-calib", calib)
+	elif GPIO.input(buttonPin) == GPIO.LOW:
+		cv2.namedWindow("Retour tracking", cv2.WND_PROP_FULLSCREEN)	
+		cv2.setWindowProperty("Retour tracking",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
+		cv2.imshow("Retour tracking", frame)
 	key = cv2.waitKey(1) & 0xFF
-	
 	# arrêt si Q est pressé
 	if key == ord("q"):
 		break

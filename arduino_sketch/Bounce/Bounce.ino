@@ -14,9 +14,9 @@ void setup()
   stepper.setMaxSpeed(1500);
   stepper.setAcceleration(550);
   stepper.moveTo(1500);
-  stepper.setEnablePin(5); 
-  stepper.setPinsInverted(false, false, true); 
-  stepper.enableOutputs();
+//  stepper.setEnablePin(5); 
+//  stepper.setPinsInverted(false, false, true); 
+//  stepper.enableOutputs();
   pinMode(fanPin, OUTPUT);
   digitalWrite(fanPin, HIGH);
 }
