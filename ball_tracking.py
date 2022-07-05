@@ -100,6 +100,5 @@ while True:
 		break
 # arrêt de la camera
 vs.stop()
-
 # fermer les fenetres
 cv2.destroyAllWindows()
