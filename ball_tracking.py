@@ -29,11 +29,15 @@ while True:
 	if frame is None:
 		break
 	# réduction de la résolution, flou, et conversion HSV
-	frame = frame[20:450, 0:600]
-	cv2.circle(frame,(114,151),5,(0,0,255),-1)
-    cv2.circle(frame, (605, 89), 5, (0, 0, 255), -1)
-    cv2.circle(frame, (72, 420), 5, (0, 0, 255), -1)
-    cv2.circle(frame, (637, 420), 5, (0, 0, 255), -1)
+	frame = frame[20:450, 60:600]
+	#frame = cv2.circle(frame,(87,37), 5,(0,0,255),-1)
+    #frame = cv2.circle(frame,(50,100),5,(0,0,255),-1)
+    # frame = cv2.circle(frame,(100,50),5,(0,0,255),-1)
+    # frame = cv2.circle(frame,(100,100),5,(0,0,255),-1)
+    imgPts = np.float32([[87,37],[450, 35],[39, 411],[505, 405]])
+    objPoints = np.float32([[0,0],[430,0],[0,540],[430,540]])
+    matrix = cv2.getPerspectiveTransform(imgPts,objPoints)
+    frame = cv2.warpPerspective(frame,matrix,(430,540))
 	blurred = cv2.GaussianBlur(frame, (11, 11), 0)
 	hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
 	# génération d'un masque sur la balle

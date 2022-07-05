@@ -6,14 +6,14 @@
 #include <math.h>
 
 //initialisation de la liste des servos
-Servo servo[4];
+Servo servo[3];
 // setup broches utilisées
-const int servo_Pin[] = {5, 6, 7, 4}; //rotation,segment1,segment2,pince
+const int servo_Pin[] = {2, 3, 4}; //rotation,segment1,segment2,pince
 //définition des valeurs de serrage/désserrage sous le format suivant :
 //{ouvert-max, fermé-min, repos}
 const int servoGrip_val[]= {170,125,170};  
-const int stepper_dirPin[] = {8};
-const int stepper_stepPin[] = {9};
+const int stepper_dirPin[] = {6};
+const int stepper_stepPin[] = {7};
 //liste d'angles
 double angle_current[] = {90, 90, 145};
 double angle_next[] = {90, 90, 145};
@@ -51,6 +51,7 @@ void setup() {
   //setup broches arduino
   pinMode(stepper_dirPin[0], OUTPUT);
   pinMode(stepper_stepPin[0], OUTPUT);
+  pinMode(5, OUTPUT);
   int i = 0;
   for (i = 0; i < 3; i++) {
     pinMode(servo_Pin[i], OUTPUT);
@@ -68,9 +69,9 @@ void setup() {
   for (i = 0; i < 3; i++) {
     servo[i].attach(servo_Pin[i], 500, 2500);
   }
-
+  digitalWrite(5, LOW);
   //tests de moteurs, à décommenter pour tester et en mettant "boot loop=false" dans la boucle principale
-  //test_stepper();
+  test_stepper();
   //test_servo(0);
   //test_servo(1);
   //test_servo(2);
@@ -95,7 +96,7 @@ void setup() {
 
 void loop() {
 
-  bool loop=true;
+  bool loop=false;
   
   recvWithStartEndMarkers();
   showNewData();

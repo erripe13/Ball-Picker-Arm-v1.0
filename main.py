@@ -16,7 +16,7 @@ def RunTests():
     #loop.test_arm()
     #loop.test_arm_XYZ(5,5,-9)
     loop.test_arm_home()
-    #loop.test_arm_home_plane()
+    loop.test_arm_home_plane()
     #loop.test_arm_clearcamera()
 
 def RunPickandPlace():
@@ -42,6 +42,6 @@ def ImageDetection():
 
 
 
-#RunTests()
+RunTests()
 #RunPickandPlace()
-ImageDetection()
+#ImageDetection()

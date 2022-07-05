@@ -42,7 +42,7 @@ double stepper_correction[]={0};
 // mettre le servo à 90°, puis mesurer l'angle réel
 // la valeur de calibration vaut donc (90 - {réel angle par rapport à 90})
 const double calibrate_TopArm=0;
-const double calibrate_MiddleArm=0;
+const double calibrate_MiddleArm=90;
 //compensation hauteur de la pince par rapport à l'extrémité du segment 2 du bras
 const double calibrate_Z=13;
 // communication
@@ -71,14 +71,14 @@ void setup() {
     pinMode(en5V, OUTPUT);            
     pinMode(fanPin, OUTPUT); 
     dht.begin();
-    servo[0].write(0);
-    servo[1].write(180);
-    
+    servo[0].write(30);
+    servo[1].write(100);
+    Serial.println("done");
 }
 
 void loop() {
-  digitalWrite(en6V, LOW);
-  digitalWrite(en5V, LOW);
+  digitalWrite(en6V, HIGH);
+  digitalWrite(en5V, HIGH);
   digitalWrite(fanPin, HIGH);
   recvWithStartEndMarkers();
   showNewData();
