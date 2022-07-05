@@ -136,9 +136,9 @@ void loop() {
   //test_stepper();
   // energize coils - the motor will hold position
     stepper.enable();
-    stepper.rotate(cmtodeg(45));
+    stepper.rotate(1700);
 
-    stepper.move(-MOTOR_STEPS*MICROSTEPS);
+    stepper.rotate(-1700);
 
     // pause and allow the motor to be moved by hand
     stepper.disable();
@@ -195,8 +195,9 @@ void pickndrop(double x, double y){
 }
 
 void cmtodeg(double input){
-  deg=input*40
-  return deg
+  int deg;
+  deg=input*40;
+  return deg;
 }
 
 void get_angles_from_yz(double y, double z) {
