@@ -112,7 +112,7 @@ void setup() {
 }
 void loop() {
   fanControl();
-  digitalWrite(stepper_enPin[0], HIGH);
+  digitalWrite(stepper_enPin[0], LOW);
 
   bool loop=true;
   
@@ -124,9 +124,8 @@ void loop() {
   //le bool_move contrôle si le bras se déplace linéairement vers la position ou s'il effectue un mouvement de prise (déplacement x d'abord/y ensuite, etc.).
   
   if (newData==true && loop==true) {
-    coordinate_move(XYZ_next[0],XYZ_next[1],XYZ_next[2],XYZ_next[3]);
-    servo_Open(XYZ_next[4]);
-    delay(XYZ_next[5]);
+    coordinate_move(XYZ_next[0],XYZ_next[1]);
+    //delay(XYZ_next[5]);
     newData=false;
     Serial.println("done");
   }
@@ -135,8 +134,6 @@ void loop() {
 
 void fanControl(){
   unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= interval) {
-    previousMillis = currentMillis;
     temperature = dht.readTemperature();  // read temperature in Celsius
     Serial.print("température : ");
     Serial.println(temperature);
@@ -158,8 +155,8 @@ void fanControl(){
       Serial.print(control);
       Serial.println("%");
     }
-  }
 }
+
 void get_angles_from_yz(double y, double z) {
 
   //voir le schéma trigo pour le nom des variables
@@ -205,8 +202,8 @@ void get_angles_from_yz(double y, double z) {
   angle_next[1] = angle_next[1] + calibrate_MiddleArm;
 
 }
-void coordinate_move(double xEnd, double yEnd, double zEnd, bool liftgrab_motion) {
-
+void coordinate_move(double xEnd, double yEnd) {
+  double zEnd = 25.0;
   double xStart = XYZ_current[0];
   double yStart = XYZ_current[1];
   double zStart = XYZ_current[2];
@@ -229,10 +226,6 @@ void coordinate_move(double xEnd, double yEnd, double zEnd, bool liftgrab_motion
     }
   }
 
-  //si le bool_liftgrab_motion est équivalent au paramètre bool_move :
-  //Contrôle si le bras se déplace linéairement vers la position ou s'il effectue un mouvement de saisie (déplacer Y d'abord/Z ensuite, etc.).
-  
-  if (liftgrab_motion == true) {
     if (zDelta < 0) {
       //le bras va descendre
       // bouge en Y
@@ -251,10 +244,6 @@ void coordinate_move(double xEnd, double yEnd, double zEnd, bool liftgrab_motion
       twoarm_step_coordinate(angle_next[0], angle_next[1]);
     }
 
-  } else {
-    get_angles_from_yz(yEnd, zEnd);
-    twoarm_step_coordinate(angle_next[0], angle_next[1]);
-  }
 
 
   //prints de débug :
@@ -267,7 +256,7 @@ void coordinate_move(double xEnd, double yEnd, double zEnd, bool liftgrab_motion
   XYZ_current[0] = xEnd;
   XYZ_current[1] = yEnd;
   XYZ_current[2] = zEnd;
-  XYZ_current[3] = liftgrab_motion;
+  //XYZ_current[3] = liftgrab_motion;
 }
 void stepper_advance(int stepper_num, double steps, int dir) {
 
@@ -497,7 +486,6 @@ void test_servo_home(int servo_num) {
   servo_steps(servo_num, angle_default);
 
 }
-
 void test_getangles(double y, double z) {
   get_angles_from_yz(y,z);
   Serial.print("Y: ");
@@ -513,7 +501,6 @@ void test_getangles(double y, double z) {
   Serial.print(" servo2 calibrated: ");
   Serial.println(angle_next[1]);
 }
-
 void recvWithStartEndMarkers() {
     static boolean recvInProgress = false;
     static byte ndx = 0;
@@ -545,7 +532,7 @@ void recvWithStartEndMarkers() {
     }
    
 }
-
+}
 void showNewData() {
     if (newData == true) {
         Serial.println(receivedChars);
@@ -563,12 +550,11 @@ void showNewData() {
         //newData = false;
     }
 }
-
 void parseData() {
 
   // formattage des données reçues
 
-  //format : <x,y,z,bool_move,bool_open,delayms,type_int> = <23,56,89,1,1,3456,3> {17}
+  //format : <x,y,z> = <23,56,89> {17}
   //X: 7.00 Y: 8.00 Z: 9.00 bool_move: 1.00 bool_open: 0.00 delay_ms: 10.00 move_type: 1.00
 
   char * strtokIndx;
