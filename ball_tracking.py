@@ -38,18 +38,20 @@ def catchball(x, y):
 		time.sleep(0.1) #wait for serial to open
 		if arduino.isOpen():
 			print("{} connected!".format(arduino.port))
-			inputs="<"+str(x)+","+str(y)+">"
-			inputs=inputs.encode("utf-8")
-			arduino.write(inputs)
 			while arduino.inWaiting()==0: pass
 			while True :
 				if  arduino.inWaiting()>0: 
 					answer=arduino.readline()
 					print(answer)
 					arduino.flushInput()
-					if answer=="done" :
+					if answer== b'ready\r\n' :
+						inputs="<"+str(x)+","+str(y)+">"
+						inputs=inputs.encode("utf-8")
+						print("inputs :", inputs)
+						arduino.write(inputs)
+						
+					elif answer== b'done\r\n' :
 						break
-				
 					
 # main
 while True:
@@ -99,11 +101,11 @@ while True:
 			cv2.putText(frame,"x,y: "+str(x)+","+str(y),(20,20),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
 			if (xpast>=x-0.25 and xpast<=x+0.25 and ypast>=y-0.25 and ypast<=y+0.25):
 				cv2.putText(frame,"STOP",(20,60),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
-
-				# counter=counter+1
-				#if (counter>=15) :
-				#	catchball(x, y)
-				#	counter=0
+				counter=counter+1
+				if (counter>=15) :
+					cv2.putText(frame,"SEND",(20,90),cv2.FONT_HERSHEY_SIMPLEX,1,(255,0,0),2)
+					catchball(x, y)
+					counter=0
 			xpast=x
 			ypast=y
 	# màj des données

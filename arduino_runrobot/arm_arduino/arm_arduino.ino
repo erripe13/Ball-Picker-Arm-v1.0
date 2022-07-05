@@ -78,7 +78,7 @@ void setup() {
   // Set Coordinates a Base
   int y = 0;
   int z = -6;
-  coordinate_move(0, y, z, false);
+  coordinate_move(0, y);
 
   // setup servo
   for (i = 0; i < 3; i++) {
@@ -111,8 +111,8 @@ void setup() {
   
 }
 void loop() {
-  fanControl();
-  digitalWrite(stepper_enPin[0], LOW);
+  //fanControl();
+  //digitalWrite(stepper_enPin[0], LOW);
 
   bool loop=true;
   
@@ -316,16 +316,16 @@ void servo_steps(int servo_num, double angle_target, double incr_step = 10, int 
 
     for (set_angle = angle_start; set_angle >= angle_target; set_angle -= incr_step) {
       servo[servo_num].write(set_angle);
-      Serial.print("angle servo:");
-      Serial.println(set_angle);
+      //Serial.print("angle servo:");
+      //Serial.println(set_angle);
       delay(step_delay);
     }
   } else {
 
     for (set_angle = angle_start; set_angle <= angle_target; set_angle += incr_step) {
       servo[servo_num].write(set_angle);
-      Serial.print("angle servo:");
-      Serial.println(set_angle);
+      //Serial.print("angle servo:");
+      //Serial.println(set_angle);
       delay(step_delay);
     }
   }
