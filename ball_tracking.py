@@ -18,7 +18,7 @@ pts = deque(maxlen=50)
 # attribution flux webcam
 vs = VideoStream(src=0).start()
 # attente démarrage cam
-time.sleep(2.0)
+time.sleep(1.0)
 
 # main
 while True:
@@ -30,14 +30,14 @@ while True:
 		break
 	# réduction de la résolution, flou, et conversion HSV
 	frame = frame[20:450, 60:600]
-	#frame = cv2.circle(frame,(87,37), 5,(0,0,255),-1)
-    #frame = cv2.circle(frame,(50,100),5,(0,0,255),-1)
-    # frame = cv2.circle(frame,(100,50),5,(0,0,255),-1)
-    # frame = cv2.circle(frame,(100,100),5,(0,0,255),-1)
-	imgPts = np.float32([[87,37],[450, 35],[39, 411],[505, 405]])
-	objPoints = np.float32([[0,0],[430,0],[0,540],[430,540]])
+	calib = cv2.circle(frame,(84,38), 5,(0,0,255),-1)
+	calib = cv2.circle(calib,(449,36),5,(0,0,255),-1)
+	calib = cv2.circle(calib,(34,419),5,(0,0,255),-1)
+	calib = cv2.circle(calib,(517,415),5,(0,0,255),-1)
+	imgPts = np.float32([[84,38],[449,36],[34,419],[517,415]])
+	objPoints = np.float32([[0,0],[1000,0],[0,1000],[1000,1000]])
 	matrix = cv2.getPerspectiveTransform(imgPts,objPoints)
-	frame = cv2.warpPerspective(frame,matrix,(430,540))
+	frame = cv2.warpPerspective(frame,matrix,(1000,1000))
 	blurred = cv2.GaussianBlur(frame, (11, 11), 0)
 	hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
 	# génération d'un masque sur la balle
@@ -45,8 +45,7 @@ while True:
 	mask = cv2.erode(mask, None, iterations=2)
 	mask = cv2.dilate(mask, None, iterations=2)
 	# trouver contours de la sortie du filtre et coordonnées de son centre
-	cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
-		cv2.CHAIN_APPROX_SIMPLE)
+	cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 	cnts = imutils.grab_contours(cnts)
 	center = None
 	# si un contour est trouvé :
@@ -61,6 +60,13 @@ while True:
 			cv2.circle(frame, (int(x), int(y)), int(radius),
 				(0, 255, 0), 2)
 			cv2.circle(frame, center, 5, (0, 0, 255), -1)
+			
+			x=(x/1000)*64
+			y=(y/1000)*64
+			x=round(x,2)+1
+			y=round(y,2)-0.4
+
+			cv2.putText(frame,"x,y: "+str(x)+","+str(y),(20,20),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
 	# màj des données
 	pts.appendleft(center)
 	# fonction pour le trail rouge
@@ -71,12 +77,14 @@ while True:
 		# calculer l'épaisseur de la ligne en fonction du temps et dessiner
 		thickness = int(np.sqrt(10 / float(i + 1)) * 2.5)
 		cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
-	# afficher la sortie video traitée assemblée
-	x=round(x)
-	y=round(y)
-	cv2.putText(frame,"x,y: "+str(x)+","+str(y),(20,20),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
+		# afficher la sortie video traitée assemblée
+	
+	#cv2.namedWindow("Retour tracking", cv2.WND_PROP_FULLSCREEN)	
+	#cv2.setWindowProperty("Retour tracking",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
 	cv2.imshow("Retour tracking", frame)
+	#cv2.imshow("pré-calib", calib)
 	key = cv2.waitKey(1) & 0xFF
+	
 	# arrêt si Q est pressé
 	if key == ord("q"):
 		break
