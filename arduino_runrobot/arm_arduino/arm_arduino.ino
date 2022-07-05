@@ -37,7 +37,7 @@ const double XYZ_base[] = {0, 0, -6, 1, 0, 0, 1}; //x,y,z, bool_move, bool_open,
 double XYZ_current[] = {0, 0, -9, 1, 0, 1}; //x,y,z, bool_move, bool_open, delay_to_next, type_of_action
 double XYZ_next[] = {0, 0, -9, 1, 0, 1}; //x,y,z, bool_move, bool_open, delay_to_next, type_of_action
 //contraintes de translation (pas-à-pas)
-const int stepper_delay[] = {27 * 28}; //27*22 for full step
+const int stepper_delay[] = {100}; //27*22 for full step
 const int stepper_maxsteps[] = {6340}; //max de pas
 const double STEPS_PER_CM[] ={171}; //résultat calcul pas/CM
 double stepper_correction[]={0};
@@ -69,7 +69,8 @@ void setup() {
   for (i = 0; i < 3; i++) {
     pinMode(servo_Pin[i], OUTPUT);
   }
-
+  pinMode(fanPin, OUTPUT); // initialize digital pin as an output
+  digitalWrite(fanPin, HIGH);
   // Setup des angles servo initiaux
   //for(i=0; i<2; i++) { servo[i].write(90); angle_current[i]=90; }
   //servo[0].write(30);
@@ -77,9 +78,8 @@ void setup() {
   //servo[2].write(servoGrip_val[2]); angle_current[2] = servoGrip_val[2];
   // Set Coordinates a Base
   int y = 0;
-  int z = -6;
-  coordinate_move(0, y);
-
+  int z = 25;
+  //coordinate_move(0, y);
   // setup servo
   for (i = 0; i < 3; i++) {
     servo[i].attach(servo_Pin[i], 500, 2500);
@@ -105,33 +105,33 @@ void setup() {
 
   //envoi ready port série
   dht.begin();        // initialize the sensor
-  pinMode(fanPin, OUTPUT); // initialize digital pin as an output
+  
   Serial.println("ready");
 
   
 }
 void loop() {
   //fanControl();
-  //digitalWrite(stepper_enPin[0], LOW);
-
-  bool loop=true;
-  
-  recvWithStartEndMarkers();
-  showNewData();
-
-  //data format <x,y,z,bool_move,bool_open,delayms,type_int> = <23,56,89,1,1,3456,3> {17}
-  //X: 7.00 Y: 8.00 Z: 9.00 bool_move: 1.00 bool_open: 0.00 delay_ms: 10.00 move_type: 1.00
-  //le bool_move contrôle si le bras se déplace linéairement vers la position ou s'il effectue un mouvement de prise (déplacement x d'abord/y ensuite, etc.).
-  
-  if (newData==true && loop==true) {
-
-    Serial.println("coord:", XYZ_next[0],XYZ_next[1]);
-    pickndrop(XYZ_next[0],XYZ_next[1]);
-    
-    //delay(XYZ_next[5]);
-    newData=false;
-    Serial.println("done");
-  }
+  digitalWrite(stepper_enPin[0], HIGH);
+  test_stepper();
+//  bool loop=true;
+//  
+//  recvWithStartEndMarkers();
+//  showNewData();
+//
+//  //data format <x,y,z,bool_move,bool_open,delayms,type_int> = <23,56,89,1,1,3456,3> {17}
+//  //X: 7.00 Y: 8.00 Z: 9.00 bool_move: 1.00 bool_open: 0.00 delay_ms: 10.00 move_type: 1.00
+//  //le bool_move contrôle si le bras se déplace linéairement vers la position ou s'il effectue un mouvement de prise (déplacement x d'abord/y ensuite, etc.).
+//  
+//  if (newData==true && loop==true) {
+//
+//    Serial.println(XYZ_next[0],XYZ_next[1]);
+//    coordinate_move(XYZ_next[0],XYZ_next[1]);
+//    
+//    //delay(XYZ_next[5]);
+//    newData=false;
+//    Serial.println("done");
+//  }
 
 }
 
