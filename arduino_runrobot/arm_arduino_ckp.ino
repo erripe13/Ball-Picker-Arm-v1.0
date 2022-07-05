@@ -1,7 +1,7 @@
-// par Pierre Mirouze
+// code par Pierre Mirouze depuis un projet de pacogarcia3
 // FabriqExpo Exploradôme de Vitry
 // programme exécuté par l'Arduino contrôlant les moteurs du bras
-
+//ressource : http://forum.arduino.cc/index.php?topic=288234.0
 
 #include <Arduino.h>
 #include "DHT.h"
@@ -9,26 +9,33 @@
 #include <math.h>
 #include "BasicStepperDriver.h"
 
-// paramètres et broches pour gestion thermique
-#define fanPin 10
-#define DHTPIN 12
-#define DHTTYPE DHT11
-DHT dht(DHTPIN, DHTTYPE);
-float temperature;
-int control=35;
-
-// paramètres et broches moteur pas-à-pas
-#define ENDSTOP 11
+// Motor steps per revolution. Most steppers are 200 steps or 1.8 degrees/step
 #define MOTOR_STEPS 400
 #define RPM 35
+
+// Since microstepping is set externally, make sure this matches the selected mode
+// If it doesn't, the motor will move at a different RPM than chosen
+// 1=full step, 2=half step etc.
 #define MICROSTEPS 1
-#define enPin 5
+
+// All the wires needed for full functionality
 #define DIR 6
 #define STEP 7
+//Uncomment line to use enable/disable functionality
+//#define SLEEP 5
+
+// 2-wire basic config, microstepping is hardwired on the driver
 BasicStepperDriver stepper(MOTOR_STEPS, DIR, STEP);
 
+#define fanPin 10 // Arduino pin connected to relay which connected to fan
+#define DHTPIN 12           // Arduino pin connected to relay which connected to DHT sensor
+#define DHTTYPE DHT11
+DHT dht(DHTPIN, DHTTYPE);
 
-// paramètres et broches du robot
+float temperature;    // temperature in Celsius
+int control=35;
+unsigned long previousMillis = 0;        // will store last time LED was updated
+const long interval = 2000;           // interval at which to blink (milliseconds)
 //initialisation de la liste des servos
 Servo servo[3];
 // setup broches utilisées
@@ -37,22 +44,21 @@ const int servo_Pin[] = {2, 3, 4}; //segment1,segment2,pince
 //{ouvert-max, fermé-min, repos}
 const int servoGrip_val[]= {114,70,85};  
 //broches moteur pas-à-pas
-//const int stepper_enPin[] = {5};
-//const int stepper_dirPin[] = {6};
-//const int stepper_stepPin[] = {7};
+const int stepper_enPin[] = {5};
+const int stepper_dirPin[] = {6};
+const int stepper_stepPin[] = {7};
 //liste d'angles
 double angle_current[] = {90, 90, 145};
 double angle_next[] = {90, 90, 145};
 //coordonnées du bras initialement, puis actuelles, puis suivantes
-const double XYZ_base[] = {0, 0, -40}; //x,y,z, bool_move, bool_open, delay_to_next, type_of_action
-double XYZ_current[] = {0, 0, -40}; //x,y,z, bool_move, bool_open, delay_to_next, type_of_action
-double XYZ_next[] = {0, 0, -9}; //x,y,z, bool_move, bool_open, delay_to_next, type_of_action
+const double XYZ_base[] = {0, 0, -6, 1, 0, 0, 1}; //x,y,z, bool_move, bool_open, delay_to_next, type_of_action
+double XYZ_current[] = {0, 0, -9, 1, 0, 1}; //x,y,z, bool_move, bool_open, delay_to_next, type_of_action
+double XYZ_next[] = {0, 0, -9, 1, 0, 1}; //x,y,z, bool_move, bool_open, delay_to_next, type_of_action
 //contraintes de translation (pas-à-pas)
-//const int stepper_delay[] = {100}; //27*22 for full step
-const int stepper_maxdeg[] = {1770}; //max de cm
-const double DEG_PER_CM[] ={39,5}; //résultat calcul deg/CM
+const int stepper_delay[] = {100}; //27*22 for full step
+const int stepper_maxsteps[] = {6340}; //max de pas
+const double STEPS_PER_CM[] ={171}; //résultat calcul pas/CM
 double stepper_correction[]={0};
-double step_deg_remain = 45;
 // vérifier que l'angle du servo correpond bien à l'angle de la partie du bras commandée
 // mettre le servo à 90°, puis mesurer l'angle réel
 // la valeur de calibration est donc (90 - {réel angle par rapport à 90})
@@ -65,60 +71,180 @@ const byte numChars = 32;
 char receivedChars[numChars];
 boolean newData = false;
 
-void setup() {  
+void setup() {
+  
   // port série
   Serial.begin(9600);
   //envoi du mot start sur le port série
-  Serial.println("start");
+  Serial.println("Démarrage de l'initialisation");
+
   //setup broches arduino
-  //pinMode(stepper_dirPin[0], OUTPUT);
-  //pinMode(stepper_stepPin[0], OUTPUT);
-  pinMode(fanPin, OUTPUT);
-  digitalWrite(fanPin, HIGH);
-  pinMode(enPin, OUTPUT);
-  pinMode(ENDSTOP, INPUT);
-  digitalWrite(enPin, LOW);
-  stepper.begin(RPM, MICROSTEPS);
+  pinMode(stepper_dirPin[0], OUTPUT);
+  pinMode(stepper_stepPin[0], OUTPUT);
+  //pinMode(stepper_enPin[0], OUTPUT);
+  
   int i = 0;
   for (i = 0; i < 3; i++) {
     pinMode(servo_Pin[i], OUTPUT);
   }
+  pinMode(fanPin, OUTPUT); // initialize digital pin as an output
+  digitalWrite(fanPin, HIGH);
+  // Setup des angles servo initiaux
+  //for(i=0; i<2; i++) { servo[i].write(90); angle_current[i]=90; }
+  //servo[0].write(30);
+  //servo[1].write(50);
+  //servo[2].write(servoGrip_val[2]); angle_current[2] = servoGrip_val[2];
   // Set Coordinates a Base
   int y = 0;
-  int z = -40  ;
+  int z = 25;
   coordinate_move(0, y);
+  // setup servo
   for (i = 0; i < 3; i++) {
     servo[i].attach(servo_Pin[i], 500, 2500);
   }
-  // initialisation capteur température
-  dht.begin();
-  
-  //init pin EN
-  stepper.setEnableActiveState(LOW);
-  
-  Serial.println("stepper test go");
+
+  //tests de moteurs, à décommenter pour tester et en mettant "boot loop=false" dans la boucle principale
+  //  test_servo(0);
+  //  test_servo(1);
+  //  test_servo(2);
+  //test_servo_home(0);
+  //test_servo_home(1);
+  //test_servo_home(2);  
   //test_stepper();
+  // test_getangles(-5,-20);
+  // test_getangles(5,-20);
+  // test_getangles(-5,-9);
+  // test_getangles(5,-9);
+  // test_getangles(0,-13);
+  //coordinate_move(15,15,25, false);
+  //delay(2000);
+  //coordinate_move(0, y, 0, false);
+  //delay(2000);
+
+  //envoi ready port série
+  dht.begin();        // initialize the sensor
+  stepper.begin(RPM, MICROSTEPS);
+  // if using enable/disable on ENABLE pin (active LOW) instead of SLEEP uncomment next line
+  stepper.setEnableActiveState(LOW);
   Serial.println("ready");
-}
 
+  
+}
 void loop() {
-  Serial.println("calib go");
-  stepper.move(-2000);
-  if (digitalRead(ENDSTOP) == HIGH){
-    Serial.println("TOUCHED");
-    stepper.stop();
-    XYZ_current[0]=0;
-  }
-  coordinate_move(20, 20);
-  // recvWithStartEndMarkers();
-  // showNewData();
-  // if (newData==true && loop==true) {
-  //   coordinate_move(XYZ_next[0],XYZ_next[1]);
-  //   newData=false;
-  //   Serial.println("done");
-  // }
+  //fanControl();
+  //digitalWrite(stepper_enPin[0], HIGH);
+  //test_stepper();
+  // energize coils - the motor will hold position
+    stepper.enable();
+    stepper.rotate(1700);
+
+    stepper.rotate(-1700);
+
+    // pause and allow the motor to be moved by hand
+    stepper.disable();
+
+   // delay(1000);
+//  bool loop=true;
+//  
+//  recvWithStartEndMarkers();
+//  showNewData();
+//
+//  //data format <x,y,z,bool_move,bool_open,delayms,type_int> = <23,56,89,1,1,3456,3> {17}
+//  //X: 7.00 Y: 8.00 Z: 9.00 bool_move: 1.00 bool_open: 0.00 delay_ms: 10.00 move_type: 1.00
+//  //le bool_move contrôle si le bras se déplace linéairement vers la position ou s'il effectue un mouvement de prise (déplacement x d'abord/y ensuite, etc.).
+//  
+ if (newData==true && loop==true) {
+
+   Serial.println(XYZ_next[0],XYZ_next[1]);
+   coordinate_move(XYZ_next[0],XYZ_next[1]);
+   
+   //delay(XYZ_next[5]);
+   newData=false;
+   Serial.println("done");
+//  }
+
 }
 
+void fanControl(){
+  unsigned long currentMillis = millis();
+    temperature = dht.readTemperature();  // read temperature in Celsius
+    Serial.print("température : ");
+    Serial.println(temperature);
+    if (temperature<26) {
+      control=100;
+      Serial.print("ventilateur: ");
+      Serial.print("40");
+      Serial.println("%");
+      analogWrite(fanPin, control);
+    }
+    if (temperature>=26){
+      Serial.print("température : ");
+      Serial.println(temperature);
+      if (temperature>=30) temperature=30;
+      control=map(temperature, 26, 30, 100, 255);
+      analogWrite(fanPin, control);
+      control=map(control, 0, 255, 0, 100);
+      Serial.print("ventilateur: ");
+      Serial.print(control);
+      Serial.println("%");
+    }
+}
+
+void pickndrop(double x, double y){
+    
+}
+
+void cmtodeg(double input){
+  int deg;
+  deg=input*40;
+  return deg;
+}
+
+void get_angles_from_yz(double y, double z) {
+
+  //voir le schéma trigo pour le nom des variables
+
+  double H, s1, s2, aB, aA, aQ, servo1angle, servo2angle, y2, z2, y3, z3;
+
+  //longueur du bras en cm
+  int L = 25;
+
+  H= sqrt (pow(y,2) + pow(z,2));
+  s1=H/2;
+  s2=sqrt (pow(L,2) - pow(s1,2));
+
+  aB=atan(s2/s1);
+  y2=y/2;
+  z2=z/2;
+  aA=atan(y2/z2);
+
+  servo1angle=aA+aB;
+  servo1angle= (servo1angle/ (2 * M_PI)) * 360;
+
+  //multiplication de la matrice  rotation dans le sens inverse des aiguilles d'une montre
+  y3 = -L*sin(aA+aB);
+  z3 = -L* cos(aA+aB);
+
+  servo2angle=atan((y-y3)/(z-z3));  
+
+  servo2angle= (servo2angle / (2 * M_PI)) * 360;
+  //le calcul de la tangente change lorsque le servo2 dépasse 90 degrés, correction ci-dessous
+  if ((z-z3)>0) {
+    servo2angle=servo2angle-180;
+  }
+
+  //angle segment 1 absolu
+  angle_next[0] = servo1angle;
+
+  //angle segment 2 absolu
+  angle_next[1] = -servo2angle;
+
+
+  //conversion en  angles des servo réels
+  angle_next[0] = angle_next[0] + calibrate_TopArm;
+  angle_next[1] = angle_next[1] + calibrate_MiddleArm;
+
+}
 void coordinate_move(double xEnd, double yEnd) {
   double zEnd = 25.0;
   double xStart = XYZ_current[0];
@@ -126,7 +252,7 @@ void coordinate_move(double xEnd, double yEnd) {
   double zStart = XYZ_current[2];
 
   //application de la calibration de pas du moteur
-  double x_to_steps = DEG_PER_CM[0];
+  double x_to_steps = STEPS_PER_CM[0];
 
   //mouvement en y ?
   double zDelta = zEnd - zStart;
@@ -137,9 +263,9 @@ void coordinate_move(double xEnd, double yEnd) {
 
   if (xDelta != 0) {
     if (xDelta > 0) {
-      stepper_advance(x_stepper_steps, 0);
+      stepper_advance(0, x_stepper_steps, 0);
     } else {
-      stepper_advance(x_stepper_steps, 1);
+      stepper_advance(0, x_stepper_steps, 1);
     }
   }
 
@@ -164,11 +290,11 @@ void coordinate_move(double xEnd, double yEnd) {
 
 
   //prints de débug :
-//  Serial.println(" //////// ");
-//  Serial.print(" xStart=  "); Serial.print(xStart); Serial.print(" yStart=  "); Serial.println(yStart);
-//  Serial.print("Angle Top Arm="); Serial.print(angle_TopArm); Serial.print(" Angle Middle Arm=  "); Serial.println(angle_MiddleArm);
-//  Serial.print("Angle Top Arm_next="); Serial.print(angle_TopArm_next); Serial.print(" Angle Middle Arm_next=  "); Serial.println(angle_MiddleArm_next);
-//  Serial.print(" xEnd=  "); Serial.print(xEnd);   Serial.print(" yEnd=  "); Serial.println(yEnd);
+  Serial.println(" //////// ");
+  Serial.print(" xStart=  "); Serial.print(xStart); Serial.print(" yStart=  "); Serial.println(yStart);
+  Serial.print("Angle Top Arm="); Serial.print(angle_TopArm); Serial.print(" Angle Middle Arm=  "); Serial.println(angle_MiddleArm);
+  Serial.print("Angle Top Arm_next="); Serial.print(angle_TopArm_next); Serial.print(" Angle Middle Arm_next=  "); Serial.println(angle_MiddleArm_next);
+  Serial.print(" xEnd=  "); Serial.print(xEnd);   Serial.print(" yEnd=  "); Serial.println(yEnd);
 
   XYZ_current[0] = xEnd;
   XYZ_current[1] = yEnd;
@@ -176,66 +302,53 @@ void coordinate_move(double xEnd, double yEnd) {
   //XYZ_current[3] = liftgrab_motion;
 }
 
-void stepper_advance(double steps, int dir) {
-  stepper.enable();
+void stepper_advance(int stepper_num, double steps, int dir) {
+
   // génération de la pwm pour le driver TMC2208
   // vérification si besoin de compensation pas-à-pas
-  // if (abs(stepper_correction[stepper_num]) > 1) {
-  //   if (stepper_correction[stepper_num]>1){
-  //     //ajout d'un pas si la compensation >1
-  //     steps++;
-  //     stepper_correction[stepper_num]--;
-  //   } else {
-  //     steps--;
-  //     stepper_correction[stepper_num]++;
-  //   }
-  // }
+  if (abs(stepper_correction[stepper_num]) > 1) {
+    if (stepper_correction[stepper_num]>1){
+      //ajout d'un pas si la compensation >1
+      steps++;
+      stepper_correction[stepper_num]--;
+    } else {
+      steps--;
+      stepper_correction[stepper_num]++;
+    }
+  }
 
   // paramètre de direction de translation
   if (dir == 0) {
-    stepper.rotate(steps);
-    //digitalWrite(stepper_dirPin[stepper_num], HIGH);
+    digitalWrite(stepper_dirPin[stepper_num], HIGH);
   } else {
-    stepper.rotate(-steps);
-    //digitalWrite(stepper_dirPin[stepper_num], LOW);
+    digitalWrite(stepper_dirPin[stepper_num], LOW);
   }
 
   // envoi pwm driver TMC2208
-  // while (1) {
-  //   digitalWrite(stepper_stepPin[stepper_num], HIGH);
-  //   delayMicroseconds(stepper_delay[stepper_num]);
-  //   digitalWrite(stepper_stepPin[stepper_num], LOW);
-  //   delayMicroseconds(stepper_delay[stepper_num]);
+  while (1) {
+    digitalWrite(stepper_stepPin[stepper_num], HIGH);
+    delayMicroseconds(stepper_delay[stepper_num]);
+    digitalWrite(stepper_stepPin[stepper_num], LOW);
+    delayMicroseconds(stepper_delay[stepper_num]);
 
-  //   steps--;
-  //   if (steps < 1) break;
-  // }
+    steps--;
+    if (steps < 1) break;
+  }
 
 
   // stockage du nombre de pas corrigés pour tenir les comptes et ne pas décalibrer
-  // if (steps > 0 && steps <1) {
-  //   if (dir ==0) {
-  //     stepper_correction[stepper_num]+=steps;
-  //   } else {
-  //     stepper_correction[stepper_num]-=steps;
-  //   }
-  // }
-  
-  // Serial.print("reste de pas stocké");
-  // Serial.println(stepper_correction[stepper_num]);
-  stepper.disable();
-}
-
-void calib_x(){
-  stepper.enable();
-  stepper.startMove(-2500);
-  if (digitalRead(ENDSTOP) == HIGH){
-    Serial.println("TOUCHED");
-    stepper.stop();
-    XYZ_current[0]=0;
+  if (steps > 0 && steps <1) {
+    if (dir ==0) {
+      stepper_correction[stepper_num]+=steps;
+    } else {
+      stepper_correction[stepper_num]-=steps;
+    }
   }
-}
+  
+  Serial.print("reste de pas stocké");
+  Serial.println(stepper_correction[stepper_num]);
 
+}
 void servo_steps(int servo_num, double angle_target, double incr_step = 10, int step_delay = 100) {
   // cette commande permet d'envoyer les instructions par paquets de 25 degrés. utile pour des servos bas de gamme.
 
@@ -339,57 +452,6 @@ void twoarm_step_coordinate(double toparm_target, double middlearm_target) {
   //Serial.println("--> two arm step End /");
 
 }
-void get_angles_from_yz(double y, double z) {
-
-  //refer to trigonometry illustration for variable description
-
-  double H, s1, s2, aB, aA, aQ, servo1angle, servo2angle, y2, z2, y3, z3;
-
-  //arm length in cm
-  int L = 13;
-
-  H= sqrt (pow(y,2) + pow(z,2));
-  s1=H/2;
-  s2=sqrt (pow(L,2) - pow(s1,2));
-
-  aB=atan(s2/s1);
-  y2=y/2;
-  z2=z/2;
-  aA=atan(y2/z2);
-
-  servo1angle=aA+aB;
-  servo1angle= (servo1angle/ (2 * M_PI)) * 360;
-
-  //matrix multiplication - counterclockwise rotation
-  y3 = -L*sin(aA+aB);
-  z3 = -L* cos(aA+aB);
-
-  servo2angle=atan((y-y3)/(z-z3));  
-
-  servo2angle= (servo2angle / (2 * M_PI)) * 360;
-  //tangent calculation changes when servo2 exceeds 90 degrees, correction below
-  if ((z-z3)>0) {
-    servo2angle=servo2angle-180;
-  }
-
-  //Absolute Top Arm Angle
-  //Top Arm moves 0 to +90
-  angle_next[0] = servo1angle;
-
-  //Absolute Middle Arm Angle
-  //Midle Arm moves 0 to +90
-  angle_next[1] = -servo2angle;
-
-
-  //Convert to SERVO Angle
-  //in this case, a 90 servo position is equal to 71 degrees for Top arm
-  //90 servo position is equal to 65 Middle Arm
-  angle_next[0] = angle_next[0] + calibrate_TopArm;
-  angle_next[1] = angle_next[1] + calibrate_MiddleArm;
-
-}
-
-
 void servo_Open(bool openVal) {
 
   int servo_num = 2;
@@ -404,10 +466,11 @@ void servo_Open(bool openVal) {
   XYZ_current[4] = openVal;
 }
 void test_stepper() {
-  stepper_advance(stepper_maxdeg[0], 0);
+
+  stepper_advance(0, stepper_maxsteps[0], 0);
   delay(1000);
-  stepper_advance(stepper_maxdeg[0], 1);
-  delay(1000);
+  stepper_advance(0, stepper_maxsteps[0], 1);
+
 }
 void test_servo(int servo_num) {
 
@@ -514,7 +577,6 @@ void recvWithStartEndMarkers() {
    
 }
 }
-
 void showNewData() {
     if (newData == true) {
         Serial.println(receivedChars);
@@ -532,7 +594,6 @@ void showNewData() {
         //newData = false;
     }
 }
-
 void parseData() {
 
   // formattage des données reçues
