@@ -24,7 +24,8 @@ pts = deque(maxlen=50)
 vs = VideoStream(src=0).start()
 # attente démarrage cam
 time.sleep(1.0)
-
+xpast=0
+ypast=0
 # main
 while True:
 	# définir frame comme flux video
@@ -62,17 +63,19 @@ while True:
 		# préciser le rayon minimal pour la détection (en pixels)
 		if radius > 10:
 			# dessiner le cercle et mettre à jour la liste des dernières coordonnées (pour le trail)
-			cv2.circle(frame, (int(x), int(y)), int(radius),
-				(0, 255, 0), 2)
-			cv2.circle(frame, center, 5, (0, 0, 255), -1)
-			
+			cv2.circle(frame, (int(x), int(y)), int(radius), (0, 255, 0), 2)
+			cv2.circle(frame, center, 5, (0, 0, 255), -1)			
 			#conversion en centimètres
 			x=((x/1000)*64)+1
 			y=((y/1000)*64)-0.4
-			x=round(x,2)
-			y=round(y,2)
-
+			x=round(x,1)
+			y=round(y,1)
+			
 			cv2.putText(frame,"x,y: "+str(x)+","+str(y),(20,20),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
+			if (xpast>=x-0.25 and xpast<=x+0.25 and ypast>=y-0.25 and ypast<=y+0.25):
+				cv2.putText(frame,"STOP",(20,60),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
+			xpast=x
+			ypast=y
 	# màj des données
 	pts.appendleft(center)
 	# fonction pour le trail rouge
@@ -85,12 +88,12 @@ while True:
 		cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
 		# afficher la sortie video traitée assemblé
 	if GPIO.input(buttonPin) == GPIO.HIGH:
-		cv2.namedWindow("pré-calib", cv2.WND_PROP_FULLSCREEN)	
-		cv2.setWindowProperty("pré-calib",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
+		#cv2.namedWindow("pré-calib", cv2.WND_PROP_FULLSCREEN)	
+		#cv2.setWindowProperty("pré-calib",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
 		cv2.imshow("pré-calib", calib)
 	elif GPIO.input(buttonPin) == GPIO.LOW:
-		cv2.namedWindow("Retour tracking", cv2.WND_PROP_FULLSCREEN)	
-		cv2.setWindowProperty("Retour tracking",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
+		#cv2.namedWindow("Retour tracking", cv2.WND_PROP_FULLSCREEN)	
+		#cv2.setWindowProperty("Retour tracking",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
 		cv2.imshow("Retour tracking", frame)
 	key = cv2.waitKey(1) & 0xFF
 	# arrêt si Q est pressé
