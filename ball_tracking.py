@@ -1,6 +1,6 @@
-# code par Pierre Mirouze depuis la base de connaissance d'Adrian Rosebrock
+# code par Pierre Mirouze
 # FabriqExpo Exploradôme de Vitry
-# suivi de la balle OpenCV et extraction des coordonnées
+# suivi de la balle avec OpenCV, extraction des coordonnées, envoi de l'ordre de mouvement au bras robotisé
 
 # import des paquets nécessaires
 from collections import deque
@@ -10,6 +10,8 @@ import cv2
 import imutils
 import time
 import RPi.GPIO as GPIO
+import serial
+
 GPIO.setmode(GPIO.BOARD)
 buttonPin = 36
 GPIO.setwarnings(False) # Ignore warning for now
@@ -24,8 +26,20 @@ pts = deque(maxlen=50)
 vs = VideoStream(src=0).start()
 # attente démarrage cam
 time.sleep(1.0)
+
 xpast=0
 ypast=0
+counter=0
+
+def catchball(x, y):
+	with serial.Serial("/dev/ttyACM0", 9600, timeout=1) as arduino:
+		time.sleep(0.1) #wait for serial to open
+		if arduino.isOpen():
+			print("{} connected!".format(arduino.port))
+			if  arduino.inWaiting()>0: 
+						answer=arduino.readline()
+						print(answer)
+						arduino.flushInput() #remove data after reading
 # main
 while True:
 	# définir frame comme flux video
@@ -39,7 +53,7 @@ while True:
 	calib = cv2.circle(frame,(84,38), 5,(0,0,255),-1)
 	calib = cv2.circle(calib,(449,36),5,(0,0,255),-1)
 	calib = cv2.circle(calib,(34,419),5,(0,0,255),-1)
-	calib = cv2.circle(calib,(517,415),5,(0,0,255),-1)
+	calib = cv2.circle(calib,(517,415),5,(0,0,255),-1) 
 	imgPts = np.float32([[84,38],[449,36],[34,419],[517,415]])
 	objPoints = np.float32([[0,0],[1000,0],[0,1000],[1000,1000]])
 	matrix = cv2.getPerspectiveTransform(imgPts,objPoints)
@@ -73,6 +87,10 @@ while True:
 			cv2.putText(frame,"x,y: "+str(x)+","+str(y),(20,20),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
 			if (xpast>=x-0.25 and xpast<=x+0.25 and ypast>=y-0.25 and ypast<=y+0.25):
 				cv2.putText(frame,"STOP",(20,60),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
+				counter=counter+1
+				if (counter>=15) :
+					catchball(x, y)
+					counter=0
 			xpast=x
 			ypast=y
 	# màj des données

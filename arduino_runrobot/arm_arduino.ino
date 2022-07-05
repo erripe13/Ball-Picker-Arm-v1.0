@@ -497,27 +497,23 @@ void test_servo_home(int servo_num) {
   servo_steps(servo_num, angle_default);
 
 }
-void test_getangles(double y, double z) {
-   
-  get_angles_from_yz(y,z);
 
+void test_getangles(double y, double z) {
+  get_angles_from_yz(y,z);
   Serial.print("Y: ");
   Serial.print(y);
   Serial.print(" Z: ");
   Serial.println(z);
-
   Serial.print("servo1: ");
   Serial.print(angle_next[0]-calibrate_TopArm);
   Serial.print(" servo2: ");
   Serial.println(angle_next[1]-calibrate_MiddleArm);
-
   Serial.print("servo1 calibrated: ");
   Serial.print(angle_next[0]);
   Serial.print(" servo2 calibrated: ");
   Serial.println(angle_next[1]);
-
-
 }
+
 void recvWithStartEndMarkers() {
     static boolean recvInProgress = false;
     static byte ndx = 0;
@@ -525,7 +521,7 @@ void recvWithStartEndMarkers() {
     char endMarker = '>';
     char rc;
  
- // if (Serial.available() > 0) {
+  if (Serial.available() > 0) {
     while (Serial.available() > 0 && newData == false) {
         rc = Serial.read();
         if (recvInProgress == true) {
@@ -549,6 +545,7 @@ void recvWithStartEndMarkers() {
     }
    
 }
+
 void showNewData() {
     if (newData == true) {
         Serial.println(receivedChars);
@@ -562,18 +559,11 @@ void showNewData() {
           Serial.print(XYZ_next[1]);
           Serial.print(" Z: ");
           Serial.print(XYZ_next[2]);
-          Serial.print(" bool_move: ");
-          Serial.print(XYZ_next[3]);
-          Serial.print(" bool_open: ");
-          Serial.print(XYZ_next[4]);
-          Serial.print(" delay_ms: ");
-          Serial.print(XYZ_next[5]);
-          Serial.print(" move_type: ");
-          Serial.println(XYZ_next[6]);
         }
         //newData = false;
     }
 }
+
 void parseData() {
 
   // formattage des données reçues
@@ -592,17 +582,4 @@ void parseData() {
   //grab Z
   strtokIndx = strtok(NULL, ",");
   XYZ_next[2] = atof(strtokIndx);     // conversion en float
-  //grab bool_move
-  strtokIndx = strtok(NULL, ",");
-  XYZ_next[3] = atoi(strtokIndx);     // conversion en integer
-  //grab bool_open
-  strtokIndx = strtok(NULL, ",");
-  XYZ_next[4] = atoi(strtokIndx);     // conversion en integer
-  //grab delayms
-  strtokIndx = strtok(NULL, ",");
-  XYZ_next[5] = atoi(strtokIndx);     // conversion en integer
-  //type of action
-  strtokIndx = strtok(NULL, ",");
-  XYZ_next[6] = atoi(strtokIndx);     // conversion en integer
-    
 }
