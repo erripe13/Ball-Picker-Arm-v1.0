@@ -107,11 +107,11 @@ while True:
 			cv2.putText(frame,"x,y: "+str(x)+","+str(y),(20,20),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
 			if (xpast>=x-0.25 and xpast<=x+0.25 and ypast>=y-0.25 and ypast<=y+0.25):
 				cv2.putText(frame,"STOP",(20,60),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
-				counter=counter+1
-				if (counter>=15) :
-					cv2.putText(frame,"SEND",(20,90),cv2.FONT_HERSHEY_SIMPLEX,1,(255,0,0),2)
-					catchball(x, y)
-					counter=0
+				# counter=counter+1
+				# if (counter>=15) :
+					# cv2.putText(frame,"SEND",(20,90),cv2.FONT_HERSHEY_SIMPLEX,1,(255,0,0),2)
+					# catchball(x, y)
+					# counter=0
 			xpast=x
 			ypast=y
 	# màj des données

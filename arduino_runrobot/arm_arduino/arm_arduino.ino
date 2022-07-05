@@ -51,7 +51,7 @@ double XYZ_next[] = {0, 0, -9}; //x,y,z, bool_move, bool_open, delay_to_next, ty
 const int stepper_maxdeg[] = {1770}; //max de cm
 const double DEG_PER_CM[] ={39,5}; //résultat calcul deg/CM
 double stepper_correction[]={0};
-double step_deg_remain = 45
+double step_deg_remain = 45;
 // vérifier que l'angle du servo correpond bien à l'angle de la partie du bras commandée
 // mettre le servo à 90°, puis mesurer l'angle réel
 // la valeur de calibration est donc (90 - {réel angle par rapport à 90})
@@ -70,8 +70,8 @@ void setup() {
   //envoi du mot start sur le port série
   Serial.println("start");
   //setup broches arduino
-  pinMode(stepper_dirPin[0], OUTPUT);
-  pinMode(stepper_stepPin[0], OUTPUT);
+  //pinMode(stepper_dirPin[0], OUTPUT);
+  //pinMode(stepper_stepPin[0], OUTPUT);
   pinMode(fanPin, OUTPUT);
   digitalWrite(fanPin, HIGH);
   int i = 0;
@@ -92,12 +92,12 @@ void setup() {
   Serial.println("calib go");
   calib_x();
   Serial.println("stepper test go");
-  test_stepper()
+  test_stepper();
   Serial.println("ready");
 }
 
 void loop() {
-  coordinate_move(20, 20)
+  coordinate_move(20, 20);
   // recvWithStartEndMarkers();
   // showNewData();
   // if (newData==true && loop==true) {
@@ -212,7 +212,7 @@ void stepper_advance(double steps, int dir) {
   
   // Serial.print("reste de pas stocké");
   // Serial.println(stepper_correction[stepper_num]);
-  stepper.disable()  
+  stepper.disable();
 }
 
 void calib_x(){
