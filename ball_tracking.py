@@ -66,6 +66,7 @@ while True:
 				(0, 255, 0), 2)
 			cv2.circle(frame, center, 5, (0, 0, 255), -1)
 			
+			#conversion en centimètres
 			x=((x/1000)*64)+1
 			y=((y/1000)*64)-0.4
 			x=round(x,2)
