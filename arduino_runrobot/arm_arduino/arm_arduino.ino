@@ -152,11 +152,11 @@ void coordinate_move(double xEnd, double yEnd) {
 
 
   //prints de débug :
-  Serial.println(" //////// ");
-  Serial.print(" xStart=  "); Serial.print(xStart); Serial.print(" yStart=  "); Serial.println(yStart);
-  Serial.print("Angle Top Arm="); Serial.print(angle_TopArm); Serial.print(" Angle Middle Arm=  "); Serial.println(angle_MiddleArm);
-  Serial.print("Angle Top Arm_next="); Serial.print(angle_TopArm_next); Serial.print(" Angle Middle Arm_next=  "); Serial.println(angle_MiddleArm_next);
-  Serial.print(" xEnd=  "); Serial.print(xEnd);   Serial.print(" yEnd=  "); Serial.println(yEnd);
+//  Serial.println(" //////// ");
+//  Serial.print(" xStart=  "); Serial.print(xStart); Serial.print(" yStart=  "); Serial.println(yStart);
+//  Serial.print("Angle Top Arm="); Serial.print(angle_TopArm); Serial.print(" Angle Middle Arm=  "); Serial.println(angle_MiddleArm);
+//  Serial.print("Angle Top Arm_next="); Serial.print(angle_TopArm_next); Serial.print(" Angle Middle Arm_next=  "); Serial.println(angle_MiddleArm_next);
+//  Serial.print(" xEnd=  "); Serial.print(xEnd);   Serial.print(" yEnd=  "); Serial.println(yEnd);
 
   XYZ_current[0] = xEnd;
   XYZ_current[1] = yEnd;
@@ -165,7 +165,7 @@ void coordinate_move(double xEnd, double yEnd) {
 }
 
 void stepper_advance(double steps, int dir) {
-  stepper.enable()
+  stepper.enable();
   // génération de la pwm pour le driver TMC2208
   // vérification si besoin de compensation pas-à-pas
   // if (abs(stepper_correction[stepper_num]) > 1) {
@@ -181,12 +181,11 @@ void stepper_advance(double steps, int dir) {
 
   // paramètre de direction de translation
   if (dir == 0) {
-    stepper.rotate(steps)
+    stepper.rotate(steps);
     //digitalWrite(stepper_dirPin[stepper_num], HIGH);
-    stepper.rotate(-steps)
   } else {
+    stepper.rotate(-steps);
     //digitalWrite(stepper_dirPin[stepper_num], LOW);
-
   }
 
   // envoi pwm driver TMC2208
@@ -216,8 +215,8 @@ void stepper_advance(double steps, int dir) {
 }
 
 void calib_x(){
-  stepper.enable()
-  stepper.startMove(-2500)
+  stepper.enable();
+  stepper.startMove(-2500);
   if (digitalRead(ENDSTOP) == HIGH){
     stepper.stop();
     XYZ_current[0]=0;
@@ -327,6 +326,57 @@ void twoarm_step_coordinate(double toparm_target, double middlearm_target) {
   //Serial.println("--> two arm step End /");
 
 }
+void get_angles_from_yz(double y, double z) {
+
+  //refer to trigonometry illustration for variable description
+
+  double H, s1, s2, aB, aA, aQ, servo1angle, servo2angle, y2, z2, y3, z3;
+
+  //arm length in cm
+  int L = 13;
+
+  H= sqrt (pow(y,2) + pow(z,2));
+  s1=H/2;
+  s2=sqrt (pow(L,2) - pow(s1,2));
+
+  aB=atan(s2/s1);
+  y2=y/2;
+  z2=z/2;
+  aA=atan(y2/z2);
+
+  servo1angle=aA+aB;
+  servo1angle= (servo1angle/ (2 * M_PI)) * 360;
+
+  //matrix multiplication - counterclockwise rotation
+  y3 = -L*sin(aA+aB);
+  z3 = -L* cos(aA+aB);
+
+  servo2angle=atan((y-y3)/(z-z3));  
+
+  servo2angle= (servo2angle / (2 * M_PI)) * 360;
+  //tangent calculation changes when servo2 exceeds 90 degrees, correction below
+  if ((z-z3)>0) {
+    servo2angle=servo2angle-180;
+  }
+
+  //Absolute Top Arm Angle
+  //Top Arm moves 0 to +90
+  angle_next[0] = servo1angle;
+
+  //Absolute Middle Arm Angle
+  //Midle Arm moves 0 to +90
+  angle_next[1] = -servo2angle;
+
+
+  //Convert to SERVO Angle
+  //in this case, a 90 servo position is equal to 71 degrees for Top arm
+  //90 servo position is equal to 65 Middle Arm
+  angle_next[0] = angle_next[0] + calibrate_TopArm;
+  angle_next[1] = angle_next[1] + calibrate_MiddleArm;
+
+}
+
+
 void servo_Open(bool openVal) {
 
   int servo_num = 2;
@@ -451,6 +501,7 @@ void recvWithStartEndMarkers() {
    
 }
 }
+
 void showNewData() {
     if (newData == true) {
         Serial.println(receivedChars);
@@ -468,6 +519,7 @@ void showNewData() {
         //newData = false;
     }
 }
+
 void parseData() {
 
   // formattage des données reçues
