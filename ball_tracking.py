@@ -105,11 +105,19 @@ with serial.Serial("/dev/ttyACM0", 9600, timeout=1) as arduino:
 										cv2.putText(frame,"SEND",(20,90),cv2.FONT_HERSHEY_SIMPLEX,1,(255,0,0),2)
 										#catchball(x, y)
 										inputs="<"+str(x)+","+str(y)+">"
-										print("inputs :", inputs)
 										inputs=inputs.encode("utf-8")
 										arduino.write(inputs)
-										if answer== 'done' :
-											counter=0
+										print("inputs :", inputs)
+										while arduino.inWaiting()==0: pass
+										while True:
+											if  arduino.inWaiting()>0: 
+												answer=arduino.readline()
+												answer=decodestr(answer)
+												print(answer)
+												arduino.flushInput()
+												if answer=='done' :
+													break
+										counter=0
 								xpast=x
 								ypast=y
 						# màj des données

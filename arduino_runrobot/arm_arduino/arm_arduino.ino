@@ -101,12 +101,13 @@ void setup() {
 }
 
 void loop() {
+bool loop=true;
 recvWithStartEndMarkers();
 showNewData();
   if (newData==true && loop==true) {
-    xmove(xdest);
-    newData=false;
-  Serial.println("done");
+      xmove(xdest);
+      newData=false;
+      Serial.println("done");
   }
 }
 
@@ -135,7 +136,7 @@ void xmove(double degmove){
   Serial.println(degmove);
   stepper.rotate(-degmove);
   stepper.stop();
-  delay(500);
+  delay(2000);
   stepper.rotate(degmove);
   stepper.stop();
   //digitalWrite(enPin, HIGH);
