@@ -3,11 +3,29 @@
 // programme exécuté par l'Arduino contrôlant les moteurs du bras
 //ressource : http://forum.arduino.cc/index.php?topic=288234.0
 
-
+#include <Arduino.h>
 #include "DHT.h"
 #include <Servo.h>
 #include <math.h>
+#include "BasicStepperDriver.h"
 
+// Motor steps per revolution. Most steppers are 200 steps or 1.8 degrees/step
+#define MOTOR_STEPS 400
+#define RPM 35
+
+// Since microstepping is set externally, make sure this matches the selected mode
+// If it doesn't, the motor will move at a different RPM than chosen
+// 1=full step, 2=half step etc.
+#define MICROSTEPS 1
+
+// All the wires needed for full functionality
+#define DIR 6
+#define STEP 7
+//Uncomment line to use enable/disable functionality
+//#define SLEEP 5
+
+// 2-wire basic config, microstepping is hardwired on the driver
+BasicStepperDriver stepper(MOTOR_STEPS, DIR, STEP);
 
 #define fanPin 10 // Arduino pin connected to relay which connected to fan
 #define DHTPIN 12           // Arduino pin connected to relay which connected to DHT sensor
@@ -63,7 +81,7 @@ void setup() {
   //setup broches arduino
   pinMode(stepper_dirPin[0], OUTPUT);
   pinMode(stepper_stepPin[0], OUTPUT);
-  pinMode(stepper_enPin[0], OUTPUT);
+  //pinMode(stepper_enPin[0], OUTPUT);
   
   int i = 0;
   for (i = 0; i < 3; i++) {
@@ -105,15 +123,34 @@ void setup() {
 
   //envoi ready port série
   dht.begin();        // initialize the sensor
-  
+  stepper.begin(RPM, MICROSTEPS);
+  // if using enable/disable on ENABLE pin (active LOW) instead of SLEEP uncomment next line
+  stepper.setEnableActiveState(LOW);
   Serial.println("ready");
 
   
 }
 void loop() {
   //fanControl();
-  digitalWrite(stepper_enPin[0], HIGH);
-  test_stepper();
+  //digitalWrite(stepper_enPin[0], HIGH);
+  //test_stepper();
+  // energize coils - the motor will hold position
+    stepper.enable();
+  
+    /*
+     * Moving motor one full revolution using the degree notation
+     */
+    stepper.rotate(360);
+
+    /*
+     * Moving motor to original position using steps
+     */
+    stepper.move(-MOTOR_STEPS*MICROSTEPS);
+
+    // pause and allow the motor to be moved by hand
+    stepper.disable();
+
+    delay(1000);
 //  bool loop=true;
 //  
 //  recvWithStartEndMarkers();
