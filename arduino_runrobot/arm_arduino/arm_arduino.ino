@@ -72,9 +72,9 @@ void setup() {
   //setup broches arduino
   pinMode(fanPin, OUTPUT);
   digitalWrite(fanPin, HIGH);
-  pinMode(enPin, OUTPUT);
+  //pinMode(enPin, OUTPUT);
   pinMode(STOPPER_PIN, INPUT);
-  digitalWrite(enPin, HIGH);
+  //digitalWrite(enPin, LOW);
 
   int i = 0;
   for (i = 0; i < 3; i++) {
@@ -91,27 +91,27 @@ void setup() {
   dht.begin();
 
   stepper.begin(RPM, MICROSTEPS);
-  stepper.setEnableActiveState(LOW);
+  //stepper.setEnableActiveState(LOW);
   pinMode(STOPPER_PIN, INPUT);
   
-  calib_x()
+  calib_x();
   Serial.println("ready");
 
-  xmove(20.0)
+  xmove(20.0);
 }
 
 void loop() {
-  recvWithStartEndMarkers();
-  showNewData();
-  if (newData==true && loop==true) {
-    xmove();
-    newData=false;
-  Serial.println("done");
-  }
+//  recvWithStartEndMarkers();
+//  showNewData();
+//  if (newData==true && loop==true) {
+//    xmove(xdest);
+//    newData=false;
+//  Serial.println("done");
+//  }
 }
 
 void calib_x(){
-  digitalWrite(enPin, LOW);
+  //digitalWrite(enPin, LOW);
   Serial.println("stepper calib");
   while (digitalRead(STOPPER_PIN) == LOW){
       stepper.rotate(-15);
@@ -119,19 +119,26 @@ void calib_x(){
   Serial.println("ENDSTOP");
   stepper.stop();
   stepper.rotate(1750);
-  digitalWrite(enPin, HIGH);
+  stepper.stop();
+  delay(2000);
+  //digitalWrite(enPin, HIGH);
 }
 
 void xmove(double degmove){
-  Serial.print("GO X");
-  degmove=45.5-(xdest*38.8);
-  digitalWrite(enPin, LOW);
+  Serial.print("GO X deg : ");
+  degmove=45.5-degmove;
+  degmove=degmove+8.0;
+  Serial.println(degmove);
+  degmove=degmove*38.8;
+  //degmove=abs(degmove);
+  //digitalWrite(enPin, LOW);
+  Serial.println(degmove);
   stepper.rotate(-degmove);
   stepper.stop();
   delay(500);
   stepper.rotate(degmove);
   stepper.stop();
-  digitalWrite(enPin, HIGH);
+  //digitalWrite(enPin, HIGH);
 }
 
 void servo_steps(int servo_num, double angle_target, double incr_step = 10, int step_delay = 100) {
