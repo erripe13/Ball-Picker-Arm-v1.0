@@ -56,8 +56,8 @@ def catchball(x, y):
 						print("inputs :", inputs)
 						inputs=inputs.encode("utf-8")
 						arduino.write(inputs)
-					elif answer== 'done' :
-						break
+						if answer== 'done' :
+							break
 					
 # main
 while True:

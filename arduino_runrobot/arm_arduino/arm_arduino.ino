@@ -97,17 +97,17 @@ void setup() {
   calib_x();
   Serial.println("ready");
 
-  xmove(20.0);
+  //xmove(20.0);
 }
 
 void loop() {
-//  recvWithStartEndMarkers();
-//  showNewData();
-//  if (newData==true && loop==true) {
-//    xmove(xdest);
-//    newData=false;
-//  Serial.println("done");
-//  }
+recvWithStartEndMarkers();
+showNewData();
+  if (newData==true && loop==true) {
+    xmove(xdest);
+    newData=false;
+  Serial.println("done");
+  }
 }
 
 void calib_x(){
