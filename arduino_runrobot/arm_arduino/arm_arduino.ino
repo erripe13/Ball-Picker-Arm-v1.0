@@ -31,8 +31,6 @@ int control=35;
 BasicStepperDriver stepper(MOTOR_STEPS, DIR, STEP);
 
 
-
-
 // paramètres et broches du robot
 //initialisation de la liste des servos
 Servo servo[3];
@@ -67,6 +65,7 @@ char receivedChars[numChars];
 boolean newData = false;
 double degmove;
 double xdest, ydest;
+double servo1angle, servo2angle;
 
 void setup() {  
   // port série
@@ -102,7 +101,12 @@ void setup() {
   
   calib_x();
   Serial.println("ready");
-
+//  digitalWrite(cutpower, HIGH);
+//  servo[0].write(90);
+//  servo[1].write(90);
+//  delay(6000);
+//  digitalWrite(cutpower, LOW);
+  //get_angles_from_yz(30, -35.35);
   //xmove(20.0);
 }
 
@@ -166,101 +170,52 @@ void servo_steps(int servo_num, double angle_target, double incr_step = 10, int 
 }
 
 void get_angles_from_yz(double y, double z) {
-
+  Serial.print("y :");
+  Serial.println(y);
+  Serial.print("z :");
+  Serial.println(z);
   //refer to trigonometry illustration for variable description
-
-  double H, s1, s2, aB, aA, aQ, servo1angle, servo2angle, y2, z2, y3, z3;
-
+  double H, s1, s2, aB, aA, aQ, y2, z2, y3, z3;
   //arm length in cm
   int L = 25;
-
   H= sqrt (pow(y,2) + pow(z,2));
   s1=H/2;
   s2=sqrt (pow(L,2) - pow(s1,2));
-
   aB=atan(s2/s1);
   y2=y/2;
   z2=z/2;
   aA=atan(y2/z2);
-
   servo1angle=aA+aB;
   servo1angle= (servo1angle/ (2 * M_PI)) * 360;
-
   y3 = -L*sin(aA+aB);
   z3 = -L* cos(aA+aB);
-
   servo2angle=atan((y-y3)/(z-z3));  
-
   servo2angle= (servo2angle / (2 * M_PI)) * 360;
   //tangent calculation changes when servo2 exceeds 90 degrees, correction below
   if ((z-z3)>0) {
     servo2angle=servo2angle-180;
   }
-
-  //Absolute Top Arm Angle
-  //Top Arm moves 0 to +90
+  
+  servo2angle=abs(servo2angle);
+  Serial.print("Angle 1 bras :");
   Serial.println(servo1angle);
-  //Absolute Middle Arm Angle
-  //Midle Arm moves 0 to +90
-  servo2angle = -servo2angle;
+  Serial.print("Angle 2 bras :");
   Serial.println(servo2angle);
-
-  //Convert to SERVO Angle
-  //in this case, a 90 servo position is equal to 71 degrees for Top arm
-  //90 servo position is equal to 65 Middle Arm
-  // angle_next[0] = angle_next[0] + calibrate_TopArm;
-  // angle_next[1] = angle_next[1] + calibrate_MiddleArm;
-
+  servo1angle=map(servo1angle, 0, 90, 90, 0);
+  servo2angle=map(servo2angle, 0, 90, 180, 90);
+  //conversion degrés bras théorique en angles servo étalonnés
+  //servo1angle = 90-servo1angle;
+  Serial.print("Angle 1 servo :");
+  Serial.println(servo1angle);
+  //servo2angle = -servo2angle;
+  Serial.print("Angle 2 servo:");
+  Serial.println(servo2angle);
+  
+  //envoi des angles
+  servo[0].write(servo1angle);
+  servo[1].write(servo2angle);
 }
 
-void test_servo(int servo_num) {
-
-  int angle_max = 0;
-  int angle_min = 0;
-  int angle_default = 0;
-
-  //ref servo_steps(int servo_num, int angle_target, int incr_step=10, int step_delay=50)
-
-  //segment1
-  if (servo_num == 0) {
-    //Butées servo1 réelles
-    angle_max = 80;
-    angle_min = 20;
-    angle_default = 46;
-  }
-  //segment2
-  if (servo_num == 1) {
-    //Butées servo2 réelles
-    angle_max = 165;
-    angle_min = 140;
-    angle_default = 155;
-  }
-  //Butées servo pince réelles
-  if (servo_num == 2) {
-    angle_max = servoGrip_val[0];
-    angle_min = servoGrip_val[1];
-    angle_default = servoGrip_val[2];
-  }
-
-  servo_steps(servo_num, angle_max);
-  delay(1000);
-  servo_steps(servo_num, angle_min);
-  delay(1000);
-  servo_steps(servo_num, angle_default);
-
-}
-
-void test_getangles(double y, double z) {
-  get_angles_from_yz(y,z);
-  Serial.print("Y: ");
-  Serial.print(y);
-  Serial.print(" Z: ");
-  Serial.println(z);
-  Serial.print("servo1: ");
-  Serial.print(angle_next[0]);
-  Serial.print(" servo2: ");
-  Serial.println(angle_next[1]);
-}
 
 void recvWithStartEndMarkers() {
     static boolean recvInProgress = false;
@@ -330,15 +285,17 @@ void parseData() {
 }
 
 void xymove(double degmove, double ymove){
+  ymove=ymove-30.0; //correction 
+  ymove=-ymove;
   servo[0].write(20);
   servo[1].write(110);
   servo[2].write(70);
   digitalWrite(cutpower, HIGH);
   digitalWrite(cutpower2, HIGH);
-  get_angles_from_yz(ymove, -30.0)
   Serial.print("GO X deg : ");
   degmove=45.5-degmove;
   degmove=degmove+8.0;
+  if (degmove>=45) degmove=45;
   Serial.println(degmove);
   degmove=degmove*38.8;
   //degmove=abs(degmove);
@@ -347,15 +304,19 @@ void xymove(double degmove, double ymove){
   stepper.rotate(-degmove);
   stepper.stop();
   delay(2000);
-
-
-  stepper.rotate(degmove);
-  stepper.stop();
+  get_angles_from_yz(ymove, -26.0);
+  delay(500);
+  servo[2].write(20);
+  delay(3000);
   servo[0].write(20);
   servo[1].write(110);
+  stepper.rotate(degmove);
+  stepper.stop();
+  delay(1000);
   servo[2].write(70);
   delay(1000);
   digitalWrite(cutpower, LOW);
   digitalWrite(cutpower2, LOW);
+  delay(4000);
   //digitalWrite(enPin, HIGH);
 }
