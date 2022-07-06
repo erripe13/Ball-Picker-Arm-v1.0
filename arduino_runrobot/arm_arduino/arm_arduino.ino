@@ -136,21 +136,14 @@ void loop() {
   //test_stepper();
   // energize coils - the motor will hold position
     stepper.enable();
-  
-    /*
-     * Moving motor one full revolution using the degree notation
-     */
-    stepper.rotate(360);
+    stepper.rotate(cmtodeg(45));
 
-    /*
-     * Moving motor to original position using steps
-     */
     stepper.move(-MOTOR_STEPS*MICROSTEPS);
 
     // pause and allow the motor to be moved by hand
     stepper.disable();
 
-    delay(1000);
+   // delay(1000);
 //  bool loop=true;
 //  
 //  recvWithStartEndMarkers();
@@ -199,6 +192,11 @@ void fanControl(){
 
 void pickndrop(double x, double y){
     
+}
+
+void cmtodeg(double input){
+  deg=input*40
+  return deg
 }
 
 void get_angles_from_yz(double y, double z) {
