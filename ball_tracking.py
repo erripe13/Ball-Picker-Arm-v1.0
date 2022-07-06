@@ -32,6 +32,12 @@ time.sleep(1.0)
 xpast=0
 ypast=0
 counter=0
+def decodestr(inputstr):   
+        inputstr=inputstr.decode("utf-8")
+        inputstr=inputstr.replace("\r","")
+        inputstr=inputstr.replace("\n","")
+        inputstr=inputstr.replace("'b","")
+        return inputstr
 
 def catchball(x, y):
 	with serial.Serial("/dev/ttyACM0", 9600, timeout=1) as arduino:
@@ -42,15 +48,15 @@ def catchball(x, y):
 			while True :
 				if  arduino.inWaiting()>0: 
 					answer=arduino.readline()
+					answer=decodestr(answer)
 					print(answer)
 					arduino.flushInput()
-					if answer== b'ready\r\n' :
+					if answer== 'ready' :
 						inputs="<"+str(x)+","+str(y)+">"
-						inputs=inputs.encode("utf-8")
 						print("inputs :", inputs)
+						inputs=inputs.encode("utf-8")
 						arduino.write(inputs)
-						
-					elif answer== b'done\r\n' :
+					elif answer== 'done' :
 						break
 					
 # main
