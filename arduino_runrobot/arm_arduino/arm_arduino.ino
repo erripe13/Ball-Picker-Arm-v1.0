@@ -131,29 +131,7 @@ void calib_x(){
   //digitalWrite(enPin, HIGH);
 }
 
-void xymove(double degmove, double ymove){
-  digitalWrite(cutpower, HIGH);
-  digitalWrite(cutpower2, HIGH);
-  servo_steps(0, 20)
-  Serial.print("GO X deg : ");
-  degmove=45.5-degmove;
-  degmove=degmove+8.0;
-  Serial.println(degmove);
-  degmove=degmove*38.8;
-  //degmove=abs(degmove);
-  //digitalWrite(enPin, LOW);
-  Serial.println(degmove);
-  stepper.rotate(-degmove);
-  stepper.stop();
-  delay(2000);
-  servo_steps(0, 30)
-  stepper.rotate(degmove);
-  servo_steps(0, 20)
-  stepper.stop();
-  digitalWrite(cutpower, LOW);
-  digitalWrite(cutpower2, LOW);
-  //digitalWrite(enPin, HIGH);
-}
+
 
 void servo_steps(int servo_num, double angle_target, double incr_step = 10, int step_delay = 100) {
   // cette commande permet d'envoyer les instructions par paquets de 25 degrés. utile pour des servos bas de gamme.
@@ -351,4 +329,29 @@ void parseData() {
   strtokIndx = strtok(NULL, ",");
   ydest = atof(strtokIndx);     // conversion en float
 
+}
+
+void xymove(double degmove, double ymove){
+  servo[0].write(20);
+  servo[1].write(110);
+  servo[2].write(70);
+  digitalWrite(cutpower, HIGH);
+  digitalWrite(cutpower2, HIGH);
+  Serial.print("GO X deg : ");
+  degmove=45.5-degmove;
+  degmove=degmove+8.0;
+  Serial.println(degmove);
+  degmove=degmove*38.8;
+  //degmove=abs(degmove);
+  //digitalWrite(enPin, LOW);
+  Serial.println(degmove);
+  stepper.rotate(-degmove);
+  stepper.stop();
+  delay(2000);
+  stepper.rotate(degmove);
+  servo_steps(0, 20);
+  stepper.stop();
+  digitalWrite(cutpower, LOW);
+  digitalWrite(cutpower2, LOW);
+  //digitalWrite(enPin, HIGH);
 }
