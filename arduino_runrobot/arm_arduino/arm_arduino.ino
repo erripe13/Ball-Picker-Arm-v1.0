@@ -124,7 +124,10 @@ void loop() {
   //le bool_move contrôle si le bras se déplace linéairement vers la position ou s'il effectue un mouvement de prise (déplacement x d'abord/y ensuite, etc.).
   
   if (newData==true && loop==true) {
-    coordinate_move(XYZ_next[0],XYZ_next[1]);
+
+    Serial.println("coord:", XYZ_next[0],XYZ_next[1]);
+    pickndrop(XYZ_next[0],XYZ_next[1]);
+    
     //delay(XYZ_next[5]);
     newData=false;
     Serial.println("done");
@@ -155,6 +158,10 @@ void fanControl(){
       Serial.print(control);
       Serial.println("%");
     }
+}
+
+void pickndrop(double x, double y){
+    
 }
 
 void get_angles_from_yz(double y, double z) {

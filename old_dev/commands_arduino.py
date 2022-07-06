@@ -32,8 +32,6 @@ class arm_controller:
         inputstr=inputstr.replace("'b","")
         return inputstr
 
-    # ressource : https://playground.arduino.cc/interfacing/python
-
     def wait_forready(self):
         print(self.decodestr(self.ser.readline()))
         while True:
