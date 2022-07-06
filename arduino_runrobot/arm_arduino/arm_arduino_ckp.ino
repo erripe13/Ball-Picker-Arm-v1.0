@@ -97,7 +97,7 @@ void setup() {
   // Set Coordinates a Base
   int y = 0;
   int z = 25;
-  //coordinate_move(0, y);
+  coordinate_move(0, y);
   // setup servo
   for (i = 0; i < 3; i++) {
     servo[i].attach(servo_Pin[i], 500, 2500);
