@@ -92,7 +92,7 @@ void setup() {
   }
   // initialisation capteur température
   dht.begin();
-  
+
   stepper.begin(RPM, MICROSTEPS);
   //init pin EN
   stepper.setEnableActiveState(LOW);
@@ -104,13 +104,14 @@ void setup() {
 
 void loop() {
   Serial.println("calib go");
-  stepper.move(-2000);
+  stepper.enable();
+  stepper.startMove(-2000);
   if (digitalRead(ENDSTOP) == HIGH){
     Serial.println("TOUCHED");
     stepper.stop();
     XYZ_current[0]=0;
   }
-  coordinate_move(20, 20);
+  //coordinate_move(20, 20);
   // recvWithStartEndMarkers();
   // showNewData();
   // if (newData==true && loop==true) {
