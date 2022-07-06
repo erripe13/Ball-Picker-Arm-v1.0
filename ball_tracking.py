@@ -136,8 +136,8 @@ with serial.Serial("/dev/ttyACM0", 9600, timeout=1) as arduino:
 							#cv2.setWindowProperty("pré-calib",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
 							cv2.imshow("pré-calib", calib)
 						elif GPIO.input(buttonPin) == GPIO.LOW:
-							#cv2.namedWindow("Retour tracking", cv2.WND_PROP_FULLSCREEN)	
-							#cv2.setWindowProperty("Retour tracking",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
+							cv2.namedWindow("Retour tracking", cv2.WND_PROP_FULLSCREEN)	
+							cv2.setWindowProperty("Retour tracking",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
 							cv2.imshow("Retour tracking", frame)
 						key = cv2.waitKey(1) & 0xFF
 						# arrêt si Q est pressé

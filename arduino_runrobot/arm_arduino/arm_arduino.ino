@@ -106,7 +106,7 @@ void setup() {
 //  servo[1].write(90);
 //  delay(6000);
 //  digitalWrite(cutpower, LOW);
-  //get_angles_from_yz(30, -35.35);
+  //get_angles_from_yz(25, -31.5);
   //xmove(20.0);
 }
 
@@ -137,8 +137,8 @@ void calib_x(){
 
 
 
-void servo_steps(int servo_num, double angle_target, double incr_step = 10, int step_delay = 100) {
-  // cette commande permet d'envoyer les instructions par paquets de 25 degrés. utile pour des servos bas de gamme.
+void servo_steps(int servo_num, double angle_target, double incr_step = 5, int step_delay = 100) {
+  // cette commande permet d'envoyer les instructions par paquets de 5 degrés. permet de gérer la vitesse
 
   int set_angle;
   int angle_start = angle_current[servo_num];
@@ -162,7 +162,7 @@ void servo_steps(int servo_num, double angle_target, double incr_step = 10, int 
     }
   }
 
-  // assurer l'instruction d'angle
+  // l'instruction d'angle
   servo[servo_num].write(angle_target);
   //mettre à jour la donnée d'angle dans le registre de position
   angle_current[servo_num] = angle_target;
@@ -195,25 +195,32 @@ void get_angles_from_yz(double y, double z) {
   if ((z-z3)>0) {
     servo2angle=servo2angle-180;
   }
-  
   servo2angle=abs(servo2angle);
+
+  
   Serial.print("Angle 1 bras :");
   Serial.println(servo1angle);
   Serial.print("Angle 2 bras :");
   Serial.println(servo2angle);
+
+  //conversion degrés bras théorique en angles servo étalonnés (inversion du sens, bornes, correction du jeu)
+  //if (servo1angle>85) servo1angle=85;
   servo1angle=map(servo1angle, 0, 90, 90, 0);
-  servo2angle=map(servo2angle, 0, 90, 180, 90);
-  //conversion degrés bras théorique en angles servo étalonnés
-  //servo1angle = 90-servo1angle;
+  //if (servo1angle>50) servo2angle=map(servo2angle, 0, 90, 180, 75);
+  //else 
+  servo2angle=map(servo2angle, 0, 90, 180, 80);
+  
+
+
   Serial.print("Angle 1 servo :");
   Serial.println(servo1angle);
   //servo2angle = -servo2angle;
   Serial.print("Angle 2 servo:");
   Serial.println(servo2angle);
   
-  //envoi des angles
-  servo[0].write(servo1angle);
-  servo[1].write(servo2angle);
+  //envoi des angles aux moteurs
+  servo_steps(0, servo1angle);
+  servo_steps(1, servo2angle);
 }
 
 
@@ -304,12 +311,12 @@ void xymove(double degmove, double ymove){
   stepper.rotate(-degmove);
   stepper.stop();
   delay(2000);
-  get_angles_from_yz(ymove, -26.0);
+  get_angles_from_yz(ymove, -25.0);
   delay(500);
   servo[2].write(20);
   delay(3000);
-  servo[0].write(20);
-  servo[1].write(110);
+  servo_steps(0, 20);
+  servo_steps(1, 110);
   stepper.rotate(degmove);
   stepper.stop();
   delay(1000);
@@ -317,6 +324,6 @@ void xymove(double degmove, double ymove){
   delay(1000);
   digitalWrite(cutpower, LOW);
   digitalWrite(cutpower2, LOW);
-  delay(4000);
+  delay(500);
   //digitalWrite(enPin, HIGH);
 }
