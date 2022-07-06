@@ -71,14 +71,14 @@ void setup() {
   //envoi du mot start sur le port série
   Serial.println("start");
   //setup broches arduino
-  //pinMode(stepper_dirPin[0], OUTPUT);
-  //pinMode(stepper_stepPin[0], OUTPUT);
+  pinMode(STEP, OUTPUT);
+  pinMode(DIR, OUTPUT);
   pinMode(fanPin, OUTPUT);
   digitalWrite(fanPin, HIGH);
   pinMode(enPin, OUTPUT);
   pinMode(ENDSTOP, INPUT);
   digitalWrite(enPin, LOW);
-  stepper.begin(RPM, MICROSTEPS);
+  
   int i = 0;
   for (i = 0; i < 3; i++) {
     pinMode(servo_Pin[i], OUTPUT);
@@ -93,6 +93,7 @@ void setup() {
   // initialisation capteur température
   dht.begin();
   
+  stepper.begin(RPM, MICROSTEPS);
   //init pin EN
   stepper.setEnableActiveState(LOW);
   
