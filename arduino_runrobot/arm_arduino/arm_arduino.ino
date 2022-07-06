@@ -70,13 +70,13 @@ void setup() {
   //envoi du mot start sur le port série
   Serial.println("start");
   //setup broches arduino
-  pinMode(STEP, OUTPUT);
-  pinMode(DIR, OUTPUT);
+  //pinMode(STEP, OUTPUT);
+  //pinMode(DIR, OUTPUT);
   pinMode(fanPin, OUTPUT);
   digitalWrite(fanPin, HIGH);
-  pinMode(enPin, OUTPUT);
+  //pinMode(enPin, OUTPUT);
   pinMode(STOPPER_PIN, INPUT);
-  digitalWrite(enPin, LOW);
+  //digitalWrite(enPin, LOW);
 
   int i = 0;
   for (i = 0; i < 3; i++) {
@@ -97,7 +97,12 @@ void setup() {
   pinMode(STOPPER_PIN, INPUT);
   
   Serial.println("stepper calib");
-  calib_x();
+  while (digitalRead(STOPPER_PIN) == LOW){
+      stepper.rotate(-15);
+  }
+  Serial.println("STOPPER");
+  stepper.stop();
+  stepper.rotate(1750);
   Serial.println("ready");
 }
 
@@ -115,10 +120,10 @@ void loop() {
 void calib_x(){
   while (digitalRead(STOPPER_PIN) == LOW){
       stepper.rotate(-15);
-    }
-    Serial.println("STOPPER");
-    stepper.stop();
-    stepper.rotate(1750);
+  }
+  Serial.println("STOPPER");
+  stepper.stop();
+  stepper.rotate(1750);
 }
 
 void servo_steps(int servo_num, double angle_target, double incr_step = 10, int step_delay = 100) {

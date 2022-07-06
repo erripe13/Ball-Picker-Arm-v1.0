@@ -43,7 +43,7 @@ void loop() {
     Serial.println("STOPPER");
     stepper.stop();
     delay(1000);
-    stepper.rotate(1000);
+    stepper.rotate(1750);
 
-    delay(1000);
+    delay(10000);
 }
