@@ -42,16 +42,17 @@ void loop() {
   
     // energize coils - the motor will hold position
     stepper.enable();
-  
+    stepper.setSpeedProfile(50, 2000, 1000)
     /*
      * Moving motor one full revolution using the degree notation
      */
-    stepper.rotate(360);
+    stepper.rotate(1700);
 
     /*
      * Moving motor to original position using steps
      */
-    stepper.move(-MOTOR_STEPS*MICROSTEPS);
+    
+    stepper.move(-1700);
 
     // pause and allow the motor to be moved by hand
     stepper.disable();

@@ -153,14 +153,14 @@ void loop() {
 //  //X: 7.00 Y: 8.00 Z: 9.00 bool_move: 1.00 bool_open: 0.00 delay_ms: 10.00 move_type: 1.00
 //  //le bool_move contrôle si le bras se déplace linéairement vers la position ou s'il effectue un mouvement de prise (déplacement x d'abord/y ensuite, etc.).
 //  
-//  if (newData==true && loop==true) {
-//
-//    Serial.println(XYZ_next[0],XYZ_next[1]);
-//    coordinate_move(XYZ_next[0],XYZ_next[1]);
-//    
-//    //delay(XYZ_next[5]);
-//    newData=false;
-//    Serial.println("done");
+ if (newData==true && loop==true) {
+
+   Serial.println(XYZ_next[0],XYZ_next[1]);
+   coordinate_move(XYZ_next[0],XYZ_next[1]);
+   
+   //delay(XYZ_next[5]);
+   newData=false;
+   Serial.println("done");
 //  }
 
 }
@@ -207,7 +207,7 @@ void get_angles_from_yz(double y, double z) {
   double H, s1, s2, aB, aA, aQ, servo1angle, servo2angle, y2, z2, y3, z3;
 
   //longueur du bras en cm
-  int L = 30;
+  int L = 25;
 
   H= sqrt (pow(y,2) + pow(z,2));
   s1=H/2;
@@ -290,11 +290,11 @@ void coordinate_move(double xEnd, double yEnd) {
 
 
   //prints de débug :
-  //Serial.println(" //////// ");
-  //Serial.print(" xStart=  "); Serial.print(xStart); Serial.print(" yStart=  "); Serial.println(yStart);
-  //Serial.print("Angle Top Arm="); Serial.print(angle_TopArm); Serial.print(" Angle Middle Arm=  "); Serial.println(angle_MiddleArm);
-  //Serial.print("Angle Top Arm_next="); Serial.print(angle_TopArm_next); Serial.print(" Angle Middle Arm_next=  "); Serial.println(angle_MiddleArm_next);
-  //Serial.print(" xEnd=  "); Serial.print(xEnd);   Serial.print(" yEnd=  "); Serial.println(yEnd);
+  Serial.println(" //////// ");
+  Serial.print(" xStart=  "); Serial.print(xStart); Serial.print(" yStart=  "); Serial.println(yStart);
+  Serial.print("Angle Top Arm="); Serial.print(angle_TopArm); Serial.print(" Angle Middle Arm=  "); Serial.println(angle_MiddleArm);
+  Serial.print("Angle Top Arm_next="); Serial.print(angle_TopArm_next); Serial.print(" Angle Middle Arm_next=  "); Serial.println(angle_MiddleArm_next);
+  Serial.print(" xEnd=  "); Serial.print(xEnd);   Serial.print(" yEnd=  "); Serial.println(yEnd);
 
   XYZ_current[0] = xEnd;
   XYZ_current[1] = yEnd;
