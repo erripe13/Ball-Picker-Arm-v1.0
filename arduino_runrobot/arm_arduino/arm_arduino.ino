@@ -54,6 +54,8 @@ const double calibrate_TopArm=0;
 const double calibrate_MiddleArm=0;
 //compensation hauteur de la pince par rapport à l'extrémité du segment 2 du bras
 const double calibrate_Z=8;
+//étalo step
+const double DEG_PER_CM=38.8;
 // communication
 const byte numChars = 32;
 char receivedChars[numChars];
@@ -112,7 +114,7 @@ void coordinate_move(double xEnd, double yEnd) {
   double zStart = XYZ_current[2];
 
   //application de la calibration de pas du moteur
-  double x_to_steps = DEG_PER_CM[0];
+  double x_to_steps = DEG_PER_CM;
 
   //mouvement en y ?
   double zDelta = zEnd - zStart;

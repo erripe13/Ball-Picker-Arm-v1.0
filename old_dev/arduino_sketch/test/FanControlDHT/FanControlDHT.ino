@@ -31,19 +31,19 @@ void loop()
     Serial.println(temperature);
     if (temperature<26) {                  //condition basse vitesse
       control=100;
-      Serial.print("done");
+      Serial.print("ventilateur :");
       Serial.print("40");
       Serial.println("%");
       analogWrite(fanPin, control);
     }
     if (temperature>=26){                   //accélération des ventilateurs jusqu'à 30°
-      Serial.print("done");
+      Serial.print("ventilateur :");
       Serial.println(temperature);
       if (temperature>=30) temperature=30;
       control=map(temperature, 26, 30, 100, 255);
       analogWrite(fanPin, control);
       control=map(control, 100, 255, 40, 100);
-      Serial.print("done");
+      Serial.print("ventilateur :");
       Serial.print(control);
       Serial.println("%");
       
