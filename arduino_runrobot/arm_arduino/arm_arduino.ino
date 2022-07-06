@@ -48,7 +48,7 @@ double XYZ_current[] = {0, 0, -40}; //x,y,z, bool_move, bool_open, delay_to_next
 double XYZ_next[] = {0, 0, -9}; //x,y,z, bool_move, bool_open, delay_to_next, type_of_action
 //contraintes de translation (pas-à-pas)
 //const int stepper_delay[] = {100}; //27*22 for full step
-const int stepper_maxcm[] = {45}; //max de cm
+const int stepper_maxdeg[] = {1770}; //max de cm
 const double DEG_PER_CM[] ={39,5}; //résultat calcul deg/CM
 double stepper_correction[]={0};
 double step_deg_remain = 45
@@ -89,18 +89,22 @@ void setup() {
   dht.begin();
   //init pin EN
   stepper.setEnableActiveState(LOW);
+  Serial.println("calib go");
   calib_x();
+  Serial.println("stepper test go");
+  test_stepper()
   Serial.println("ready");
 }
 
 void loop() {
-  recvWithStartEndMarkers();
-  showNewData();
-  if (newData==true && loop==true) {
-    coordinate_move(XYZ_next[0],XYZ_next[1]);
-    newData=false;
-    Serial.println("done");
-  }
+  coordinate_move(20, 20)
+  // recvWithStartEndMarkers();
+  // showNewData();
+  // if (newData==true && loop==true) {
+  //   coordinate_move(XYZ_next[0],XYZ_next[1]);
+  //   newData=false;
+  //   Serial.println("done");
+  // }
 }
 
 void coordinate_move(double xEnd, double yEnd) {
@@ -121,9 +125,9 @@ void coordinate_move(double xEnd, double yEnd) {
 
   if (xDelta != 0) {
     if (xDelta > 0) {
-      stepper_advance(0, x_stepper_steps, 0);
+      stepper_advance(x_stepper_steps, 0);
     } else {
-      stepper_advance(0, x_stepper_steps, 1);
+      stepper_advance(x_stepper_steps, 1);
     }
   }
 
@@ -160,7 +164,7 @@ void coordinate_move(double xEnd, double yEnd) {
   //XYZ_current[3] = liftgrab_motion;
 }
 
-void stepper_advance(int stepper_num, double steps, int dir) {
+void stepper_advance(double steps, int dir) {
   stepper.enable()
   // génération de la pwm pour le driver TMC2208
   // vérification si besoin de compensation pas-à-pas
@@ -177,9 +181,9 @@ void stepper_advance(int stepper_num, double steps, int dir) {
 
   // paramètre de direction de translation
   if (dir == 0) {
-    stepper.rotate
+    stepper.rotate(steps)
     //digitalWrite(stepper_dirPin[stepper_num], HIGH);
-
+    stepper.rotate(-steps)
   } else {
     //digitalWrite(stepper_dirPin[stepper_num], LOW);
 
@@ -337,11 +341,10 @@ void servo_Open(bool openVal) {
   XYZ_current[4] = openVal;
 }
 void test_stepper() {
-
-  stepper_advance(0, stepper_maxsteps[0], 0);
+  stepper_advance(stepper_maxdeg[0], 0);
   delay(1000);
-  stepper_advance(0, stepper_maxsteps[0], 1);
-
+  stepper_advance(stepper_maxdeg[0], 1);
+  delay(1000);
 }
 void test_servo(int servo_num) {
 
@@ -484,4 +487,3 @@ void parseData() {
   strtokIndx = strtok(NULL, ",");
   XYZ_next[2] = atof(strtokIndx);     // conversion en float
 }
-z
