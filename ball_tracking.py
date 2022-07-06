@@ -11,11 +11,21 @@ import imutils
 import time
 import RPi.GPIO as GPIO
 import serial
+import board
+import neopixel
 
 GPIO.setmode(GPIO.BOARD)
 buttonPin = 36
 GPIO.setwarnings(False) # Ignore warning for now
 GPIO.setup(buttonPin, GPIO.IN)
+
+pixel_pin = board.D18
+# The number of NeoPixels
+num_pixels = 26
+ORDER = neopixel.GRB
+pixels = neopixel.NeoPixel(
+    pixel_pin, num_pixels, brightness=1, auto_write=False, pixel_order=ORDER
+)
 
 # limites HSV couleur balle, à définir avec hsv_define.py
 greenLower = (15, 112, 143)
@@ -51,6 +61,10 @@ def catchball(x, y):
 					
 # main
 while True:
+	# éclairage blanc
+	pixels.fill((255, 255, 255))
+    #envoi de la donnée
+	pixels.show()
 	# définir frame comme flux video
 	frame = vs.read()
 	#frame = frame[1] if args.get("video", False) else frame
@@ -96,10 +110,14 @@ while True:
 			cv2.putText(frame,"x,y: "+str(x)+","+str(y),(20,20),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
 			if (xpast>=x-0.25 and xpast<=x+0.25 and ypast>=y-0.25 and ypast<=y+0.25):
 				cv2.putText(frame,"STOP",(20,60),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
-				counter=counter+1
-				if (counter>=15) :
-					catchball(x, y)
-					counter=0
+				# éclairage blanc
+				pixels.fill((255, 0, 0))
+    			#envoi de la donnée
+				pixels.show()
+				# counter=counter+1
+				#if (counter>=15) :
+				#	catchball(x, y)
+				#	counter=0
 			xpast=x
 			ypast=y
 	# màj des données
