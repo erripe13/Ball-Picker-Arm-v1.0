@@ -122,8 +122,8 @@ showNewData();
 }
 
 void calib_x(){
-  servocontrol(0, 10);
-  servocontrol(1, 100);
+  servocontrol(0, 40);
+  servocontrol(1, 80);
   digitalWrite(cutpower, HIGH);
   digitalWrite(cutpower2, HIGH);
   //digitalWrite(enPin, LOW);
@@ -135,6 +135,8 @@ void calib_x(){
   stepper.stop();
   stepper.rotate(1750);
   stepper.stop();
+  servocontrol(0, 40);
+  servocontrol(1, 80);
   delay(1000);
   digitalWrite(cutpower, LOW);
   digitalWrite(cutpower2, LOW);
@@ -294,28 +296,34 @@ void parseData() {
 }
 
 void xymove(double degmove, double ymove){
+  //correction de la donnée y
   ymove=ymove-30.0; //correction 
   ymove=-ymove; //inversion du y
+  //bras rétracté
   servocontrol(0, 10);
   servocontrol(1, 100);
   servo[2].write(70);
+  //alimentation servo
   digitalWrite(cutpower, HIGH);
   digitalWrite(cutpower2, HIGH);
   Serial.print("GO X deg : ");
+  //correction de la donnée x
   degmove=45.5-degmove;
   degmove=degmove+9.5;
   if (degmove>=45) degmove=45;
+  if (degmove<=-5) degmove=-5;
   Serial.println(degmove);
-  degmove=degmove*38.8;
-  //degmove=abs(degmove);
-  //digitalWrite(enPin, LOW);
+  degmove=degmove*38.8; //conversion en degrés
   Serial.println(degmove);
-  stepper.rotate(-degmove);
+  stepper.rotate(-degmove); //va au-dessus de la balle
   stepper.stop();
   delay(1000);
+  //la pince s'approche
   get_angles_from_yz(ymove, -25.0);
   delay(300);
+  //la pince descend
   get_angles_from_yz(ymove, -33.0);
+  //conditions cinématiques
   if (ymove>=5){
   //envoi des angles aux moteurs
   servo[2].write(20);
@@ -330,13 +338,21 @@ void xymove(double degmove, double ymove){
   servocontrol(1, 100);
   servocontrol(0, 10);
   }
+  //retour au joueur
   stepper.rotate(degmove);
   stepper.stop();
-  delay(1000);
-  servo[2].write(70);
-  delay(1000);
+  delay(500);
+  //positionnement pour lâcher la balle
+  servocontrol(1, 80);
+  servocontrol(0, 95);
+  delay(500);
+  servo[2].write(70); //ouvre la pince
+  delay(500);
+  //rétractation du bras
+  servocontrol(0, 40);
+  servocontrol(1, 80);
+  //repos (coupure alim servo)
   digitalWrite(cutpower, LOW);
   digitalWrite(cutpower2, LOW);
   delay(500);
-  //digitalWrite(enPin, HIGH);
 }
