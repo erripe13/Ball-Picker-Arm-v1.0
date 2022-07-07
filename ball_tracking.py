@@ -99,10 +99,10 @@ with serial.Serial("/dev/ttyACM0", 9600, timeout=1) as arduino:
 								y=round(y,1)
 								cv2.putText(frame,"x,y: "+str(x)+","+str(y),(20,20),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
 								if (xpast>=x-0.25 and xpast<=x+0.25 and ypast>=y-0.25 and ypast<=y+0.25):
-									cv2.putText(frame,"STOP",(20,60),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
+									cv2.putText(frame,"LE ROBOT VA ATTRAPER LA BALLE",(20,60),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
 									counter=counter+1
 									if (counter>=15) :
-										cv2.putText(frame,"SEND",(20,90),cv2.FONT_HERSHEY_SIMPLEX,1,(255,0,0),2)
+										#cv2.putText(frame,"SEND",(20,90),cv2.FONT_HERSHEY_SIMPLEX,1,(255,0,0),2)
 										#catchball(x, y)
 										inputs="<"+str(x)+","+str(y)+">"
 										inputs=inputs.encode("utf-8")
@@ -130,7 +130,7 @@ with serial.Serial("/dev/ttyACM0", 9600, timeout=1) as arduino:
 							# calculer l'épaisseur de la ligne en fonction du temps et dessiner
 							thickness = int(np.sqrt(10 / float(i + 1)) * 2.5)
 							cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
-							# afficher la sortie video traitée assemblé
+							# afficher la sortie video traitée assemblée
 						if GPIO.input(buttonPin) == GPIO.HIGH:
 							#cv2.namedWindow("pré-calib", cv2.WND_PROP_FULLSCREEN)	
 							#cv2.setWindowProperty("pré-calib",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)

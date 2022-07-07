@@ -17,16 +17,20 @@ DHT dht(DHTPIN, DHTTYPE);
 float temperature;
 int control=35;
 
-// paramètres et broches moteur pas-à-pas
+// paramètres et broches moteur
 #define STOPPER_PIN 11
 #define MOTOR_STEPS 400
-#define RPM 35
+#define RPM 45
 #define MICROSTEPS 1
 #define enPin 5
 #define DIR 6
 #define STEP 7
 #define SLEEP 5
+#define cutpower 8
+#define cutpower2 9
 BasicStepperDriver stepper(MOTOR_STEPS, DIR, STEP);
+
+
 
 
 // paramètres et broches du robot
@@ -70,6 +74,8 @@ void setup() {
   //envoi du mot start sur le port série
   Serial.println("start");
   //setup broches arduino
+  pinMode(cutpower, OUTPUT);
+  pinMode(cutpower2, OUTPUT);
   pinMode(fanPin, OUTPUT);
   digitalWrite(fanPin, HIGH);
   //pinMode(enPin, OUTPUT);
@@ -105,8 +111,7 @@ bool loop=true;
 recvWithStartEndMarkers();
 showNewData();
   if (newData==true && loop==true) {
-      xmove(xdest);
-      test_getangles(ydest, -40.0)
+      xymove(xdest, ydest);
       newData=false;
       Serial.println("done");
   }
@@ -126,7 +131,10 @@ void calib_x(){
   //digitalWrite(enPin, HIGH);
 }
 
-void xmove(double degmove){
+void xymove(double degmove, double ymove){
+  digitalWrite(cutpower, HIGH);
+  digitalWrite(cutpower2, HIGH);
+  servo_steps(0, 20)
   Serial.print("GO X deg : ");
   degmove=45.5-degmove;
   degmove=degmove+8.0;
@@ -138,8 +146,12 @@ void xmove(double degmove){
   stepper.rotate(-degmove);
   stepper.stop();
   delay(2000);
+  servo_steps(0, 30)
   stepper.rotate(degmove);
+  servo_steps(0, 20)
   stepper.stop();
+  digitalWrite(cutpower, LOW);
+  digitalWrite(cutpower2, LOW);
   //digitalWrite(enPin, HIGH);
 }
 
