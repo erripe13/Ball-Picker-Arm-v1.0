@@ -18,7 +18,7 @@ float temperature;
 int control=35;
 
 // paramètres et broches moteur pas-à-pas
-#define ENDSTOP 11
+#define STOPPER_PIN 11
 #define MOTOR_STEPS 400
 #define RPM 35
 #define MICROSTEPS 1
@@ -61,6 +61,8 @@ const byte numChars = 32;
 char receivedChars[numChars];
 boolean newData = false;
 
+double xdest, ydest;
+
 void setup() {  
   // port série
   Serial.begin(9600);
@@ -72,7 +74,7 @@ void setup() {
   pinMode(fanPin, OUTPUT);
   digitalWrite(fanPin, HIGH);
   pinMode(enPin, OUTPUT);
-  pinMode(ENDSTOP, INPUT);
+  pinMode(STOPPER_PIN, INPUT);
   digitalWrite(enPin, LOW);
 
   int i = 0;
@@ -101,118 +103,12 @@ void loop() {
   recvWithStartEndMarkers();
   showNewData();
   if (newData==true && loop==true) {
-    coordinate_move(XYZ_next[0],XYZ_next[1]);
+
     newData=false;
   Serial.println("done");
   }
 }
 
-void coordinate_move(double xEnd, double yEnd) {
-  double zEnd = 25.0;
-  double xStart = XYZ_current[0];
-  double yStart = XYZ_current[1];
-  double zStart = XYZ_current[2];
-
-  //application de la calibration de pas du moteur
-  double x_to_steps = DEG_PER_CM;
-
-  //mouvement en y ?
-  double zDelta = zEnd - zStart;
-  //mouvement en z ?
-  double xDelta = xEnd - xStart;
-
-  double x_stepper_steps = x_to_steps * abs(xDelta);
-
-  if (xDelta != 0) {
-    if (xDelta > 0) {
-      stepper_advance(x_stepper_steps, 0);
-    } else {
-      stepper_advance(x_stepper_steps, 1);
-    }
-  }
-
-    if (zDelta < 0) {
-      //le bras va descendre
-      // bouge en Y
-      get_angles_from_yz(yEnd, zStart);
-      twoarm_step_coordinate(angle_next[0], angle_next[1]);
-
-      // bouge en Z
-      get_angles_from_yz(yEnd, zEnd);
-      twoarm_step_coordinate(angle_next[0], angle_next[1]);
-
-    } else {
-      //le bras va monter
-      get_angles_from_yz(yStart, zEnd);
-      twoarm_step_coordinate(angle_next[0], angle_next[1]);
-      get_angles_from_yz(yEnd, zEnd);
-      twoarm_step_coordinate(angle_next[0], angle_next[1]);
-    }
-
-
-
-  //prints de débug :
-//  Serial.println(" //////// ");
-//  Serial.print(" xStart=  "); Serial.print(xStart); Serial.print(" yStart=  "); Serial.println(yStart);
-//  Serial.print("Angle Top Arm="); Serial.print(angle_TopArm); Serial.print(" Angle Middle Arm=  "); Serial.println(angle_MiddleArm);
-//  Serial.print("Angle Top Arm_next="); Serial.print(angle_TopArm_next); Serial.print(" Angle Middle Arm_next=  "); Serial.println(angle_MiddleArm_next);
-//  Serial.print(" xEnd=  "); Serial.print(xEnd);   Serial.print(" yEnd=  "); Serial.println(yEnd);
-
-  XYZ_current[0] = xEnd;
-  XYZ_current[1] = yEnd;
-  XYZ_current[2] = zEnd;
-  //XYZ_current[3] = liftgrab_motion;
-}
-
-void stepper_advance(double steps, int dir) {
-  stepper.enable();
-  // génération de la pwm pour le driver TMC2208
-  // vérification si besoin de compensation pas-à-pas
-  // if (abs(stepper_correction[stepper_num]) > 1) {
-  //   if (stepper_correction[stepper_num]>1){
-  //     //ajout d'un pas si la compensation >1
-  //     steps++;
-  //     stepper_correction[stepper_num]--;
-  //   } else {
-  //     steps--;
-  //     stepper_correction[stepper_num]++;
-  //   }
-  // }
-
-  // paramètre de direction de translation
-  if (dir == 0) {
-    stepper.rotate(steps);
-    //digitalWrite(stepper_dirPin[stepper_num], HIGH);
-  } else {
-    stepper.rotate(-steps);
-    //digitalWrite(stepper_dirPin[stepper_num], LOW);
-  }
-
-  // envoi pwm driver TMC2208
-  // while (1) {
-  //   digitalWrite(stepper_stepPin[stepper_num], HIGH);
-  //   delayMicroseconds(stepper_delay[stepper_num]);
-  //   digitalWrite(stepper_stepPin[stepper_num], LOW);
-  //   delayMicroseconds(stepper_delay[stepper_num]);
-
-  //   steps--;
-  //   if (steps < 1) break;
-  // }
-
-
-  // stockage du nombre de pas corrigés pour tenir les comptes et ne pas décalibrer
-  // if (steps > 0 && steps <1) {
-  //   if (dir ==0) {
-  //     stepper_correction[stepper_num]+=steps;
-  //   } else {
-  //     stepper_correction[stepper_num]-=steps;
-  //   }
-  // }
-  
-  // Serial.print("reste de pas stocké");
-  // Serial.println(stepper_correction[stepper_num]);
-  stepper.disable();
-}
 
 void calib_x(){
   while (digitalRead(STOPPER_PIN) == LOW){
