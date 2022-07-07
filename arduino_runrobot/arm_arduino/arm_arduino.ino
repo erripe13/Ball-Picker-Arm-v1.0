@@ -122,6 +122,10 @@ showNewData();
 }
 
 void calib_x(){
+  servocontrol(0, 10);
+  servocontrol(1, 100);
+  digitalWrite(cutpower, HIGH);
+  digitalWrite(cutpower2, HIGH);
   //digitalWrite(enPin, LOW);
   Serial.println("stepper calib");
   while (digitalRead(STOPPER_PIN) == LOW){
@@ -131,50 +135,38 @@ void calib_x(){
   stepper.stop();
   stepper.rotate(1750);
   stepper.stop();
-  delay(2000);
+  delay(1000);
+  digitalWrite(cutpower, LOW);
+  digitalWrite(cutpower2, LOW);
   //digitalWrite(enPin, HIGH);
 }
 
 
-
-void servo_steps(int servo_num, double angle_target, double incr_step = 5, int step_delay = 100) {
-  // cette commande permet d'envoyer les instructions par paquets de 5 degrés. permet de gérer la vitesse
-
-  int set_angle;
-  int angle_start = angle_current[servo_num];
-
-  if (angle_start > angle_target) {
-    //commencer à partir de l'angle_start, puis déplacer le servo par incr_pas dans l'angle_target
-
-    for (set_angle = angle_start; set_angle >= angle_target; set_angle -= incr_step) {
-      servo[servo_num].write(set_angle);
-      //Serial.print("angle servo:");
-      //Serial.println(set_angle);
-      delay(step_delay);
+void servocontrol(int num, int i){
+int s=15;
+int angle;
+angle=servo[num].read();
+if ( i >= angle) {
+    for (angle = angle; angle <= i; angle = angle + 1) { 
+      servo[num].write(angle);
+      delay(s);
     }
-  } else {
-
-    for (set_angle = angle_start; set_angle <= angle_target; set_angle += incr_step) {
-      servo[servo_num].write(set_angle);
-      //Serial.print("angle servo:");
-      //Serial.println(set_angle);
-      delay(step_delay);
-    }
-  }
-
-  // l'instruction d'angle
-  servo[servo_num].write(angle_target);
-  //mettre à jour la donnée d'angle dans le registre de position
-  angle_current[servo_num] = angle_target;
-
 }
+else { 
+    for (angle = angle; angle >= i; angle = angle - 1){ 
+      servo[num].write(angle);
+      delay(s);
+    }
+}
+}
+
 
 void get_angles_from_yz(double y, double z) {
   Serial.print("y :");
   Serial.println(y);
   Serial.print("z :");
   Serial.println(z);
-  //refer to trigonometry illustration for variable description
+  //calculs trigonométriques
   double H, s1, s2, aB, aA, aQ, y2, z2, y3, z3;
   //arm length in cm
   int L = 25;
@@ -208,8 +200,8 @@ void get_angles_from_yz(double y, double z) {
   servo1angle=map(servo1angle, 0, 90, 90, 0);
   //if (servo1angle>50) servo2angle=map(servo2angle, 0, 90, 180, 75);
   //else 
-  servo2angle=map(servo2angle, 0, 90, 180, 80);
-  
+  servo2angle=map(servo2angle, 0, 90, 180, 90);
+  servo2angle=servo2angle-12;
 
 
   Serial.print("Angle 1 servo :");
@@ -217,11 +209,21 @@ void get_angles_from_yz(double y, double z) {
   //servo2angle = -servo2angle;
   Serial.print("Angle 2 servo:");
   Serial.println(servo2angle);
-  
+
+  if (y>=5){
   //envoi des angles aux moteurs
-  servo_steps(0, servo1angle);
-  servo_steps(1, servo2angle);
+  servocontrol(1, servo2angle);
+  delay(100);
+  servocontrol(0, servo1angle);
+  delay(200);}
+  else{
+  //envoi des angles aux moteurs
+  servocontrol(0, servo1angle);
+  delay(100);
+  servocontrol(1, servo2angle);
+  delay(200);}
 }
+
 
 
 void recvWithStartEndMarkers() {
@@ -293,15 +295,15 @@ void parseData() {
 
 void xymove(double degmove, double ymove){
   ymove=ymove-30.0; //correction 
-  ymove=-ymove;
-  servo[0].write(20);
-  servo[1].write(110);
+  ymove=-ymove; //inversion du y
+  servocontrol(0, 10);
+  servocontrol(1, 100);
   servo[2].write(70);
   digitalWrite(cutpower, HIGH);
   digitalWrite(cutpower2, HIGH);
   Serial.print("GO X deg : ");
   degmove=45.5-degmove;
-  degmove=degmove+8.0;
+  degmove=degmove+9.5;
   if (degmove>=45) degmove=45;
   Serial.println(degmove);
   degmove=degmove*38.8;
@@ -310,13 +312,24 @@ void xymove(double degmove, double ymove){
   Serial.println(degmove);
   stepper.rotate(-degmove);
   stepper.stop();
-  delay(2000);
+  delay(1000);
   get_angles_from_yz(ymove, -25.0);
-  delay(500);
+  delay(300);
+  get_angles_from_yz(ymove, -33.0);
+  if (ymove>=5){
+  //envoi des angles aux moteurs
   servo[2].write(20);
-  delay(3000);
-  servo_steps(0, 20);
-  servo_steps(1, 110);
+  delay(1000);
+  servocontrol(0, 10);
+  servocontrol(1, 100);
+  }
+  else{
+  //envoi des angles aux moteurs
+  servo[2].write(20);
+  delay(1000);
+  servocontrol(1, 100);
+  servocontrol(0, 10);
+  }
   stepper.rotate(degmove);
   stepper.stop();
   delay(1000);
