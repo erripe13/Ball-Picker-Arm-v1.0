@@ -272,10 +272,6 @@ void test_getangles(double y, double z) {
   Serial.print(angle_next[0]);
   Serial.print(" servo2: ");
   Serial.println(angle_next[1]);
-  Serial.print("servo1 calibrated: ");
-  Serial.print(angle_next[0]);
-  Serial.print(" servo2 calibrated: ");
-  Serial.println(angle_next[1]);
 }
 
 void recvWithStartEndMarkers() {
