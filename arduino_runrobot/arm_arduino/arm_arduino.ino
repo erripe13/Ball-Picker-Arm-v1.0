@@ -96,13 +96,7 @@ void setup() {
   stepper.setEnableActiveState(LOW);
   pinMode(STOPPER_PIN, INPUT);
   
-  Serial.println("stepper calib");
-  while (digitalRead(STOPPER_PIN) == LOW){
-      stepper.rotate(-15);
-  }
-  Serial.println("STOPPER");
-  stepper.stop();
-  stepper.rotate(1750);
+  calib_x()
   Serial.println("ready");
 }
 
@@ -118,10 +112,11 @@ void loop() {
 
 
 void calib_x(){
+  Serial.println("stepper calib");
   while (digitalRead(STOPPER_PIN) == LOW){
       stepper.rotate(-15);
   }
-  Serial.println("STOPPER");
+  Serial.println("ENDSTOP");
   stepper.stop();
   stepper.rotate(1750);
 }
