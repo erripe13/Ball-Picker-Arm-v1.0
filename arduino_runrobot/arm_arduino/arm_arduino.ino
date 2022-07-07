@@ -47,12 +47,6 @@ double angle_next[] = {90, 90, 145};
 const double XYZ_base[] = {0, 0, -40}; //x,y,z, bool_move, bool_open, delay_to_next, type_of_action
 double XYZ_current[] = {0, 0, -40}; //x,y,z, bool_move, bool_open, delay_to_next, type_of_action
 double XYZ_next[] = {0, 0, -9}; //x,y,z, bool_move, bool_open, delay_to_next, type_of_action
-//contraintes de translation (pas-à-pas)
-//const int stepper_delay[] = {100}; //27*22 for full step
-const int stepper_maxdeg[] = {1770}; //max de cm
-const double DEG_PER_CM[] ={39,5}; //résultat calcul deg/CM
-double stepper_correction[]={0};
-double step_deg_remain = 45;
 // vérifier que l'angle du servo correpond bien à l'angle de la partie du bras commandée
 // mettre le servo à 90°, puis mesurer l'angle réel
 // la valeur de calibration est donc (90 - {réel angle par rapport à 90})
@@ -113,12 +107,12 @@ void loop() {
   }
   //coordinate_move(20, 20);
   // recvWithStartEndMarkers();
-  // showNewData();
-  // if (newData==true && loop==true) {
-  //   coordinate_move(XYZ_next[0],XYZ_next[1]);
-  //   newData=false;
-  //   Serial.println("done");
-  // }
+  showNewData();
+  if (newData==true && loop==true) {
+    coordinate_move(XYZ_next[0],XYZ_next[1]);
+    newData=false;
+  Serial.println("done");
+  }
 }
 
 void coordinate_move(double xEnd, double yEnd) {
@@ -269,78 +263,7 @@ void servo_steps(int servo_num, double angle_target, double incr_step = 10, int 
   angle_current[servo_num] = angle_target;
 
 }
-void twoarm_step_coordinate(double toparm_target, double middlearm_target) {
 
-  double incr_steps0=1;
-  double incr_steps1= 1;
-  int inner_step_delay0 = 0;
-  int inner_step_delay1 = 0;
-  int outer_step_delay = 30;
-  double i, j;
-  int e0 = 0;
-  int e1 = 0;
-
-  //détermine quel segment a le meilleur delta en terme d'efficacité de mouvement
-  double delta0 = abs(angle_current[0] - toparm_target);
-  double delta1 = abs(angle_current[1] - middlearm_target);
-
-  //coordination des deux servos avec gestion de la vitesse pour que les deux segments finissent leurs déplacements en même temps
-
-  if (delta0!=0 && delta1!=0) {
-    if (delta0 >= delta1) {
-      incr_steps0 = (delta0 / delta1)*incr_steps1;
-      //au plus le déplacement est grand au plus on ralentit
-      inner_step_delay0=(delta0/delta1)*0.5;
-   
-      outer_step_delay=outer_step_delay-inner_step_delay0;
-    } else {
-      incr_steps1 = (delta1 / delta0)*incr_steps0;
-      inner_step_delay1=(delta1/delta0)*0.5;
-
-      outer_step_delay=outer_step_delay-inner_step_delay1;
-    }
-  }
-  
-  if (outer_step_delay<0) {
-    outer_step_delay=0;
-  }
-  
-  //identification de la direction des pas "soft" des servos
-  if (angle_current[0] > toparm_target) {
-    i = -incr_steps0;
-  } else {
-    i = incr_steps0;
-  }
-  if (angle_current[1] > middlearm_target) {
-    j = -incr_steps1;
-  } else {
-    j = incr_steps1;
-  }
-  
-  // contrôle général des servos
-  while (1) {
-    // segment1
-    if (abs(angle_current[0] - toparm_target) > incr_steps0) {
-      servo_steps(0, angle_current[0] + i, incr_steps0, inner_step_delay0);
-    } else {
-      servo_steps(0, toparm_target, incr_steps0, inner_step_delay0);
-      e0 = 1;
-    }
-    // segment2
-    if (abs(angle_current[1] - middlearm_target) > incr_steps1) {
-      servo_steps(1, angle_current[1] + j, incr_steps1, inner_step_delay1);
-    } else {
-      servo_steps(1, middlearm_target, incr_steps1, inner_step_delay1);
-      e1 = 1;
-    }
-    delay(outer_step_delay);
-    if ((e0 + e1) >= 2) break;
-
-  }
-
-  //Serial.println("--> two arm step End /");
-
-}
 void get_angles_from_yz(double y, double z) {
 
   //refer to trigonometry illustration for variable description
@@ -348,7 +271,7 @@ void get_angles_from_yz(double y, double z) {
   double H, s1, s2, aB, aA, aQ, servo1angle, servo2angle, y2, z2, y3, z3;
 
   //arm length in cm
-  int L = 13;
+  int L = 25;
 
   H= sqrt (pow(y,2) + pow(z,2));
   s1=H/2;
@@ -386,31 +309,11 @@ void get_angles_from_yz(double y, double z) {
   //Convert to SERVO Angle
   //in this case, a 90 servo position is equal to 71 degrees for Top arm
   //90 servo position is equal to 65 Middle Arm
-  angle_next[0] = angle_next[0] + calibrate_TopArm;
-  angle_next[1] = angle_next[1] + calibrate_MiddleArm;
+  // angle_next[0] = angle_next[0] + calibrate_TopArm;
+  // angle_next[1] = angle_next[1] + calibrate_MiddleArm;
 
 }
 
-
-void servo_Open(bool openVal) {
-
-  int servo_num = 2;
-  int open_angle = servoGrip_val[0];
-  int close_angle = servoGrip_val[1];
-  if (openVal == true) {
-    servo_steps(servo_num, open_angle, 1, 5);
-  } else {
-    servo_steps(servo_num, close_angle, 1, 5);
-  }
-  
-  XYZ_current[4] = openVal;
-}
-void test_stepper() {
-  stepper_advance(stepper_maxdeg[0], 0);
-  delay(1000);
-  stepper_advance(stepper_maxdeg[0], 1);
-  delay(1000);
-}
 void test_servo(int servo_num) {
 
   int angle_max = 0;

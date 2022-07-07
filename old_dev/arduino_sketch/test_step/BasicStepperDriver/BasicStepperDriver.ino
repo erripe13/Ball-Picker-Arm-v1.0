@@ -46,13 +46,13 @@ void loop() {
     /*
      * Moving motor one full revolution using the degree notation
      */
-    stepper.rotate(1700);
+    stepper.rotate(-1700);
 
     /*
      * Moving motor to original position using steps
      */
     
-    stepper.move(-1700);
+    stepper.move(1700);
 
     // pause and allow the motor to be moved by hand
     stepper.disable();
