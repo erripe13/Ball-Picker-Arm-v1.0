@@ -186,7 +186,6 @@ void get_angles_from_yz(double y, double z) {
   servo1angle=aA+aB;
   servo1angle= (servo1angle/ (2 * M_PI)) * 360;
 
-  //matrix multiplication - counterclockwise rotation
   y3 = -L*sin(aA+aB);
   z3 = -L* cos(aA+aB);
 
@@ -200,12 +199,11 @@ void get_angles_from_yz(double y, double z) {
 
   //Absolute Top Arm Angle
   //Top Arm moves 0 to +90
-  angle_next[0] = servo1angle;
-
+  Serial.println(servo1angle);
   //Absolute Middle Arm Angle
   //Midle Arm moves 0 to +90
-  angle_next[1] = -servo2angle;
-
+  servo2angle = -servo2angle;
+  Serial.println(servo2angle);
 
   //Convert to SERVO Angle
   //in this case, a 90 servo position is equal to 71 degrees for Top arm
@@ -337,6 +335,7 @@ void xymove(double degmove, double ymove){
   servo[2].write(70);
   digitalWrite(cutpower, HIGH);
   digitalWrite(cutpower2, HIGH);
+  get_angles_from_yz(ymove, -30.0)
   Serial.print("GO X deg : ");
   degmove=45.5-degmove;
   degmove=degmove+8.0;
@@ -348,9 +347,14 @@ void xymove(double degmove, double ymove){
   stepper.rotate(-degmove);
   stepper.stop();
   delay(2000);
+
+
   stepper.rotate(degmove);
-  servo_steps(0, 20);
   stepper.stop();
+  servo[0].write(20);
+  servo[1].write(110);
+  servo[2].write(70);
+  delay(1000);
   digitalWrite(cutpower, LOW);
   digitalWrite(cutpower2, LOW);
   //digitalWrite(enPin, HIGH);
