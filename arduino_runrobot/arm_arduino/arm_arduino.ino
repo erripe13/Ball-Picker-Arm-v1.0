@@ -72,7 +72,7 @@ void setup() {
   pinMode(enPin, OUTPUT);
   pinMode(ENDSTOP, INPUT);
   digitalWrite(enPin, LOW);
-  
+
   int i = 0;
   for (i = 0; i < 3; i++) {
     pinMode(servo_Pin[i], OUTPUT);
@@ -80,7 +80,7 @@ void setup() {
   // Set Coordinates a Base
   int y = 0;
   int z = -40  ;
-  coordinate_move(0, y);
+  //coordinate_move(0, y);
   for (i = 0; i < 3; i++) {
     servo[i].attach(servo_Pin[i], 500, 2500);
   }
@@ -89,24 +89,14 @@ void setup() {
 
   stepper.begin(RPM, MICROSTEPS);
   //init pin EN
-  stepper.setEnableActiveState(LOW);
   
-  Serial.println("stepper test go");
-  //test_stepper();
+  Serial.println("stepper calib");
+  calib_x();
   Serial.println("ready");
 }
 
 void loop() {
-  Serial.println("calib go");
-  stepper.enable();
-  stepper.startMove(-2000);
-  if (digitalRead(ENDSTOP) == HIGH){
-    Serial.println("TOUCHED");
-    stepper.stop();
-    XYZ_current[0]=0;
-  }
-  //coordinate_move(20, 20);
-  // recvWithStartEndMarkers();
+  recvWithStartEndMarkers();
   showNewData();
   if (newData==true && loop==true) {
     coordinate_move(XYZ_next[0],XYZ_next[1]);
@@ -223,13 +213,12 @@ void stepper_advance(double steps, int dir) {
 }
 
 void calib_x(){
-  stepper.enable();
-  stepper.startMove(-2500);
-  if (digitalRead(ENDSTOP) == HIGH){
-    Serial.println("TOUCHED");
+  while (digitalRead(STOPPER_PIN) == LOW){
+      stepper.rotate(-15);
+    }
+    Serial.println("STOPPER");
     stepper.stop();
-    XYZ_current[0]=0;
-  }
+    stepper.rotate(1750);
 }
 
 void servo_steps(int servo_num, double angle_target, double incr_step = 10, int step_delay = 100) {
@@ -350,28 +339,7 @@ void test_servo(int servo_num) {
   servo_steps(servo_num, angle_default);
 
 }
-void test_servo_home(int servo_num) {
-  
-  int angle_default = 0;
 
-  //ref servo_steps(int servo_num, int angle_target, int incr_step=10, int step_delay=50)
-
-  //segment1
-  if (servo_num == 0) {
-    angle_default = 10;
-  }
-  //segment2
-  if (servo_num == 1) {
-    angle_default = 90;
-  }
-  //servo pince
-  if (servo_num == 2) {
-    angle_default = servoGrip_val[2];
-  }
-
-  servo_steps(servo_num, angle_default);
-
-}
 void test_getangles(double y, double z) {
   get_angles_from_yz(y,z);
   Serial.print("Y: ");
@@ -379,14 +347,15 @@ void test_getangles(double y, double z) {
   Serial.print(" Z: ");
   Serial.println(z);
   Serial.print("servo1: ");
-  Serial.print(angle_next[0]-calibrate_TopArm);
+  Serial.print(angle_next[0]);
   Serial.print(" servo2: ");
-  Serial.println(angle_next[1]-calibrate_MiddleArm);
+  Serial.println(angle_next[1]);
   Serial.print("servo1 calibrated: ");
   Serial.print(angle_next[0]);
   Serial.print(" servo2 calibrated: ");
   Serial.println(angle_next[1]);
 }
+
 void recvWithStartEndMarkers() {
     static boolean recvInProgress = false;
     static byte ndx = 0;
@@ -422,17 +391,15 @@ void recvWithStartEndMarkers() {
 
 void showNewData() {
     if (newData == true) {
-        Serial.println(receivedChars);
+        //Serial.println(receivedChars);
         parseData();
 
-        bool printmsg=false;
+        bool printmsg=true;
         if (printmsg == true) {
           Serial.print("X: ");
-          Serial.print(XYZ_next[0]);
+          Serial.println(xdest);
           Serial.print(" Y: ");
-          Serial.print(XYZ_next[1]);
-          Serial.print(" Z: ");
-          Serial.print(XYZ_next[2]);
+          Serial.println(ydest);
         }
         //newData = false;
     }
@@ -449,11 +416,9 @@ void parseData() {
  
   //grab X
   strtokIndx = strtok(receivedChars,","); 
-  XYZ_next[0] = atof(strtokIndx);     // conversion en float
+  xdest = atof(strtokIndx);     // conversion en float
   //grab Y
   strtokIndx = strtok(NULL, ",");
-  XYZ_next[1] = atof(strtokIndx);     // conversion en float
-  //grab Z
-  strtokIndx = strtok(NULL, ",");
-  XYZ_next[2] = atof(strtokIndx);     // conversion en float
+  ydest = atof(strtokIndx);     // conversion en float
+
 }
