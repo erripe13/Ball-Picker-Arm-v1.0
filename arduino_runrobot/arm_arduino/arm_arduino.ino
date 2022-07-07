@@ -25,6 +25,7 @@ int control=35;
 #define enPin 5
 #define DIR 6
 #define STEP 7
+#define SLEEP 5
 BasicStepperDriver stepper(MOTOR_STEPS, DIR, STEP);
 
 
@@ -92,7 +93,8 @@ void setup() {
   dht.begin();
 
   stepper.begin(RPM, MICROSTEPS);
-  //init pin EN
+  stepper.setEnableActiveState(LOW);
+  pinMode(STOPPER_PIN, INPUT);
   
   Serial.println("stepper calib");
   calib_x();
