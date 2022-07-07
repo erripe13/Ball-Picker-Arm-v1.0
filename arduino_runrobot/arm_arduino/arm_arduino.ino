@@ -106,6 +106,7 @@ recvWithStartEndMarkers();
 showNewData();
   if (newData==true && loop==true) {
       xmove(xdest);
+      test_getangles(ydest, -40.0)
       newData=false;
       Serial.println("done");
   }
