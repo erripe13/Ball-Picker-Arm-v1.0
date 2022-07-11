@@ -1,0 +1,7 @@
+
+*.kicad_prl
+*.zip
+Shield PCB/.DS_Store
+arduino_runrobot/.DS_Store
+*.json
+.DS_Store
