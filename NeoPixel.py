@@ -1,5 +1,5 @@
-# SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries
-# SPDX-License-Identifier: MIT
+# code de la biblothèque neopixel pour pilotage du ruban dans la boîte
+# programme exécuté au démarrage pour obtenir une lumière blanche
 
 # Simple test for NeoPixels on Raspberry Pi
 import time

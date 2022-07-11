@@ -1,6 +1,8 @@
 # code par Pierre Mirouze
 # FabriqExpo Exploradôme de Vitry
-#code à exécution manuelle pour définir les 6 paramètres HSV de la balle pour la calibration du filtre dans ball_tracking.py
+# code à exécution manuelle pour définir les 6 paramètres HSV de la balle 
+# pour la calibration du filtre, reporter les paramètres trouvés avec ce programme 
+# dans les lignes 23 et 24 du programme ball_tracking.py
 
 
 from __future__ import print_function

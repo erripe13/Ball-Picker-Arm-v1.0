@@ -12,27 +12,31 @@ import time
 import RPi.GPIO as GPIO
 import serial
 
-
+#config du switch de debug
 GPIO.setmode(GPIO.BOARD)
 buttonPin = 36
-GPIO.setwarnings(False) # Ignore warning for now
+GPIO.setwarnings(False) # Ignorer warning
 GPIO.setup(buttonPin, GPIO.IN)
 
 
-# limites HSV couleur balle, à définir avec hsv_define.py
-greenLower = (15, 112, 143)
-greenUpper = (45, 255, 255)
-pts = deque(maxlen=50)
+# limites HSV de la couleur de la balle, à définir avec hsv_define.py
+HSVLower = (15, 112, 143) #(H low, S low, V low)
+HSVUpper = (45, 255, 255) #(H up, S up, V up)
+
+
+pts = deque(maxlen=50) #longueur de la traînée rouge
 
 # attribution flux webcam
 vs = VideoStream(src=0).start()
 # attente démarrage cam
 time.sleep(1.0)
 
+#déclaration de variables
 xpast=0
 ypast=0
 counter=0
 
+#fonction de décodage du port série
 def decodestr(inputstr):   
         inputstr=inputstr.decode("utf-8")
         inputstr=inputstr.replace("\r","")
@@ -57,16 +61,17 @@ with serial.Serial("/dev/ttyACM0", 9600, timeout=1) as arduino:
 					while True:
 						# définir frame comme flux video
 						frame = vs.read()
-						#frame = frame[1] if args.get("video", False) else frame
 						# fin de la boucle si pas de flux
 						if frame is None:
 							break
 						# réduction de la résolution, flou, et conversion HSV
 						frame = frame[20:450, 60:600]
+						#affichage des 4 angles
 						calib = cv2.circle(frame,(84,38), 5,(0,0,255),-1)
 						calib = cv2.circle(calib,(449,36),5,(0,0,255),-1)
 						calib = cv2.circle(calib,(34,419),5,(0,0,255),-1)
 						calib = cv2.circle(calib,(517,415),5,(0,0,255),-1) 
+						#déclaration des points du trapèze à rectifier
 						imgPts = np.float32([[84,38],[449,36],[34,419],[517,415]])
 						objPoints = np.float32([[0,0],[1000,0],[0,1000],[1000,1000]])
 						matrix = cv2.getPerspectiveTransform(imgPts,objPoints)
@@ -74,7 +79,7 @@ with serial.Serial("/dev/ttyACM0", 9600, timeout=1) as arduino:
 						blurred = cv2.GaussianBlur(frame, (11, 11), 0)
 						hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
 						# génération d'un masque sur la balle
-						mask = cv2.inRange(hsv, greenLower, greenUpper)
+						mask = cv2.inRange(hsv, greenLower, HSVUpper)
 						mask = cv2.erode(mask, None, iterations=2)
 						mask = cv2.dilate(mask, None, iterations=2)
 						# trouver contours de la sortie du filtre et coordonnées de son centre
@@ -98,15 +103,15 @@ with serial.Serial("/dev/ttyACM0", 9600, timeout=1) as arduino:
 								x=round(x,1)
 								y=round(y,1)
 								cv2.putText(frame,"x,y: "+str(x)+","+str(y),(20,20),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),2)
+								#si la balle arrête de se déplacer, démarrer la procédure de saisie
 								if (xpast>=x-0.25 and xpast<=x+0.25 and ypast>=y-0.25 and ypast<=y+0.25):
 									cv2.putText(frame,"LE ROBOT VA ATTRAPER LA BALLE",(20,60),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
 									counter=counter+1
+									#si la balle est immobile depuis 15 images, aller l'attraper
 									if (counter>=15) :
-										#cv2.putText(frame,"SEND",(20,90),cv2.FONT_HERSHEY_SIMPLEX,1,(255,0,0),2)
-										#catchball(x, y)
 										inputs="<"+str(x)+","+str(y)+">"
 										inputs=inputs.encode("utf-8")
-										arduino.write(inputs)
+										arduino.write(inputs) #envoi des coordonnées à l'arduino
 										print("inputs :", inputs)
 										while arduino.inWaiting()==0: pass
 										while True:
@@ -115,7 +120,7 @@ with serial.Serial("/dev/ttyACM0", 9600, timeout=1) as arduino:
 												answer=decodestr(answer)
 												print(answer)
 												arduino.flushInput()
-												if answer=='done' :
+												if answer=='done' : #si le bras a terminé le mouvement
 													break
 										counter=0
 								xpast=x

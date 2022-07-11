@@ -1,4 +1,4 @@
-// par Pierre Mirouze
+// code par Pierre Mirouze
 // FabriqExpo Exploradôme de Vitry
 // programme exécuté par l'Arduino contrôlant les moteurs du bras
 
@@ -185,39 +185,37 @@ void get_angles_from_yz(double y, double z) {
   z3 = -L* cos(aA+aB);
   servo2angle=atan((y-y3)/(z-z3));  
   servo2angle= (servo2angle / (2 * M_PI)) * 360;
-  //tangent calculation changes when servo2 exceeds 90 degrees, correction below
   if ((z-z3)>0) {
     servo2angle=servo2angle-180;
   }
   servo2angle=abs(servo2angle);
 
-  
+  //print des angles calculés avant traitement pour envoi au servomoteurs
   Serial.print("Angle 1 bras :");
   Serial.println(servo1angle);
   Serial.print("Angle 2 bras :");
   Serial.println(servo2angle);
 
   //conversion degrés bras théorique en angles servo étalonnés (inversion du sens, bornes, correction du jeu)
-  //if (servo1angle>85) servo1angle=85;
   servo1angle=map(servo1angle, 0, 90, 90, 0);
-  //if (servo1angle>50) servo2angle=map(servo2angle, 0, 90, 180, 75);
-  //else 
   servo2angle=map(servo2angle, 0, 90, 180, 90);
-  servo2angle=servo2angle-12;
-
+  
+  servo2angle=servo2angle-12; //offset sur le servo2
 
   Serial.print("Angle 1 servo :");
   Serial.println(servo1angle);
-  //servo2angle = -servo2angle;
   Serial.print("Angle 2 servo:");
   Serial.println(servo2angle);
 
+  //décomposition du mouvement pour éviter le contact avec le plateau lors du trajet
+  //si la balle est côté droit
   if (y>=5){
   //envoi des angles aux moteurs
   servocontrol(1, servo2angle);
   delay(100);
   servocontrol(0, servo1angle);
   delay(200);}
+  //si la balle est côté gauche
   else{
   //envoi des angles aux moteurs
   servocontrol(0, servo1angle);
@@ -227,7 +225,7 @@ void get_angles_from_yz(double y, double z) {
 }
 
 
-
+//fonction de réception sur le port série
 void recvWithStartEndMarkers() {
     static boolean recvInProgress = false;
     static byte ndx = 0;
@@ -261,9 +259,9 @@ void recvWithStartEndMarkers() {
 }
 }
 
+//fonction de print des caractères reçus
 void showNewData() {
     if (newData == true) {
-        //Serial.println(receivedChars);
         parseData();
 
         bool printmsg=true;
@@ -273,16 +271,13 @@ void showNewData() {
           Serial.print(" Y: ");
           Serial.println(ydest);
         }
-        //newData = false;
     }
 }
 
+//fonction de formattage des données
 void parseData() {
 
   // formattage des données reçues
-
-  //format : <x,y,z> = <23,56,89> {17}
-  //X: 7.00 Y: 8.00 Z: 9.00 bool_move: 1.00 bool_open: 0.00 delay_ms: 10.00 move_type: 1.00
 
   char * strtokIndx;
  
@@ -295,6 +290,7 @@ void parseData() {
 
 }
 
+//fonction principale de mouvement du bras
 void xymove(double degmove, double ymove){
   //correction de la donnée y
   if (ymove<=4) ymove=4;
