@@ -137,7 +137,7 @@ void calib_x(){
   stepper.stop();
   servocontrol(0, 40);
   servocontrol(1, 80);
-  delay(1000);
+  delay(2000);
   digitalWrite(cutpower, LOW);
   digitalWrite(cutpower2, LOW);
   //digitalWrite(enPin, HIGH);
@@ -297,6 +297,8 @@ void parseData() {
 
 void xymove(double degmove, double ymove){
   //correction de la donnée y
+  if (ymove<=4) ymove=4;
+  if (ymove>=61) ymove=61;
   ymove=ymove-30.0; //correction 
   ymove=-ymove; //inversion du y
   //bras rétracté
